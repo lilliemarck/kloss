@@ -4,6 +4,23 @@
 
 namespace kloss {
 namespace creator {
+namespace {
+
+float const deltaTime = 1.0f / 10.0f;
+
+void updateKeyPair(key_pair& key_pair, bool pressed, QKeyEvent const* event, Qt::Key first, Qt::Key second)
+{
+    if (event->key() == first)
+    {
+        key_pair.set_first(pressed);
+    }
+    else if (event->key() == second)
+    {
+        key_pair.set_second(pressed);
+    }
+}
+
+} // namespace
 
 GLWidget::GLWidget(QWidget* parent) : QGLWidget(parent)
 {
@@ -12,6 +29,40 @@ GLWidget::GLWidget(QWidget* parent) : QGLWidget(parent)
 
 void GLWidget::initializeGL()
 {
+}
+
+void GLWidget::keyPressEvent(QKeyEvent* event)
+{
+    updateKeyPair(backwardForward_, true, event, Qt::Key_S, Qt::Key_W);
+    updateKeyPair(leftRight_,       true, event, Qt::Key_A, Qt::Key_D);
+
+    if (backwardForward_.value() != 0.0f || leftRight_.value() != 0.0f)
+    {
+        timer_.start(1.0f / deltaTime, this);
+    }
+}
+
+void GLWidget::keyReleaseEvent(QKeyEvent* event)
+{
+    updateKeyPair(backwardForward_, false, event, Qt::Key_S, Qt::Key_W);
+    updateKeyPair(leftRight_,       false, event, Qt::Key_A, Qt::Key_D);
+
+    if (backwardForward_.value() == 0.0f && leftRight_.value() == 0.0f)
+    {
+        timer_.stop();
+    }
+}
+
+void GLWidget::timerEvent(QTimerEvent* event)
+{
+    QGLWidget::timerEvent(event);
+
+    if (event->timerId() == timer_.timerId())
+    {
+        camera_.position += backwardForward_.value() * forward_vector(camera_) * deltaTime;
+        camera_.position += leftRight_.value() * right_vector(camera_) * deltaTime;
+        update();
+    }
 }
 
 void GLWidget::mousePressEvent(QMouseEvent* event)

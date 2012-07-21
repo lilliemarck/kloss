@@ -1,4 +1,4 @@
-find_package(Qt4 REQUIRED QtGui QtOpenGl)
+find_package(Qt4 REQUIRED QtCore QtGui QtOpenGl)
 find_package(OpenGL)
 
 include(${QT_USE_FILE})

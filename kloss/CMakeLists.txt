@@ -1,2 +1,3 @@
 add_library(kloss
-    camera.cpp)
+    camera.cpp
+    key_pair.cpp)

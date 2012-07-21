@@ -9,12 +9,28 @@ camera::camera()
 {
 }
 
-cml::matrix44f_c world_transform(camera const& camera)
+cml::vector3f forward_vector(camera const& camera)
+{
+    return -matrix_get_z_basis_vector(rotation_matrix(camera));
+}
+
+cml::vector3f right_vector(camera const& camera)
+{
+    return matrix_get_x_basis_vector(rotation_matrix(camera));
+}
+
+cml::matrix44f_c rotation_matrix(camera const& camera)
 {
     cml::matrix44f_c matrix;
-    cml::matrix_rotation_world_x(matrix, camera.pitch);
-    cml::matrix_rotate_about_world_y(matrix, camera.yaw);
-    cml::matrix_set_translation(matrix, camera.position);
+    matrix_rotation_world_x(matrix, camera.pitch);
+    matrix_rotate_about_world_y(matrix, camera.yaw);
+    return matrix;
+}
+
+cml::matrix44f_c world_transform(camera const& camera)
+{
+    cml::matrix44f_c matrix = rotation_matrix(camera);
+    matrix_set_translation(matrix, camera.position);
     return matrix;
 }
 
