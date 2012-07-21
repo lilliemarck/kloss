@@ -11,4 +11,4 @@ add_executable(klosscreator
     GLWidget.cpp
     main.cpp)
 
-target_link_libraries(klosscreator ${QT_LIBRARIES} ${OPENGL_glu_LIBRARY})
+target_link_libraries(klosscreator kloss ${QT_LIBRARIES} ${OPENGL_glu_LIBRARY})
