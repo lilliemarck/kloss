@@ -24,7 +24,7 @@ void updateKeyPair(key_pair& key_pair, bool pressed, QKeyEvent const* event, Qt:
 
 GLWidget::GLWidget(QWidget* parent) : QGLWidget(parent)
 {
-    camera_.position.set(0.0f, 0.0f, 4.0f);
+    camera_.set_position({0.0f, 0.0f, 4.0f});
 }
 
 void GLWidget::initializeGL()
@@ -59,8 +59,8 @@ void GLWidget::timerEvent(QTimerEvent* event)
 
     if (event->timerId() == timer_.timerId())
     {
-        camera_.position += backwardForward_.value() * forward_vector(camera_) * deltaTime;
-        camera_.position += leftRight_.value() * right_vector(camera_) * deltaTime;
+        move_forward(camera_, backwardForward_.value() * deltaTime);
+        move_sideways(camera_, leftRight_.value() * deltaTime);
         update();
     }
 }
@@ -76,8 +76,8 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
 
     float widgetSize = minorSize(*this);
     float degreesPerPixel = 1.0f / widgetSize;
-    camera_.yaw -= move.x() * degreesPerPixel;
-    camera_.pitch -= move.y() * degreesPerPixel;
+    rotate_yaw(camera_, -move.x() * degreesPerPixel);
+    rotate_pitch(camera_, -move.y() * degreesPerPixel);
 
     mouseOrigin_ = event->posF();
     update();
