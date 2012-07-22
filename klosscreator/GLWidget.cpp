@@ -109,7 +109,12 @@ void GLWidget::drawCursor() const
 {
     if (auto position = intersect_ground_plane(to_ray(camera_)))
     {
-        draw(cursor_, *position);
+        auto snapped = *position;
+
+        snapped[0] = std::round(snapped[0]);
+        snapped[2] = std::round(snapped[2]);
+
+        draw(cursor_, snapped);
     }
 }
 
