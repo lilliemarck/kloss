@@ -1,5 +1,6 @@
 #include "GLWidget.hpp"
 #include <QMouseEvent>
+#include <kloss/block.hpp>
 #include <kloss/geometry.hpp>
 
 namespace kloss {
@@ -32,6 +33,7 @@ GLWidget::GLWidget(QWidget* parent)
 
 void GLWidget::initializeGL()
 {
+    glEnable(GL_CULL_FACE);
 }
 
 void GLWidget::keyPressEvent(QKeyEvent* event)
@@ -70,20 +72,53 @@ void GLWidget::timerEvent(QTimerEvent* event)
 
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-    mouseOrigin_ = event->posF();
+    if (event->button() == Qt::LeftButton)
+    {
+        if (auto position = cursorPosition())
+        {
+            float x      = (*position)[0];
+            float y      = (*position)[1];
+            float top    = 1.0f;
+            float bottom = 0.0f;
+
+            block block;
+            block[0] = {x,        y,        top, bottom};
+            block[1] = {x + 1.0f, y,        top, bottom};
+            block[2] = {x + 1.0f, y + 1.0f, top, bottom};
+            block[3] = {x,        y + 1.0f, top, bottom};
+
+            world_.insert(block);
+            update();
+        }
+    }
+    else if (event->button() == Qt::RightButton)
+    {
+        mouseOrigin_ = event->posF();
+    }
+}
+
+void GLWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::RightButton)
+    {
+        mouseOrigin_.reset();
+    }
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
-    QPointF move = event->posF() - mouseOrigin_;
+    if (mouseOrigin_)
+    {
+        QPointF move = event->posF() - *mouseOrigin_;
 
-    float widgetSize = minorSize(*this);
-    float degreesPerPixel = 1.0f / widgetSize;
-    rotate_yaw(camera_, -move.x() * degreesPerPixel);
-    rotate_pitch(camera_, -move.y() * degreesPerPixel);
+        float widgetSize = minorSize(*this);
+        float degreesPerPixel = 1.0f / widgetSize;
+        rotate_yaw(camera_, -move.x() * degreesPerPixel);
+        rotate_pitch(camera_, -move.y() * degreesPerPixel);
 
-    mouseOrigin_ = event->posF();
-    update();
+        mouseOrigin_ = event->posF();
+        update();
+    }
 }
 
 void GLWidget::resizeGL(int width, int height)
@@ -103,10 +138,11 @@ void GLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT);
 
     draw(grid_);
+    world_.draw();
     drawCursor();
 }
 
-void GLWidget::drawCursor() const
+boost::optional<cml::vector3f> GLWidget::cursorPosition() const
 {
     if (auto position = intersect_xy_plane(to_ray(camera_)))
     {
@@ -115,7 +151,20 @@ void GLWidget::drawCursor() const
         snapped[0] = std::round(snapped[0]);
         snapped[1] = std::round(snapped[1]);
 
-        draw(cursor_, snapped);
+        return snapped;
+    }
+    else
+    {
+        return {};
+    }
+}
+
+
+void GLWidget::drawCursor() const
+{
+    if (auto position = cursorPosition())
+    {
+        draw(cursor_, *position);
     }
 }
 

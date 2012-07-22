@@ -1,4 +1,5 @@
 add_library(kloss
     camera.cpp
     geometry.cpp
-    key_pair.cpp)
+    key_pair.cpp
+    world.cpp)
