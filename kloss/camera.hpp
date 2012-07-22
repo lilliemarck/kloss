@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cml/cml.h>
+#include <kloss/geometry.hpp>
 
 namespace kloss {
 
@@ -28,7 +29,14 @@ void move_forward(camera& camera, float units);
 void move_sideways(camera& camera, float units);
 void rotate_yaw(camera& camera, float radians);
 void rotate_pitch(camera& camera, float radians);
+
+cml::vector3f look_direction(camera const& camera);
 cml::matrix44f_c rotation_matrix(camera const& camera);
 cml::matrix44f_c world_transform(camera const& camera);
+
+/**
+ * Create a ray from the camera's position and look direction.
+ */
+ray to_ray(camera const& camera);
 
 } // namespace kloss

@@ -1,6 +1,6 @@
 #include "GLWidget.hpp"
-
 #include <QMouseEvent>
+#include <kloss/geometry.hpp>
 
 namespace kloss {
 namespace creator {
@@ -20,10 +20,12 @@ void updateKeyPair(key_pair& key_pair, bool pressed, QKeyEvent const* event, Qt:
     }
 }
 
-
 } // namespace
 
-GLWidget::GLWidget(QWidget* parent) : QGLWidget(parent), grid_(10)
+GLWidget::GLWidget(QWidget* parent)
+    : QGLWidget(parent)
+    , grid_(10)
+    , cursor_(0.125f)
 {
     camera_.set_position({0.0f, 0.0f, 4.0f});
 }
@@ -100,6 +102,15 @@ void GLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT);
 
     grid_.draw();
+    drawCursor();
+}
+
+void GLWidget::drawCursor() const
+{
+    if (auto position = intersect_ground_plane(to_ray(camera_)))
+    {
+        draw(cursor_, *position);
+    }
 }
 
 float minorSize(QWidget const& widget)

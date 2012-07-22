@@ -8,6 +8,7 @@ add_definitions(${QT_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${QT_INCLUDE_DIR}")
 
 add_executable(klosscreator
+    cursor.cpp
     GLWidget.cpp
     grid.cpp
     main.cpp)

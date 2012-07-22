@@ -43,7 +43,7 @@ void camera::set_pitch(float radians)
 
 void move_forward(camera& camera, float units)
 {
-    camera.set_position(camera.get_position() - units * matrix_get_z_basis_vector(rotation_matrix(camera)));
+    camera.set_position(camera.get_position() + units * look_direction(camera));
 }
 
 void move_sideways(camera& camera, float units)
@@ -61,6 +61,11 @@ void rotate_pitch(camera& camera, float radians)
     camera.set_pitch(camera.get_pitch() + radians);
 }
 
+cml::vector3f look_direction(camera const& camera)
+{
+    return -matrix_get_z_basis_vector(rotation_matrix(camera));
+}
+
 cml::matrix44f_c rotation_matrix(camera const& camera)
 {
     cml::matrix44f_c matrix;
@@ -74,6 +79,11 @@ cml::matrix44f_c world_transform(camera const& camera)
     cml::matrix44f_c matrix = rotation_matrix(camera);
     matrix_set_translation(matrix, camera.get_position());
     return matrix;
+}
+
+ray to_ray(camera const& camera)
+{
+    return {camera.get_position(), look_direction(camera)};
 }
 
 } // namespace kloss
