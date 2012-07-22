@@ -2,9 +2,9 @@
 
 #include <QGLWidget>
 #include <QBasicTimer>
-
 #include <kloss/camera.hpp>
 #include <kloss/key_pair.hpp>
+#include <klosscreator/grid.hpp>
 
 namespace kloss {
 namespace creator {
@@ -25,6 +25,7 @@ private:
     void paintGL() override;
 
     camera camera_;
+    grid grid_;
     key_pair backwardForward_;
     key_pair leftRight_;
     QBasicTimer timer_;

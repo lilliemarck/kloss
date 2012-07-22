@@ -9,6 +9,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${QT_INCLUDE_DIR}")
 
 add_executable(klosscreator
     GLWidget.cpp
+    grid.cpp
     main.cpp)
 
 target_link_libraries(klosscreator kloss ${QT_LIBRARIES} ${OPENGL_glu_LIBRARY})

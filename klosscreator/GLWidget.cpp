@@ -20,9 +20,10 @@ void updateKeyPair(key_pair& key_pair, bool pressed, QKeyEvent const* event, Qt:
     }
 }
 
+
 } // namespace
 
-GLWidget::GLWidget(QWidget* parent) : QGLWidget(parent)
+GLWidget::GLWidget(QWidget* parent) : QGLWidget(parent), grid_(10)
 {
     camera_.set_position({0.0f, 0.0f, 4.0f});
 }
@@ -97,14 +98,8 @@ void GLWidget::paintGL()
     glLoadMatrixf(inverse(world_transform(camera_)).data());
 
     glClear(GL_COLOR_BUFFER_BIT);
-    glColor3f(1.0f, 1.0f, 1.0f);
 
-    glBegin(GL_POLYGON);
-    glVertex2i(0, 0);
-    glVertex2i(1, 0);
-    glVertex2i(1, 1);
-    glVertex2i(0, 1);
-    glEnd();
+    grid_.draw();
 }
 
 float minorSize(QWidget const& widget)
