@@ -4,8 +4,7 @@
 #include <QBasicTimer>
 #include <kloss/camera.hpp>
 #include <kloss/key_pair.hpp>
-#include <klosscreator/cursor.hpp>
-#include <klosscreator/grid.hpp>
+#include <klosscreator/vertex_array.hpp>
 
 namespace kloss {
 namespace creator {
@@ -27,8 +26,8 @@ private:
     void drawCursor() const;
 
     camera camera_;
-    grid grid_;
-    creator::cursor cursor_;
+    vertex_array grid_;
+    vertex_array cursor_;
     key_pair backwardForward_;
     key_pair leftRight_;
     QBasicTimer timer_;

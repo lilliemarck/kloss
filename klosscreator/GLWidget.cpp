@@ -24,8 +24,8 @@ void updateKeyPair(key_pair& key_pair, bool pressed, QKeyEvent const* event, Qt:
 
 GLWidget::GLWidget(QWidget* parent)
     : QGLWidget(parent)
-    , grid_(10)
-    , cursor_(0.125f)
+    , grid_(make_grid(10))
+    , cursor_(make_cursor(0.125f))
 {
     camera_.set_position({0.0f, 0.0f, 4.0f});
 }
@@ -101,7 +101,7 @@ void GLWidget::paintGL()
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    grid_.draw();
+    draw(grid_);
     drawCursor();
 }
 

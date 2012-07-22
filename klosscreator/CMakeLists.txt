@@ -8,9 +8,8 @@ add_definitions(${QT_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${QT_INCLUDE_DIR}")
 
 add_executable(klosscreator
-    cursor.cpp
     GLWidget.cpp
-    grid.cpp
-    main.cpp)
+    main.cpp
+    vertex_array.cpp)
 
 target_link_libraries(klosscreator kloss ${QT_LIBRARIES} ${OPENGL_glu_LIBRARY})
