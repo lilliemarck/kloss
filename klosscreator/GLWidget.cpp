@@ -27,7 +27,7 @@ GLWidget::GLWidget(QWidget* parent)
     , grid_(make_grid(10))
     , cursor_(make_cursor(0.125f))
 {
-    camera_.set_position({0.0f, 0.0f, 4.0f});
+    camera_.set_position({0.0f, -4.0f, 2.0f});
 }
 
 void GLWidget::initializeGL()
@@ -92,6 +92,7 @@ void GLWidget::resizeGL(int width, int height)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(60.0f, float(width) / float(height), 0.1f, 1000.0f);
+    glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 }
 
 void GLWidget::paintGL()
@@ -107,12 +108,12 @@ void GLWidget::paintGL()
 
 void GLWidget::drawCursor() const
 {
-    if (auto position = intersect_ground_plane(to_ray(camera_)))
+    if (auto position = intersect_xy_plane(to_ray(camera_)))
     {
         auto snapped = *position;
 
         snapped[0] = std::round(snapped[0]);
-        snapped[2] = std::round(snapped[2]);
+        snapped[1] = std::round(snapped[1]);
 
         draw(cursor_, snapped);
     }

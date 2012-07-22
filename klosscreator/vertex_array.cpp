@@ -45,8 +45,8 @@ vertex_array make_grid(int size)
         float min = -size;
         float max = i != 0 ? size : 0.0f;
 
-        append_line(array, {255, 255, 255}, {i, 0.0f, min}, {i, 0.0f, max});
-        append_line(array, {255, 255, 255}, {min, 0.0f, i}, {max, 0.0f, i});
+        append_line(array, {255, 255, 255}, {i, min, 0.0f}, {i, max, 0.0f});
+        append_line(array, {255, 255, 255}, {min, i, 0.0f}, {max, i, 0.0f});
     }
 
     {

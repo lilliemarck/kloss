@@ -63,14 +63,14 @@ void rotate_pitch(camera& camera, float radians)
 
 cml::vector3f look_direction(camera const& camera)
 {
-    return -matrix_get_z_basis_vector(rotation_matrix(camera));
+    return matrix_get_y_basis_vector(rotation_matrix(camera));
 }
 
 cml::matrix44f_c rotation_matrix(camera const& camera)
 {
     cml::matrix44f_c matrix;
     matrix_rotation_world_x(matrix, camera.get_pitch());
-    matrix_rotate_about_world_y(matrix, camera.get_yaw());
+    matrix_rotate_about_world_z(matrix, camera.get_yaw());
     return matrix;
 }
 
