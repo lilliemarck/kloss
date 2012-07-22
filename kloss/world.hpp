@@ -13,8 +13,15 @@ public:
     void draw();
 
 private:
-    std::vector<cml::vector3f> vertices_;
-    std::vector<unsigned> indices_;
+    void setup_light();
+
+    struct vertex
+    {
+        cml::vector3f normal;
+        cml::vector3f position;
+    };
+
+    std::vector<vertex> vertices_;
 };
 
 } // namespace kloss
