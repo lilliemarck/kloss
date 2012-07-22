@@ -159,7 +159,6 @@ boost::optional<cml::vector3f> GLWidget::cursorPosition() const
     }
 }
 
-
 void GLWidget::drawCursor() const
 {
     if (auto position = cursorPosition())
