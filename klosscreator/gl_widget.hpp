@@ -39,6 +39,8 @@ private:
     void initializeGL() override;
     void resizeGL(int width, int height) override;
     void paintGL() override;
+    cml::matrix44f_c projection_matrix() const;
+    cml::matrix44f_c modelview_matrix() const;
     void draw_cursor() const;
 
     kloss::world world_;

@@ -139,16 +139,17 @@ void gl_widget::mouseMoveEvent(QMouseEvent* event)
 void gl_widget::resizeGL(int width, int height)
 {
     glViewport(0, 0, width, height);
+
     glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(60.0f, float(width) / float(height), 0.1f, 1000.0f);
-    glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
+    cml::matrix44f_c matrix = projection_matrix();
+    glLoadMatrixf(matrix.data());
 }
 
 void gl_widget::paintGL()
 {
     glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixf(inverse(world_transform(camera_)).data());
+    auto matrix = modelview_matrix();
+    glLoadMatrixf(matrix.data());
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -172,6 +173,22 @@ boost::optional<cml::vector3f> gl_widget::cursor_position() const
     {
         return {};
     }
+}
+
+cml::matrix44f_c gl_widget::projection_matrix() const
+{
+    cml::matrix44f_c axis_adjust;
+    matrix_rotation_world_x(axis_adjust, -cml::constantsf::pi_over_2());
+
+    cml::matrix44f_c matrix;
+    matrix_perspective_yfov_RH(matrix, cml::rad(60.0f), float(width()) / float(height()), 0.1f, 1000.0f, cml::z_clip_neg_one);
+
+    return matrix * axis_adjust;
+}
+
+cml::matrix44f_c gl_widget::modelview_matrix() const
+{
+    return inverse(world_transform(camera_));
 }
 
 void gl_widget::draw_cursor() const
