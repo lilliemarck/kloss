@@ -2,22 +2,11 @@
 #include <GL/gl.h>
 
 namespace kloss {
-namespace {
-
-cml::vector3f top(corner const& corner)
-{
-    return {corner.x, corner.y, corner.top};
-}
-
-cml::vector3f bottom(corner const& corner)
-{
-    return {corner.x, corner.y, corner.bottom};
-}
-
-} // namespace
 
 void world::insert(block const& block)
 {
+    blocks_.push_back(block);
+
     // front
     cml::vector3f normal = {0.0f, -1.0f, 0.0f};
     vertices_.push_back({normal, top   (block[0])});
@@ -71,6 +60,24 @@ void world::insert(block const& block)
     vertices_.push_back({normal, bottom(block[0])});
     vertices_.push_back({normal, bottom(block[2])});
     vertices_.push_back({normal, bottom(block[1])});
+}
+
+boost::optional<block> world::pick(ray const& ray) const
+{
+    for (block const& block : blocks_)
+    {
+        auto triangles = to_triangles(block);
+
+        for (triangle const& triangle : triangles)
+        {
+            if (intersects(ray, triangle))
+            {
+                return block;
+            }
+        }
+    }
+
+    return {};
 }
 
 void world::draw()

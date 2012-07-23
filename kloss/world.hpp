@@ -10,6 +10,7 @@ class world
 {
 public:
     void insert(block const& block);
+    boost::optional<block> pick(ray const& ray) const;
     void draw();
 
 private:
@@ -21,6 +22,7 @@ private:
         cml::vector3f position;
     };
 
+    std::vector<block> blocks_;
     std::vector<vertex> vertices_;
 };
 

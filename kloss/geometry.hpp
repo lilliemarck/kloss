@@ -5,6 +5,11 @@
 
 namespace kloss {
 
+struct triangle
+{
+    cml::vector3f a, b, c;
+};
+
 struct ray
 {
     cml::vector3f origin;
@@ -12,5 +17,6 @@ struct ray
 };
 
 boost::optional<cml::vector3f> intersect_xy_plane(ray const& ray);
+bool intersects(ray const& ray, triangle const& triangle);
 
 } // namespace kloss

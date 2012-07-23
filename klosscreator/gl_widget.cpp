@@ -2,6 +2,7 @@
 #include <QMouseEvent>
 #include <kloss/geometry.hpp>
 #include <kloss/memory.hpp>
+#include <klosscreator/move_block_tool.hpp>
 #include <klosscreator/new_block_tool.hpp>
 
 namespace kloss {
@@ -72,6 +73,7 @@ void gl_widget::use_new_block_tool()
 
 void gl_widget::use_move_block_tool()
 {
+    tool_ = make_unique<move_block_tool>(*this);
 }
 
 void gl_widget::initializeGL()
