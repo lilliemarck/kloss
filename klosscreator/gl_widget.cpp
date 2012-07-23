@@ -29,6 +29,7 @@ gl_widget::gl_widget(QWidget* parent)
     , grid_(make_grid(10))
     , cursor_(make_cursor(0.125f))
 {
+    setMouseTracking(true);
     camera_.set_position({0.0f, -4.0f, 2.0f});
 }
 
@@ -39,6 +40,29 @@ gl_widget::~gl_widget()
 world& gl_widget::world()
 {
     return world_;
+}
+
+ray gl_widget::mouse_ray(float mouse_x, float mouse_y) const
+{
+    cml::matrix44f_c viewport;
+    matrix_viewport(viewport, 0.0f, float(width()), float(height()), 0.0f, cml::z_clip_zero);
+
+    ray ray;
+    make_pick_ray(mouse_x,
+                  mouse_y,
+                  modelview_matrix(),
+                  projection_matrix(),
+                  viewport,
+                  ray.origin,
+                  ray.direction,
+                  false);
+
+    return ray;
+}
+
+vertex_array const& gl_widget::cursor_vertices() const
+{
+    return cursor_;
 }
 
 void gl_widget::use_new_block_tool()
@@ -155,23 +179,10 @@ void gl_widget::paintGL()
 
     draw(grid_);
     world_.draw();
-    draw_cursor();
-}
 
-boost::optional<cml::vector3f> gl_widget::cursor_position() const
-{
-    if (auto position = intersect_xy_plane(to_ray(camera_)))
+    if (tool_)
     {
-        auto snapped = *position;
-
-        snapped[0] = std::round(snapped[0]);
-        snapped[1] = std::round(snapped[1]);
-
-        return snapped;
-    }
-    else
-    {
-        return {};
+        tool_->paint_gl();
     }
 }
 
@@ -189,14 +200,6 @@ cml::matrix44f_c gl_widget::projection_matrix() const
 cml::matrix44f_c gl_widget::modelview_matrix() const
 {
     return inverse(world_transform(camera_));
-}
-
-void gl_widget::draw_cursor() const
-{
-    if (auto position = cursor_position())
-    {
-        draw(cursor_, *position);
-    }
 }
 
 float minor_size(QWidget const& widget)

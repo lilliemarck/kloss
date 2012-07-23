@@ -23,7 +23,8 @@ public:
     ~gl_widget();
 
     world& world();
-    boost::optional<cml::vector3f> cursor_position() const;
+    ray mouse_ray(float mouse_x, float mouse_y) const;
+    vertex_array const& cursor_vertices() const;
 
 public slots:
     void use_new_block_tool();
@@ -41,7 +42,6 @@ private:
     void paintGL() override;
     cml::matrix44f_c projection_matrix() const;
     cml::matrix44f_c modelview_matrix() const;
-    void draw_cursor() const;
 
     kloss::world world_;
     camera camera_;
