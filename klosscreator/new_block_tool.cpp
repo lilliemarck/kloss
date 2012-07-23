@@ -1,4 +1,5 @@
 #include "new_block_tool.hpp"
+#include <memory>
 #include <QMouseEvent>
 #include <kloss/block.hpp>
 #include <klosscreator/gl_widget.hpp>
@@ -21,11 +22,11 @@ void new_block_tool::mouse_press_event(QMouseEvent* event)
             float top    = 1.0f;
             float bottom = 0.0f;
 
-            block block;
-            block[0] = {x,        y,        top, bottom};
-            block[1] = {x + 1.0f, y,        top, bottom};
-            block[2] = {x + 1.0f, y + 1.0f, top, bottom};
-            block[3] = {x,        y + 1.0f, top, bottom};
+            block_ptr block = std::make_shared<kloss::block>();
+            (*block)[0] = {x,        y,        top, bottom};
+            (*block)[1] = {x + 1.0f, y,        top, bottom};
+            (*block)[2] = {x + 1.0f, y + 1.0f, top, bottom};
+            (*block)[3] = {x,        y + 1.0f, top, bottom};
 
             parent_.world().insert(block);
             parent_.update();

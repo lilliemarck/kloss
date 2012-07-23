@@ -1,13 +1,16 @@
 #include "world.hpp"
+#include <cassert>
 #include <GL/gl.h>
 
 namespace kloss {
 
-void world::insert(block const& block)
+void world::insert(block_ptr const& block)
 {
+    assert(block);
+
     blocks_.push_back(block);
 
-    auto triangles = to_triangles(block);
+    auto triangles = to_triangles(*block);
 
     for (auto const& triangle : triangles)
     {
@@ -18,11 +21,11 @@ void world::insert(block const& block)
     }
 }
 
-boost::optional<block> world::pick(ray const& ray) const
+block_ptr world::pick(ray const& ray) const
 {
-    for (block const& block : blocks_)
+    for (auto const& block : blocks_)
     {
-        auto triangles = to_triangles(block);
+        auto triangles = to_triangles(*block);
 
         for (triangle const& triangle : triangles)
         {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <boost/optional.hpp>
 #include <cml/cml.h>
 #include <kloss/block.hpp>
 #include <klosscreator/tool.hpp>
@@ -18,7 +17,7 @@ public:
 
 private:
     gl_widget& parent_;
-    boost::optional<block> block_;
+    block_ptr block_;
 };
 
 } // namespace creator
