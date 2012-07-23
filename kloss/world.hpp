@@ -7,14 +7,22 @@
 
 namespace kloss {
 
+struct pick
+{
+    block_ptr block;
+    cml::vector3f intersection;
+};
+
 class world
 {
 public:
     void insert(block_ptr const& block);
-    block_ptr pick(ray const& ray) const;
+    pick pick(ray const& ray) const;
     void draw();
+    void update_vertex_array();
 
 private:
+    void append_vertices(block const& block);
     void setup_light();
 
     struct vertex

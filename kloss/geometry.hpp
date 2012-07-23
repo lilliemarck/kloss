@@ -18,6 +18,7 @@ struct ray
 
 cml::vector3f make_normal(triangle const& triangle);
 boost::optional<cml::vector3f> intersect_xy_plane(ray const& ray);
+boost::optional<cml::vector3f> intersect_xy_plane(ray const& ray, float z);
 boost::optional<float> intersect(ray const& ray, triangle const& triangle);
 
 } // namespace kloss

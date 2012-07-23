@@ -12,8 +12,57 @@ move_block_tool::move_block_tool(gl_widget& parent) : parent_(parent)
 
 void move_block_tool::mouse_press_event(QMouseEvent* event)
 {
-    block_ = parent_.world().pick(parent_.mouse_ray(event->x(), event->y()));
-    parent_.update();
+    if (event->button() == Qt::LeftButton)
+    {
+        auto pick = parent_.world().pick(parent_.mouse_ray(event->x(), event->y()));
+
+        block_ = pick.block;
+
+        if (block_)
+        {
+            drag_ = {pick.intersection, *block_};
+        }
+
+        parent_.update();
+    }
+}
+
+void move_block_tool::mouse_release_event(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        drag_.reset();
+    }
+}
+
+void move_block_tool::mouse_move_event(QMouseEvent* event)
+{
+    if (drag_)
+    {
+        auto mouse_ray = parent_.mouse_ray(event->x(), event->y());
+        auto intersection = intersect_xy_plane(mouse_ray, drag_->drag_origin[2]);
+
+        if (intersection)
+        {
+            cml::vector3f translation = *intersection - drag_->drag_origin;
+
+            translation[0] = std::round(translation[0]);
+            translation[1] = std::round(translation[1]);
+            translation[2] = std::round(translation[2]);
+
+            *block_ = drag_->original_block;
+
+            for (auto& column : *block_)
+            {
+                column.x += translation[0];
+                column.y += translation[1];
+            }
+
+            parent_.world().update_vertex_array();
+        }
+
+        parent_.update();
+    }
 }
 
 void move_block_tool::paint_gl()
@@ -22,6 +71,7 @@ void move_block_tool::paint_gl()
     {
         block const& block = *block_;
         auto const& cursor_vertices = parent_.cursor_vertices();
+
         draw(cursor_vertices, {block[0].x, block[0].y, block[0].top});
         draw(cursor_vertices, {block[1].x, block[1].y, block[1].top});
         draw(cursor_vertices, {block[2].x, block[2].y, block[2].top});

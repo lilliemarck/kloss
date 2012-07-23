@@ -10,19 +10,10 @@ void world::insert(block_ptr const& block)
     assert(block);
 
     blocks_.push_back(block);
-
-    auto triangles = to_triangles(*block);
-
-    for (auto const& triangle : triangles)
-    {
-        cml::vector3f normal = make_normal(triangle);
-        vertices_.push_back({normal, triangle.a});
-        vertices_.push_back({normal, triangle.b});
-        vertices_.push_back({normal, triangle.c});
-    }
+    append_vertices(*block);
 }
 
-block_ptr world::pick(ray const& ray) const
+pick world::pick(ray const& ray) const
 {
     float nearest = std::numeric_limits<float>::max();
     block_ptr nearest_block;
@@ -44,7 +35,7 @@ block_ptr world::pick(ray const& ray) const
         }
     }
 
-    return nearest_block;
+    return {nearest_block, ray.origin + nearest * ray.direction};
 }
 
 void world::draw()
@@ -66,6 +57,29 @@ void world::draw()
         glPopClientAttrib();
 
         glPopAttrib();
+    }
+}
+
+void world::update_vertex_array()
+{
+    vertices_.clear();
+
+    for (auto const& block : blocks_)
+    {
+        append_vertices(*block);
+    }
+}
+
+void world::append_vertices(block const& block)
+{
+    auto triangles = to_triangles(block);
+
+    for (auto const& triangle : triangles)
+    {
+        cml::vector3f normal = make_normal(triangle);
+        vertices_.push_back({normal, triangle.a});
+        vertices_.push_back({normal, triangle.b});
+        vertices_.push_back({normal, triangle.c});
     }
 }
 
