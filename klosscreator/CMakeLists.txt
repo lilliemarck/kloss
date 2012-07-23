@@ -15,6 +15,7 @@ add_executable(klosscreator ${klosscreator_MOC_SOURCES}
     gl_widget.cpp
     main.cpp
     main_window.cpp
+    new_block_tool.cpp
     vertex_array.cpp)
 
 target_link_libraries(klosscreator kloss ${QT_LIBRARIES} ${OPENGL_glu_LIBRARY})

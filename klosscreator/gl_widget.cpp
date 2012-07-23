@@ -1,7 +1,8 @@
 #include "gl_widget.hpp"
 #include <QMouseEvent>
-#include <kloss/block.hpp>
 #include <kloss/geometry.hpp>
+#include <kloss/memory.hpp>
+#include <klosscreator/new_block_tool.hpp>
 
 namespace kloss {
 namespace creator {
@@ -31,8 +32,18 @@ gl_widget::gl_widget(QWidget* parent)
     camera_.set_position({0.0f, -4.0f, 2.0f});
 }
 
+gl_widget::~gl_widget()
+{
+}
+
+world& gl_widget::world()
+{
+    return world_;
+}
+
 void gl_widget::use_new_block_tool()
 {
+    tool_ = make_unique<new_block_tool>(*this);
 }
 
 void gl_widget::use_move_block_tool()
@@ -80,26 +91,12 @@ void gl_widget::timerEvent(QTimerEvent* event)
 
 void gl_widget::mousePressEvent(QMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton)
+    if (tool_)
     {
-        if (auto position = cursor_position())
-        {
-            float x      = (*position)[0];
-            float y      = (*position)[1];
-            float top    = 1.0f;
-            float bottom = 0.0f;
-
-            block block;
-            block[0] = {x,        y,        top, bottom};
-            block[1] = {x + 1.0f, y,        top, bottom};
-            block[2] = {x + 1.0f, y + 1.0f, top, bottom};
-            block[3] = {x,        y + 1.0f, top, bottom};
-
-            world_.insert(block);
-            update();
-        }
+        tool_->mouse_press_event(event);
     }
-    else if (event->button() == Qt::RightButton)
+
+    if (event->button() == Qt::RightButton)
     {
         mouse_origin_ = event->posF();
     }
@@ -107,6 +104,11 @@ void gl_widget::mousePressEvent(QMouseEvent* event)
 
 void gl_widget::mouseReleaseEvent(QMouseEvent* event)
 {
+    if (tool_)
+    {
+        tool_->mouse_release_event(event);
+    }
+
     if (event->button() == Qt::RightButton)
     {
         mouse_origin_.reset();
@@ -115,6 +117,11 @@ void gl_widget::mouseReleaseEvent(QMouseEvent* event)
 
 void gl_widget::mouseMoveEvent(QMouseEvent* event)
 {
+    if (tool_)
+    {
+        tool_->mouse_move_event(event);
+    }
+
     if (mouse_origin_)
     {
         QPointF move = event->posF() - *mouse_origin_;

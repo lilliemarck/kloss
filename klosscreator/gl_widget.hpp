@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <boost/optional.hpp>
 #include <QGLWidget>
 #include <QBasicTimer>
@@ -11,12 +12,18 @@
 namespace kloss {
 namespace creator {
 
+class tool;
+
 class gl_widget : public QGLWidget
 {
     Q_OBJECT
 
 public:
     gl_widget(QWidget* parent = nullptr);
+    ~gl_widget();
+
+    world& world();
+    boost::optional<cml::vector3f> cursor_position() const;
 
 public slots:
     void use_new_block_tool();
@@ -32,10 +39,9 @@ private:
     void initializeGL() override;
     void resizeGL(int width, int height) override;
     void paintGL() override;
-    boost::optional<cml::vector3f> cursor_position() const;
     void draw_cursor() const;
 
-    world world_;
+    kloss::world world_;
     camera camera_;
     vertex_array grid_;
     vertex_array cursor_;
@@ -43,6 +49,7 @@ private:
     key_pair left_right_;
     QBasicTimer timer_;
     boost::optional<QPointF> mouse_origin_;
+    std::unique_ptr<tool> tool_;
 };
 
 /**
@@ -50,5 +57,5 @@ private:
  */
 float minor_size(QWidget const& widget);
 
-} // namespcae creator
+} // namespace creator
 } // namespace kloss
