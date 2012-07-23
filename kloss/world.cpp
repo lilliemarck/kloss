@@ -7,59 +7,15 @@ void world::insert(block const& block)
 {
     blocks_.push_back(block);
 
-    // front
-    cml::vector3f normal = {0.0f, -1.0f, 0.0f};
-    vertices_.push_back({normal, top   (block[0])});
-    vertices_.push_back({normal, bottom(block[0])});
-    vertices_.push_back({normal, top   (block[1])});
-    vertices_.push_back({normal, top   (block[1])});
-    vertices_.push_back({normal, bottom(block[0])});
-    vertices_.push_back({normal, bottom(block[1])});
+    auto triangles = to_triangles(block);
 
-    // right
-    normal = {1.0f, 0.0f, 0.0f};
-    vertices_.push_back({normal, top   (block[1])});
-    vertices_.push_back({normal, bottom(block[1])});
-    vertices_.push_back({normal, top   (block[2])});
-    vertices_.push_back({normal, top   (block[2])});
-    vertices_.push_back({normal, bottom(block[1])});
-    vertices_.push_back({normal, bottom(block[2])});
-
-    // back
-    normal = {0.0f, 1.0f, 0.0f};
-    vertices_.push_back({normal, top   (block[2])});
-    vertices_.push_back({normal, bottom(block[2])});
-    vertices_.push_back({normal, top   (block[3])});
-    vertices_.push_back({normal, top   (block[3])});
-    vertices_.push_back({normal, bottom(block[2])});
-    vertices_.push_back({normal, bottom(block[3])});
-
-    // left
-    normal = {-1.0f, 0.0f, 0.0f};
-    vertices_.push_back({normal, top   (block[3])});
-    vertices_.push_back({normal, bottom(block[3])});
-    vertices_.push_back({normal, top   (block[0])});
-    vertices_.push_back({normal, top   (block[0])});
-    vertices_.push_back({normal, bottom(block[3])});
-    vertices_.push_back({normal, bottom(block[0])});
-
-    // top
-    normal = {0.0f, 0.0f, 1.0f};
-    vertices_.push_back({normal, top(block[3])});
-    vertices_.push_back({normal, top(block[0])});
-    vertices_.push_back({normal, top(block[2])});
-    vertices_.push_back({normal, top(block[2])});
-    vertices_.push_back({normal, top(block[0])});
-    vertices_.push_back({normal, top(block[1])});
-
-    // bottom
-    normal = {0.0f, 0.0f, -1.0f};
-    vertices_.push_back({normal, bottom(block[3])});
-    vertices_.push_back({normal, bottom(block[2])});
-    vertices_.push_back({normal, bottom(block[0])});
-    vertices_.push_back({normal, bottom(block[0])});
-    vertices_.push_back({normal, bottom(block[2])});
-    vertices_.push_back({normal, bottom(block[1])});
+    for (auto const& triangle : triangles)
+    {
+        cml::vector3f normal = make_normal(triangle);
+        vertices_.push_back({normal, triangle.a});
+        vertices_.push_back({normal, triangle.b});
+        vertices_.push_back({normal, triangle.c});
+    }
 }
 
 boost::optional<block> world::pick(ray const& ray) const

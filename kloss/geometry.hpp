@@ -16,6 +16,7 @@ struct ray
     cml::vector3f direction;
 };
 
+cml::vector3f make_normal(triangle const& triangle);
 boost::optional<cml::vector3f> intersect_xy_plane(ray const& ray);
 bool intersects(ray const& ray, triangle const& triangle);
 

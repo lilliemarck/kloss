@@ -2,6 +2,11 @@
 
 namespace kloss {
 
+cml::vector3f make_normal(triangle const& triangle)
+{
+    return cross(triangle.b - triangle.a, triangle.c - triangle.a);
+}
+
 boost::optional<cml::vector3f> intersect_xy_plane(ray const& ray)
 {
     if (ray.direction[1] != 0.0f)
