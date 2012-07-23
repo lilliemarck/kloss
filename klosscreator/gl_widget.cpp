@@ -31,6 +31,14 @@ gl_widget::gl_widget(QWidget* parent)
     camera_.set_position({0.0f, -4.0f, 2.0f});
 }
 
+void gl_widget::use_new_block_tool()
+{
+}
+
+void gl_widget::use_move_block_tool()
+{
+}
+
 void gl_widget::initializeGL()
 {
     glEnable(GL_CULL_FACE);

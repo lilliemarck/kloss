@@ -8,6 +8,7 @@ add_definitions(${QT_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${QT_INCLUDE_DIR}")
 
 qt4_wrap_cpp(klosscreator_MOC_SOURCES
+    gl_widget.hpp
     main_window.hpp)
 
 add_executable(klosscreator ${klosscreator_MOC_SOURCES}

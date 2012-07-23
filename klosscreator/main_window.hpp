@@ -16,10 +16,14 @@ public:
 private:
     void create_actions();
     void create_menus();
+    void create_toolbar();
 
     gl_widget gl_widget_;
     QAction* quit_action_;
+    QAction* new_block_action_;
+    QAction* move_block_action_;
     QMenu* file_menu_;
+    QToolBar* tool_bar_;
 };
 
 } // namespcae creator

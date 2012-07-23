@@ -13,8 +13,14 @@ namespace creator {
 
 class gl_widget : public QGLWidget
 {
+    Q_OBJECT
+
 public:
     gl_widget(QWidget* parent = nullptr);
+
+public slots:
+    void use_new_block_tool();
+    void use_move_block_tool();
 
 private:
     void keyPressEvent(QKeyEvent* event) override;
