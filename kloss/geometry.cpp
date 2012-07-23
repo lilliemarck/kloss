@@ -40,14 +40,14 @@ bool same_side(cml::vector3f const& begin,
 
 } // namespace
 
-bool intersects(ray const& ray, triangle const& triangle)
+boost::optional<float> intersect(ray const& ray, triangle const& triangle)
 {
     auto normal = cross(triangle.b - triangle.a, triangle.c - triangle.a);
     float denom = dot(normal, ray.direction);
 
     if (denom > 0.0f)
     {
-        return false;
+        return {};
     }
 
     float nom = dot(normal, triangle.a - ray.origin);
@@ -55,14 +55,19 @@ bool intersects(ray const& ray, triangle const& triangle)
 
     if (t < 0.0f)
     {
-        return false;
+        return {};
     }
 
     auto point = ray.origin + t * ray.direction;
 
-    return same_side(triangle.a, triangle.b, point, triangle.c) &&
-           same_side(triangle.b, triangle.c, point, triangle.a) &&
-           same_side(triangle.c, triangle.a, point, triangle.b);
+    if (same_side(triangle.a, triangle.b, point, triangle.c) &&
+        same_side(triangle.b, triangle.c, point, triangle.a) &&
+        same_side(triangle.c, triangle.a, point, triangle.b))
+    {
+        return t;
+    }
+
+    return {};
 }
 
 } // namespace kloss

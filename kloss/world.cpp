@@ -1,5 +1,6 @@
 #include "world.hpp"
 #include <cassert>
+#include <limits>
 #include <GL/gl.h>
 
 namespace kloss {
@@ -23,20 +24,27 @@ void world::insert(block_ptr const& block)
 
 block_ptr world::pick(ray const& ray) const
 {
+    float nearest = std::numeric_limits<float>::max();
+    block_ptr nearest_block;
+
     for (auto const& block : blocks_)
     {
         auto triangles = to_triangles(*block);
 
         for (triangle const& triangle : triangles)
         {
-            if (intersects(ray, triangle))
+            if (auto temp = intersect(ray, triangle))
             {
-                return block;
+                if (*temp < nearest)
+                {
+                    nearest = *temp;
+                    nearest_block = block;
+                }
             }
         }
     }
 
-    return {};
+    return nearest_block;
 }
 
 void world::draw()
