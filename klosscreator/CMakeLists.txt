@@ -11,7 +11,7 @@ qt4_wrap_cpp(klosscreator_MOC_SOURCES
     main_window.hpp)
 
 add_executable(klosscreator ${klosscreator_MOC_SOURCES}
-    GLWidget.cpp
+    gl_widget.cpp
     main.cpp
     main_window.cpp
     vertex_array.cpp)

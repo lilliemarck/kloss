@@ -11,10 +11,10 @@
 namespace kloss {
 namespace creator {
 
-class GLWidget : public QGLWidget
+class gl_widget : public QGLWidget
 {
 public:
-    GLWidget(QWidget* parent = nullptr);
+    gl_widget(QWidget* parent = nullptr);
 
 private:
     void keyPressEvent(QKeyEvent* event) override;
@@ -26,23 +26,23 @@ private:
     void initializeGL() override;
     void resizeGL(int width, int height) override;
     void paintGL() override;
-    boost::optional<cml::vector3f> cursorPosition() const;
-    void drawCursor() const;
+    boost::optional<cml::vector3f> cursor_position() const;
+    void draw_cursor() const;
 
     world world_;
     camera camera_;
     vertex_array grid_;
     vertex_array cursor_;
-    key_pair backwardForward_;
-    key_pair leftRight_;
+    key_pair backward_forward_;
+    key_pair left_right_;
     QBasicTimer timer_;
-    boost::optional<QPointF> mouseOrigin_;
+    boost::optional<QPointF> mouse_origin_;
 };
 
 /**
  * Return the smaller value of the window's width or height.
  */
-float minorSize(QWidget const& widget);
+float minor_size(QWidget const& widget);
 
 } // namespcae creator
 } // namespace kloss

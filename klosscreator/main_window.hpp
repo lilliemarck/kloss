@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
-#include <klosscreator/GLWidget.hpp>
+#include <klosscreator/gl_widget.hpp>
 
 namespace kloss {
 namespace creator {
@@ -17,7 +17,7 @@ private:
     void create_actions();
     void create_menus();
 
-    GLWidget gl_widget_;
+    gl_widget gl_widget_;
     QAction* quit_action_;
     QMenu* file_menu_;
 };
