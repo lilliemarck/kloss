@@ -11,9 +11,9 @@ new_block_tool::new_block_tool(gl_widget& parent) : parent_(parent)
 {
 }
 
-void new_block_tool::mouse_press_event(QMouseEvent* event)
+void new_block_tool::mouse_press_event(QMouseEvent const& event)
 {
-    if (event->button() == Qt::LeftButton)
+    if (event.button() == Qt::LeftButton)
     {
         if (cursor_position_)
         {
@@ -34,9 +34,9 @@ void new_block_tool::mouse_press_event(QMouseEvent* event)
     }
 }
 
-void new_block_tool::mouse_move_event(QMouseEvent* event)
+void new_block_tool::mouse_move_event(QMouseEvent const& event)
 {
-    cursor_position_ = intersect_xy_plane(parent_.mouse_ray(event->x(), event->y()));
+    cursor_position_ = intersect_xy_plane(parent_.mouse_ray(event.x(), event.y()));
 
     if (cursor_position_)
     {

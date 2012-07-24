@@ -10,11 +10,11 @@ move_block_tool::move_block_tool(gl_widget& parent) : parent_(parent)
 {
 }
 
-void move_block_tool::mouse_press_event(QMouseEvent* event)
+void move_block_tool::mouse_press_event(QMouseEvent const& event)
 {
-    if (event->button() == Qt::LeftButton)
+    if (event.button() == Qt::LeftButton)
     {
-        auto pick = parent_.world().pick(parent_.mouse_ray(event->x(), event->y()));
+        auto pick = parent_.world().pick(parent_.mouse_ray(event.x(), event.y()));
 
         block_ = pick.block;
 
@@ -27,19 +27,19 @@ void move_block_tool::mouse_press_event(QMouseEvent* event)
     }
 }
 
-void move_block_tool::mouse_release_event(QMouseEvent* event)
+void move_block_tool::mouse_release_event(QMouseEvent const& event)
 {
-    if (event->button() == Qt::LeftButton)
+    if (event.button() == Qt::LeftButton)
     {
         drag_.reset();
     }
 }
 
-void move_block_tool::mouse_move_event(QMouseEvent* event)
+void move_block_tool::mouse_move_event(QMouseEvent const& event)
 {
     if (drag_)
     {
-        auto mouse_ray = parent_.mouse_ray(event->x(), event->y());
+        auto mouse_ray = parent_.mouse_ray(event.x(), event.y());
         auto position = constrain(parent_.get_constrain_algorithm(), mouse_ray, drag_->drag_origin);
 
         if (position)

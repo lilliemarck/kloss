@@ -103,7 +103,7 @@ void gl_widget::mousePressEvent(QMouseEvent* event)
 
     if (tool_)
     {
-        tool_->mouse_press_event(event);
+        tool_->mouse_press_event(*event);
     }
 }
 
@@ -113,7 +113,7 @@ void gl_widget::mouseReleaseEvent(QMouseEvent* event)
 
     if (tool_)
     {
-        tool_->mouse_release_event(event);
+        tool_->mouse_release_event(*event);
     }
 }
 
@@ -123,7 +123,7 @@ void gl_widget::mouseMoveEvent(QMouseEvent* event)
 
     if (tool_)
     {
-        tool_->mouse_move_event(event);
+        tool_->mouse_move_event(*event);
     }
 }
 

@@ -11,9 +11,9 @@ class tool
 {
 public:
     virtual ~tool() {}
-    virtual void mouse_press_event(QMouseEvent* event) {}
-    virtual void mouse_release_event(QMouseEvent* event) {}
-    virtual void mouse_move_event(QMouseEvent* event) {}
+    virtual void mouse_press_event(QMouseEvent const& event) {}
+    virtual void mouse_release_event(QMouseEvent const& event) {}
+    virtual void mouse_move_event(QMouseEvent const& event) {}
     virtual void paint_gl() {}
 };
 
