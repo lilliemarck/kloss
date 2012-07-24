@@ -11,6 +11,11 @@ boost::optional<cml::vector3f> constrain_to_z_axis(ray const& ray, cml::vector3f
      * Find the z value of the intersection between the ray and a y-axis
      * aligned cylinder that is centered on the ray's origin and having a
      * radius such that the surface touches the reference point.
+     *
+     * This algorithm assumes that the ray originates from the same point as
+     * the camera is placed. When using a pick ray that originates from the
+     * near clipping plane a small error is introduced when the camera turns
+     * towards the sides.
      */
     auto radius = distance(to_vector2(ray.origin), to_vector2(reference));
     auto denom = sqrt(square(ray.direction[0]) + square(ray.direction[1]));
