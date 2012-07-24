@@ -3,11 +3,10 @@
 #include <memory>
 #include <boost/optional.hpp>
 #include <QGLWidget>
-#include <QBasicTimer>
 #include <kloss/camera.hpp>
-#include <kloss/key_pair.hpp>
 #include <kloss/world.hpp>
 #include <klosscreator/constrain.hpp>
+#include <klosscreator/move_camera_tool.hpp>
 #include <klosscreator/vertex_array.hpp>
 
 namespace kloss {
@@ -24,6 +23,7 @@ public:
     ~gl_widget();
 
     world& world();
+    camera& camera();
     ray mouse_ray(float mouse_x, float mouse_y) const;
     vertex_array const& cursor_vertices() const;
     constrain_algorithm get_constrain_algorithm() const;
@@ -37,7 +37,6 @@ public slots:
 private:
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
-    void timerEvent(QTimerEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
@@ -48,14 +47,12 @@ private:
     cml::matrix44f_c modelview_matrix() const;
 
     kloss::world world_;
-    camera camera_;
+    kloss::camera camera_;
     vertex_array grid_;
     vertex_array cursor_;
-    key_pair backward_forward_;
-    key_pair left_right_;
-    QBasicTimer timer_;
     constrain_algorithm constrain_algorithm_;
     boost::optional<QPointF> mouse_origin_;
+    move_camera_tool move_camera_tool_;
     std::unique_ptr<tool> tool_;
 };
 

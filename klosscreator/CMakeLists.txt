@@ -16,6 +16,7 @@ add_executable(klosscreator ${klosscreator_MOC_SOURCES}
     main.cpp
     main_window.cpp
     move_block_tool.cpp
+    move_camera_tool.cpp
     new_block_tool.cpp
     vertex_array.cpp)
 

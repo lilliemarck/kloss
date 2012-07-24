@@ -8,29 +8,13 @@
 
 namespace kloss {
 namespace creator {
-namespace {
-
-float const delta_time = 1.0f / 10.0f;
-
-void update_key_pair(key_pair& key_pair, bool pressed, QKeyEvent const* event, Qt::Key first, Qt::Key second)
-{
-    if (event->key() == first)
-    {
-        key_pair.set_first(pressed);
-    }
-    else if (event->key() == second)
-    {
-        key_pair.set_second(pressed);
-    }
-}
-
-} // namespace
 
 gl_widget::gl_widget(QWidget* parent)
     : QGLWidget(parent)
     , grid_(make_grid(10))
     , cursor_(make_cursor(0.125f))
     , constrain_algorithm_(constrain_algorithm::xy_plane)
+    , move_camera_tool_(*this)
 {
     setMouseTracking(true);
     camera_.set_position({0.0f, -4.0f, 2.0f});
@@ -43,6 +27,11 @@ gl_widget::~gl_widget()
 world& gl_widget::world()
 {
     return world_;
+}
+
+camera& gl_widget::camera()
+{
+    return camera_;
 }
 
 ray gl_widget::mouse_ray(float mouse_x, float mouse_y) const
@@ -100,36 +89,12 @@ void gl_widget::initializeGL()
 
 void gl_widget::keyPressEvent(QKeyEvent* event)
 {
-    update_key_pair(backward_forward_, true, event, Qt::Key_S, Qt::Key_W);
-    update_key_pair(left_right_,       true, event, Qt::Key_A, Qt::Key_D);
-
-    if (backward_forward_.value() != 0.0f || left_right_.value() != 0.0f)
-    {
-        timer_.start(1.0f / delta_time, this);
-    }
+    move_camera_tool_.key_press_event(*event);
 }
 
 void gl_widget::keyReleaseEvent(QKeyEvent* event)
 {
-    update_key_pair(backward_forward_, false, event, Qt::Key_S, Qt::Key_W);
-    update_key_pair(left_right_,       false, event, Qt::Key_A, Qt::Key_D);
-
-    if (backward_forward_.value() == 0.0f && left_right_.value() == 0.0f)
-    {
-        timer_.stop();
-    }
-}
-
-void gl_widget::timerEvent(QTimerEvent* event)
-{
-    QGLWidget::timerEvent(event);
-
-    if (event->timerId() == timer_.timerId())
-    {
-        move_forward(camera_, backward_forward_.value() * delta_time);
-        move_sideways(camera_, left_right_.value() * delta_time);
-        update();
-    }
+    move_camera_tool_.key_release_event(*event);
 }
 
 void gl_widget::mousePressEvent(QMouseEvent* event)
