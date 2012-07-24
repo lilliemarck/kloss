@@ -1,12 +1,12 @@
 #pragma once
 
 #include <memory>
-#include <boost/optional.hpp>
 #include <QGLWidget>
 #include <kloss/camera.hpp>
 #include <kloss/world.hpp>
 #include <klosscreator/constrain.hpp>
 #include <klosscreator/move_camera_tool.hpp>
+#include <klosscreator/turn_camera_tool.hpp>
 #include <klosscreator/vertex_array.hpp>
 
 namespace kloss {
@@ -51,8 +51,8 @@ private:
     vertex_array grid_;
     vertex_array cursor_;
     constrain_algorithm constrain_algorithm_;
-    boost::optional<QPointF> mouse_origin_;
     move_camera_tool move_camera_tool_;
+    turn_camera_tool turn_camera_tool_;
     std::unique_ptr<tool> tool_;
 };
 

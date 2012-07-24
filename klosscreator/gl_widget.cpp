@@ -1,7 +1,6 @@
 #include "gl_widget.hpp"
 #include <QMouseEvent>
 #include <kloss/geometry.hpp>
-#include <kloss/math.hpp>
 #include <kloss/memory.hpp>
 #include <klosscreator/move_block_tool.hpp>
 #include <klosscreator/new_block_tool.hpp>
@@ -15,6 +14,7 @@ gl_widget::gl_widget(QWidget* parent)
     , cursor_(make_cursor(0.125f))
     , constrain_algorithm_(constrain_algorithm::xy_plane)
     , move_camera_tool_(*this)
+    , turn_camera_tool_(*this)
 {
     setMouseTracking(true);
     camera_.set_position({0.0f, -4.0f, 2.0f});
@@ -99,48 +99,31 @@ void gl_widget::keyReleaseEvent(QKeyEvent* event)
 
 void gl_widget::mousePressEvent(QMouseEvent* event)
 {
+    turn_camera_tool_.mouse_press_event(*event);
+
     if (tool_)
     {
         tool_->mouse_press_event(event);
-    }
-
-    if (event->button() == Qt::RightButton)
-    {
-        mouse_origin_ = event->posF();
     }
 }
 
 void gl_widget::mouseReleaseEvent(QMouseEvent* event)
 {
+    turn_camera_tool_.mouse_release_event(*event);
+
     if (tool_)
     {
         tool_->mouse_release_event(event);
-    }
-
-    if (event->button() == Qt::RightButton)
-    {
-        mouse_origin_.reset();
     }
 }
 
 void gl_widget::mouseMoveEvent(QMouseEvent* event)
 {
+    turn_camera_tool_.mouse_move_event(*event);
+
     if (tool_)
     {
         tool_->mouse_move_event(event);
-    }
-
-    if (mouse_origin_)
-    {
-        QPointF move = event->posF() - *mouse_origin_;
-
-        float widget_size = minor_size(*this);
-        float degrees_per_pixel = 1.0f / widget_size;
-        rotate_yaw(camera_, -move.x() * degrees_per_pixel);
-        rotate_pitch(camera_, -move.y() * degrees_per_pixel);
-
-        mouse_origin_ = event->posF();
-        update();
     }
 }
 

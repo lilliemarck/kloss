@@ -18,6 +18,7 @@ add_executable(klosscreator ${klosscreator_MOC_SOURCES}
     move_block_tool.cpp
     move_camera_tool.cpp
     new_block_tool.cpp
+    turn_camera_tool.cpp
     vertex_array.cpp)
 
 target_link_libraries(klosscreator kloss ${QT_LIBRARIES})
