@@ -38,7 +38,7 @@ void append_line(vertex_array& array, color3ub const& color, cml::vector3f const
 vertex_array make_grid(int size)
 {
     vertex_array array;
-    array.reserve(2 * (4 * size + 5));
+    array.reserve(2 * (4 * size + 4));
 
     for (float i = -size; i <= size; ++i)
     {
@@ -52,7 +52,6 @@ vertex_array make_grid(int size)
     {
         append_line(array, {255, 0, 0}, {0.0f, 0.0f, 0.0f}, {size, 0.0f, 0.0f});
         append_line(array, {0, 255, 0}, {0.0f, 0.0f, 0.0f}, {0.0f, size, 0.0f});
-        append_line(array, {0, 0, 255}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, size});
     }
 
     return array;
