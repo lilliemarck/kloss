@@ -12,6 +12,17 @@ cml::vector3f bottom(corner const& corner)
     return {corner.x, corner.y, corner.bottom};
 }
 
+void translate(block& block, cml::vector3f const& units)
+{
+    for (auto& column : block)
+    {
+        column.x      += units[0];
+        column.y      += units[1];
+        column.top    += units[2];
+        column.bottom += units[2];
+    }
+}
+
 std::vector<triangle> to_triangles(block const& block)
 {
     return

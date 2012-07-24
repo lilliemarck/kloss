@@ -20,6 +20,7 @@ cml::vector3f bottom(corner const& corner);
 using block = std::array<corner,4>;
 using block_ptr = std::shared_ptr<block>;
 
+void translate(block& block, cml::vector3f const& units);
 std::vector<triangle> to_triangles(block const& block);
 
 } // namespace kloss

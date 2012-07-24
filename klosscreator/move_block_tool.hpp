@@ -5,6 +5,9 @@
 #include <klosscreator/tool.hpp>
 
 namespace kloss {
+
+struct pick;
+
 namespace creator {
 
 class move_block_tool : public tool
@@ -18,14 +21,20 @@ public:
     void paint_gl() override;
 
 private:
+    void single_select(pick const& pick);
+    void multi_select(pick const& pick);
+
     struct drag
     {
-        cml::vector3f drag_origin;
-        block original_block;
+        drag(cml::vector3f const& origin, std::vector<block_ptr> const& blocks);
+        void restore_blocks(std::vector<block_ptr> const& blocks);
+
+        cml::vector3f reference;
+        std::vector<block> original_blocks;
     };
 
     gl_widget& parent_;
-    block_ptr block_;
+    std::vector<block_ptr> selection_;
     boost::optional<drag> drag_;
 };
 
