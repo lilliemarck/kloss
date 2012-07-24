@@ -22,6 +22,8 @@ private:
     QAction* quit_action_;
     QAction* new_block_action_;
     QAction* move_block_action_;
+    QAction* xy_plane_constraint_action_;
+    QAction* z_azis_constraint_action_;
     QMenu* file_menu_;
     QToolBar* tool_bar_;
 };

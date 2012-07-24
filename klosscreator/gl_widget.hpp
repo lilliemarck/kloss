@@ -7,6 +7,7 @@
 #include <kloss/camera.hpp>
 #include <kloss/key_pair.hpp>
 #include <kloss/world.hpp>
+#include <klosscreator/constrain.hpp>
 #include <klosscreator/vertex_array.hpp>
 
 namespace kloss {
@@ -25,10 +26,13 @@ public:
     world& world();
     ray mouse_ray(float mouse_x, float mouse_y) const;
     vertex_array const& cursor_vertices() const;
+    constrain_algorithm get_constrain_algorithm() const;
 
 public slots:
     void use_new_block_tool();
     void use_move_block_tool();
+    void use_xy_plane_constraint();
+    void use_z_axis_constraint();
 
 private:
     void keyPressEvent(QKeyEvent* event) override;
@@ -50,6 +54,7 @@ private:
     key_pair backward_forward_;
     key_pair left_right_;
     QBasicTimer timer_;
+    constrain_algorithm constrain_algorithm_;
     boost::optional<QPointF> mouse_origin_;
     std::unique_ptr<tool> tool_;
 };

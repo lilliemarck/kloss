@@ -11,6 +11,7 @@ qt4_wrap_cpp(klosscreator_MOC_SOURCES
     main_window.hpp)
 
 add_executable(klosscreator ${klosscreator_MOC_SOURCES}
+    constrain.cpp
     gl_widget.cpp
     main.cpp
     main_window.cpp

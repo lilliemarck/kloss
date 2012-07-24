@@ -35,6 +35,21 @@ void main_window::create_actions()
     toolGroup->addAction(new_block_action_);
     toolGroup->addAction(move_block_action_);
     new_block_action_->trigger();
+
+    xy_plane_constraint_action_ = new QAction(tr("XY"), this);
+    xy_plane_constraint_action_->setCheckable(true);
+    xy_plane_constraint_action_->setShortcut(Qt::Key_X);
+    connect(xy_plane_constraint_action_, SIGNAL(triggered()), &gl_widget_, SLOT(use_xy_plane_constraint()));
+
+    z_azis_constraint_action_ = new QAction(tr("Z"), this);
+    z_azis_constraint_action_->setCheckable(true);
+    z_azis_constraint_action_->setShortcut(Qt::Key_Z);
+    connect(z_azis_constraint_action_, SIGNAL(triggered()), &gl_widget_, SLOT(use_z_axis_constraint()));
+
+    QActionGroup* constraintGroup = new QActionGroup(this);
+    constraintGroup->addAction(xy_plane_constraint_action_);
+    constraintGroup->addAction(z_azis_constraint_action_);
+    xy_plane_constraint_action_->trigger();
 }
 
 void main_window::create_menus()
@@ -48,6 +63,9 @@ void main_window::create_toolbar()
     tool_bar_ = addToolBar(tr("Tools"));
     tool_bar_->addAction(new_block_action_);
     tool_bar_->addAction(move_block_action_);
+    tool_bar_->addSeparator();
+    tool_bar_->addAction(xy_plane_constraint_action_);
+    tool_bar_->addAction(z_azis_constraint_action_);
 }
 
 } // namespace kloss

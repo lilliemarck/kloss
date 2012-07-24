@@ -1,6 +1,7 @@
 #include "gl_widget.hpp"
 #include <QMouseEvent>
 #include <kloss/geometry.hpp>
+#include <kloss/math.hpp>
 #include <kloss/memory.hpp>
 #include <klosscreator/move_block_tool.hpp>
 #include <klosscreator/new_block_tool.hpp>
@@ -29,6 +30,7 @@ gl_widget::gl_widget(QWidget* parent)
     : QGLWidget(parent)
     , grid_(make_grid(10))
     , cursor_(make_cursor(0.125f))
+    , constrain_algorithm_(constrain_algorithm::xy_plane)
 {
     setMouseTracking(true);
     camera_.set_position({0.0f, -4.0f, 2.0f});
@@ -66,6 +68,11 @@ vertex_array const& gl_widget::cursor_vertices() const
     return cursor_;
 }
 
+constrain_algorithm gl_widget::get_constrain_algorithm() const
+{
+    return constrain_algorithm_;
+}
+
 void gl_widget::use_new_block_tool()
 {
     tool_ = make_unique<new_block_tool>(*this);
@@ -74,6 +81,16 @@ void gl_widget::use_new_block_tool()
 void gl_widget::use_move_block_tool()
 {
     tool_ = make_unique<move_block_tool>(*this);
+}
+
+void gl_widget::use_xy_plane_constraint()
+{
+    constrain_algorithm_ = constrain_algorithm::xy_plane;
+}
+
+void gl_widget::use_z_axis_constraint()
+{
+    constrain_algorithm_ = constrain_algorithm::z_axis;
 }
 
 void gl_widget::initializeGL()

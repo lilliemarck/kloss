@@ -40,11 +40,11 @@ void move_block_tool::mouse_move_event(QMouseEvent* event)
     if (drag_)
     {
         auto mouse_ray = parent_.mouse_ray(event->x(), event->y());
-        auto intersection = intersect_xy_plane(mouse_ray, drag_->drag_origin[2]);
+        auto position = constrain(parent_.get_constrain_algorithm(), mouse_ray, drag_->drag_origin);
 
-        if (intersection)
+        if (position)
         {
-            cml::vector3f translation = *intersection - drag_->drag_origin;
+            cml::vector3f translation = *position - drag_->drag_origin;
 
             translation[0] = std::round(translation[0]);
             translation[1] = std::round(translation[1]);
@@ -56,6 +56,8 @@ void move_block_tool::mouse_move_event(QMouseEvent* event)
             {
                 column.x += translation[0];
                 column.y += translation[1];
+                column.top += translation[2];
+                column.bottom += translation[2];
             }
 
             parent_.world().update_vertex_array();
