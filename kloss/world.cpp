@@ -45,6 +45,8 @@ boost::optional<cml::vector3f> world::pick_vertex(cml::matrix44f_c const& model,
                                                   cml::vector2f const& mouse) const
 {
     float const radius = 5.0f;
+    float nearest_distance = std::numeric_limits<float>::max();
+    boost::optional<cml::vector3f> nearest_vertex;
 
     for (auto const& block : blocks_)
     {
@@ -57,17 +59,18 @@ boost::optional<cml::vector3f> world::pick_vertex(cml::matrix44f_c const& model,
             if (screen_vertex)
             {
                 (*screen_vertex)[1] = viewport.height - (*screen_vertex)[1];
-                auto distance = kloss::distance(mouse, *screen_vertex);
+                auto distance = kloss::distance(mouse, to_vector2(*screen_vertex));
 
-                if (distance < radius)
+                if (distance < radius && (*screen_vertex)[2] < nearest_distance)
                 {
-                    return vertex;
+                    nearest_distance = (*screen_vertex)[2];
+                    nearest_vertex = vertex;
                 }
             }
         }
     }
 
-    return {};
+    return nearest_vertex;
 }
 
 void world::draw()
