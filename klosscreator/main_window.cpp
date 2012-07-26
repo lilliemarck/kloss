@@ -31,9 +31,14 @@ void main_window::create_actions()
     move_block_action_->setCheckable(true);
     connect(move_block_action_, SIGNAL(triggered()), &gl_widget_, SLOT(use_move_block_tool()));
 
+    move_vertex_action_ = new QAction(tr("Move Vertex"), this);
+    move_vertex_action_->setCheckable(true);
+    connect(move_vertex_action_, SIGNAL(triggered()), &gl_widget_, SLOT(use_move_vertex_tool()));
+
     QActionGroup* toolGroup = new QActionGroup(this);
     toolGroup->addAction(new_block_action_);
     toolGroup->addAction(move_block_action_);
+    toolGroup->addAction(move_vertex_action_);
     new_block_action_->trigger();
 
     xy_plane_constraint_action_ = new QAction(tr("XY"), this);
@@ -63,6 +68,7 @@ void main_window::create_toolbar()
     tool_bar_ = addToolBar(tr("Tools"));
     tool_bar_->addAction(new_block_action_);
     tool_bar_->addAction(move_block_action_);
+    tool_bar_->addAction(move_vertex_action_);
     tool_bar_->addSeparator();
     tool_bar_->addAction(xy_plane_constraint_action_);
     tool_bar_->addAction(z_azis_constraint_action_);

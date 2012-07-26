@@ -22,5 +22,6 @@ using block_ptr = std::shared_ptr<block>;
 
 void translate(block& block, cml::vector3f const& units);
 std::vector<triangle> to_triangles(block const& block);
+std::vector<cml::vector3f> to_vertices(block const& block);
 
 } // namespace kloss

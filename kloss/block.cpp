@@ -53,4 +53,13 @@ std::vector<triangle> to_triangles(block const& block)
     };
 }
 
+std::vector<cml::vector3f> to_vertices(block const& block)
+{
+    return
+    {
+           top(block[0]),    top(block[1]),    top(block[2]),    top(block[3]),
+        bottom(block[0]), bottom(block[1]), bottom(block[2]), bottom(block[3])
+    };
+}
+
 } // namespace kloss

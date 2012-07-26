@@ -1,6 +1,7 @@
 #include "world.hpp"
 #include <cassert>
 #include <limits>
+#include <kloss/math.hpp>
 #include <GL/gl.h>
 
 namespace kloss {
@@ -36,6 +37,37 @@ pick world::pick(ray const& ray) const
     }
 
     return {nearest_block, ray.origin + nearest * ray.direction};
+}
+
+boost::optional<cml::vector3f> world::pick_vertex(cml::matrix44f_c const& model,
+                                                  cml::matrix44f_c const& projection,
+                                                  viewport const& viewport,
+                                                  cml::vector2f const& mouse) const
+{
+    float const radius = 5.0f;
+
+    for (auto const& block : blocks_)
+    {
+        auto vertices = to_vertices(*block);
+
+        for (cml::vector3f const& vertex : vertices)
+        {
+            auto screen_vertex = project(vertex, model, projection, viewport);
+
+            if (screen_vertex)
+            {
+                (*screen_vertex)[1] = viewport.height - (*screen_vertex)[1];
+                auto distance = kloss::distance(mouse, *screen_vertex);
+
+                if (distance < radius)
+                {
+                    return vertex;
+                }
+            }
+        }
+    }
+
+    return {};
 }
 
 void world::draw()

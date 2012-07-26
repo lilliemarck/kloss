@@ -3,7 +3,10 @@
 #include <kloss/geometry.hpp>
 #include <kloss/memory.hpp>
 #include <klosscreator/move_block_tool.hpp>
+#include <klosscreator/move_vertex_tool.hpp>
 #include <klosscreator/new_block_tool.hpp>
+
+#include <kloss/math.hpp>
 
 namespace kloss {
 namespace creator {
@@ -62,6 +65,12 @@ constrain_algorithm gl_widget::get_constrain_algorithm() const
     return constrain_algorithm_;
 }
 
+boost::optional<cml::vector3f> gl_widget::pick_vertex(float mouse_x, float mouse_y) const
+{
+    viewport viewport = {0, 0, width(), height()};
+    return world_.pick_vertex(modelview_matrix(), projection_matrix(), viewport, {mouse_x, mouse_y});
+}
+
 void gl_widget::use_new_block_tool()
 {
     tool_ = make_unique<new_block_tool>(*this);
@@ -70,6 +79,11 @@ void gl_widget::use_new_block_tool()
 void gl_widget::use_move_block_tool()
 {
     tool_ = make_unique<move_block_tool>(*this);
+}
+
+void gl_widget::use_move_vertex_tool()
+{
+    tool_ = make_unique<move_vertex_tool>(*this);
 }
 
 void gl_widget::use_xy_plane_constraint()

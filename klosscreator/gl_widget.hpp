@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <QGLWidget>
+#include <boost/optional.hpp>
 #include <kloss/camera.hpp>
 #include <kloss/world.hpp>
 #include <klosscreator/constrain.hpp>
@@ -27,10 +28,12 @@ public:
     ray mouse_ray(float mouse_x, float mouse_y) const;
     vertex_array const& cursor_vertices() const;
     constrain_algorithm get_constrain_algorithm() const;
+    boost::optional<cml::vector3f> pick_vertex(float mouse_x, float mouse_y) const;
 
 public slots:
     void use_new_block_tool();
     void use_move_block_tool();
+    void use_move_vertex_tool();
     void use_xy_plane_constraint();
     void use_z_axis_constraint();
 
