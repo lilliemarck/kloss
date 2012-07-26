@@ -18,6 +18,7 @@ pick world::pick(ray const& ray) const
 {
     float nearest = std::numeric_limits<float>::max();
     block_ptr nearest_block;
+    triangle nearest_triangle;
 
     for (auto const& block : blocks_)
     {
@@ -31,12 +32,13 @@ pick world::pick(ray const& ray) const
                 {
                     nearest = *temp;
                     nearest_block = block;
+                    nearest_triangle = triangle;
                 }
             }
         }
     }
 
-    return {nearest_block, ray.origin + nearest * ray.direction};
+    return {nearest_block, nearest_triangle, ray.origin + nearest * ray.direction};
 }
 
 boost::optional<cml::vector3f> world::pick_vertex(cml::matrix44f_c const& model,

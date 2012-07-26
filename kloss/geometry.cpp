@@ -7,6 +7,11 @@ cml::vector3f make_normal(triangle const& triangle)
     return cross(triangle.b - triangle.a, triangle.c - triangle.a);
 }
 
+ray make_ray_to(cml::vector3f const& origin, cml::vector3f const& target)
+{
+    return {origin, target - origin};
+}
+
 boost::optional<cml::vector3f> intersect_xy_plane(ray const& ray)
 {
     return intersect_xy_plane(ray, 0.0f);

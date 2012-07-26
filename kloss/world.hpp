@@ -12,6 +12,7 @@ struct viewport;
 struct pick
 {
     block_ptr block;
+    kloss::triangle triangle;
     cml::vector3f intersection;
 };
 
