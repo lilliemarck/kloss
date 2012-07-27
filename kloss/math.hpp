@@ -30,9 +30,4 @@ struct viewport
     int height;
 };
 
-boost::optional<cml::vector3f> project(cml::vector3f const& point,
-                                       cml::matrix44f_c const& model,
-                                       cml::matrix44f_c const& projection,
-                                       viewport const& viewport);
-
 } // namespace kloss
