@@ -3,6 +3,7 @@
 #include <kloss/algorithm.hpp>
 #include <kloss/math.hpp>
 #include <klosscreator/gl_widget.hpp>
+#include <klosscreator/select_pick.hpp>
 
 namespace kloss {
 namespace creator {
@@ -18,18 +19,20 @@ void move_vertex_tool::mouse_press_event(QMouseEvent const& event)
     if (event.button() == Qt::LeftButton)
     {
         auto pick = parent_.pick_vertex(event.x(), event.y());
+        bool did_select;
 
         if (event.modifiers() & Qt::ControlModifier)
         {
-            selection_.multi_select(pick);
+            did_select = multi_select(selection_, pick);
         }
         else
         {
-            selection_.single_select(pick);
+            did_select = single_select(selection_, pick);
         }
 
-        if (selection_.reference())
+        if (did_select)
         {
+            reference_ = get_intersection(pick);
             drag_ = selection_.backup();
         }
 
@@ -50,11 +53,11 @@ void move_vertex_tool::mouse_move_event(QMouseEvent const& event)
     if (drag_)
     {
         auto mouse_ray = parent_.mouse_ray(event.x(), event.y());
-        auto position = constrain(parent_.get_constrain_algorithm(), mouse_ray, *selection_.reference());
+        auto position = constrain(parent_.get_constrain_algorithm(), mouse_ray, *reference_);
 
         if (position)
         {
-            cml::vector3f translation = *position - *selection_.reference();
+            cml::vector3f translation = *position - *reference_;
 
             translation[0] = round(translation[0], snap_size);
             translation[1] = round(translation[1], snap_size);
