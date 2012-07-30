@@ -21,10 +21,10 @@ class world
 public:
     void insert(block_ptr const& block);
     pick pick(ray const& ray) const;
-    boost::optional<cml::vector3f> pick_vertex(cml::matrix44f_c const& model,
-                                               cml::matrix44f_c const& projection,
-                                               viewport const& viewport,
-                                               cml::vector2f const& mouse) const;
+    boost::optional<vertex_ref> pick_vertex(cml::matrix44f_c const& model,
+                                            cml::matrix44f_c const& projection,
+                                            viewport const& viewport,
+                                            cml::vector2f const& mouse) const;
     void draw();
     void update_vertex_array();
 

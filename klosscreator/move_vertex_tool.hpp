@@ -22,7 +22,7 @@ public:
 
 private:
     gl_widget& parent_;
-    boost::optional<cml::vector3f> vertex_;
+    boost::optional<vertex_ref> vertex_;
 };
 
 } // namespace creator

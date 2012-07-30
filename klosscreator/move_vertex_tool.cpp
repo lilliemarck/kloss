@@ -40,7 +40,7 @@ void move_vertex_tool::paint_gl()
     if (vertex_)
     {
         auto const& cursor_vertices = parent_.cursor_vertices();
-        draw(cursor_vertices, *vertex_);
+        draw(cursor_vertices, vertex_->to_vector());
     }
 }
 

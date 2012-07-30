@@ -65,7 +65,7 @@ constrain_algorithm gl_widget::get_constrain_algorithm() const
     return constrain_algorithm_;
 }
 
-boost::optional<cml::vector3f> gl_widget::pick_vertex(float mouse_x, float mouse_y) const
+boost::optional<vertex_ref> gl_widget::pick_vertex(float mouse_x, float mouse_y) const
 {
     viewport viewport = {0, 0, width(), height()};
 
@@ -73,19 +73,20 @@ boost::optional<cml::vector3f> gl_widget::pick_vertex(float mouse_x, float mouse
 
     if (vertex)
     {
-        auto pick = world_.pick(make_ray_to(camera_.get_position(), *vertex));
+        auto vertex_vector = vertex->to_vector();
+        auto pick = world_.pick(make_ray_to(camera_.get_position(), vertex_vector));
 
         if (pick.block)
         {
             for (std::size_t i = 0; i < 3; ++i)
             {
-                if (pick.triangle[i] == *vertex)
+                if (pick.triangle[i] == vertex_vector)
                 {
                     return vertex;
                 }
             }
 
-            if (distance(camera_.get_position(), *vertex) >
+            if (distance(camera_.get_position(), vertex_vector) >
                 distance(camera_.get_position(), pick.intersection))
             {
                 return {};
