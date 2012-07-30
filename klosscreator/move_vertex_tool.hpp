@@ -6,9 +6,6 @@
 #include <klosscreator/tool.hpp>
 
 namespace kloss {
-
-struct pick;
-
 namespace creator {
 
 class move_vertex_tool : public tool

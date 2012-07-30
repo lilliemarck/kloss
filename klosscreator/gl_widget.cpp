@@ -74,7 +74,7 @@ boost::optional<vertex_ref> gl_widget::pick_vertex(float mouse_x, float mouse_y)
     if (vertex)
     {
         auto vertex_vector = vertex->to_vector();
-        auto pick = world_.pick(make_ray_to(camera_.get_position(), vertex_vector));
+        auto pick = world_.pick_block(make_ray_to(camera_.get_position(), vertex_vector));
 
         if (pick.block)
         {

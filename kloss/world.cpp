@@ -42,7 +42,7 @@ void world::insert(block_ptr const& block)
     append_vertices(*block);
 }
 
-pick world::pick(ray const& ray) const
+pick const world::pick_block(ray const& ray) const
 {
     float nearest = std::numeric_limits<float>::max();
     block_ptr nearest_block;
@@ -69,10 +69,10 @@ pick world::pick(ray const& ray) const
     return {nearest_block, nearest_triangle, ray.origin + nearest * ray.direction};
 }
 
-boost::optional<vertex_ref> world::pick_vertex(cml::matrix44f_c const& model,
-                                               cml::matrix44f_c const& projection,
-                                               viewport const& viewport,
-                                               cml::vector2f const& mouse) const
+boost::optional<vertex_ref> const world::pick_vertex(cml::matrix44f_c const& model,
+                                                     cml::matrix44f_c const& projection,
+                                                     viewport const& viewport,
+                                                     cml::vector2f const& mouse) const
 {
     float const radius = 5.0f;
     float nearest_distance = std::numeric_limits<float>::max();

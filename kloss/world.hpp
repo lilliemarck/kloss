@@ -16,15 +16,23 @@ struct pick
     cml::vector3f intersection;
 };
 
+struct viewport
+{
+    int x;
+    int y;
+    int width;
+    int height;
+};
+
 class world
 {
 public:
     void insert(block_ptr const& block);
-    pick pick(ray const& ray) const;
-    boost::optional<vertex_ref> pick_vertex(cml::matrix44f_c const& model,
-                                            cml::matrix44f_c const& projection,
-                                            viewport const& viewport,
-                                            cml::vector2f const& mouse) const;
+    pick const pick_block(ray const& ray) const;
+    boost::optional<vertex_ref> const pick_vertex(cml::matrix44f_c const& model,
+                                                  cml::matrix44f_c const& projection,
+                                                  viewport const& viewport,
+                                                  cml::vector2f const& mouse) const;
     void draw();
     void update_vertex_array();
 

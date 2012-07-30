@@ -15,7 +15,7 @@ void move_block_tool::mouse_press_event(QMouseEvent const& event)
 {
     if (event.button() == Qt::LeftButton)
     {
-        auto pick = parent_.world().pick(parent_.mouse_ray(event.x(), event.y()));
+        auto pick = parent_.world().pick_block(parent_.mouse_ray(event.x(), event.y()));
 
         if (event.modifiers() & Qt::ControlModifier)
         {
