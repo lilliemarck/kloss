@@ -2,6 +2,7 @@
 
 #include <cml/cml.h>
 #include <kloss/block.hpp>
+#include <klosscreator/selection.hpp>
 #include <klosscreator/tool.hpp>
 
 namespace kloss {
@@ -21,21 +22,44 @@ public:
     void paint_gl() override;
 
 private:
-    void single_select(boost::optional<vertex_ref> const& pick);
-    void multi_select(boost::optional<vertex_ref> const& pick);
-
-    struct drag
+    struct selection_policy
     {
-        drag(cml::vector3f const& reference, std::vector<vertex_ref> const& vertices);
-        void restore(std::vector<vertex_ref>& vertices);
+        using pick_type = boost::optional<vertex_ref>;
+        using selection_type = vertex_ref;
+        using backup_type = corner;
 
-        cml::vector3f reference;
-        std::vector<corner> original_corners;
+        static bool const has_selection(pick_type const& pick)
+        {
+            return pick;
+        }
+
+        static selection_type const& get_selection(pick_type const& pick)
+        {
+            return *pick;
+        }
+
+        static cml::vector3f const get_intersection(pick_type const& pick)
+        {
+            return pick->to_vector();
+        }
+
+        static backup_type const& backup(selection_type const& selection)
+        {
+            return selection.corner();
+        }
+
+        static void restore(selection_type& selection, backup_type const& backup)
+        {
+            selection.corner() = backup;
+        }
     };
 
+    using selection_type = selection<selection_policy>;
+    using backup_type = decltype(selection_type().backup());
+
     gl_widget& parent_;
-    std::vector<vertex_ref> selection_;
-    boost::optional<drag> drag_;
+    selection_type selection_;
+    boost::optional<backup_type> drag_;
 };
 
 } // namespace creator
