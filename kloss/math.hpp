@@ -1,9 +1,16 @@
 #pragma once
 
+#include <algorithm>
 #include <boost/optional.hpp>
 #include <cml/cml.h>
 
 namespace kloss {
+
+template <typename T>
+T const round(T const& x, float increment)
+{
+    return std::round(x / increment) * increment;
+}
 
 template <typename T>
 T square(T const& x)

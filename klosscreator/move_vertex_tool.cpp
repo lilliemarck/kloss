@@ -7,6 +7,8 @@
 namespace kloss {
 namespace creator {
 
+static float const snap_size = 1.0f / 8.0f;
+
 move_vertex_tool::move_vertex_tool(gl_widget& parent) : parent_(parent)
 {
 }
@@ -54,9 +56,9 @@ void move_vertex_tool::mouse_move_event(QMouseEvent const& event)
         {
             cml::vector3f translation = *position - *selection_.reference();
 
-            translation[0] = std::round(translation[0]);
-            translation[1] = std::round(translation[1]);
-            translation[2] = std::round(translation[2]);
+            translation[0] = round(translation[0], snap_size);
+            translation[1] = round(translation[1], snap_size);
+            translation[2] = round(translation[2], snap_size);
 
             selection_.restore(*drag_);
 
