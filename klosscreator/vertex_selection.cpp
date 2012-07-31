@@ -10,10 +10,10 @@ uint8_t side_to_flag(vertex_ref const& vertex)
     switch (vertex.side())
     {
         case block_side::top:
-            return vertex_selection::top_flag;
+            return corner_ref::top_flag;
 
         case block_side::bottom:
-            return vertex_selection::bottom_flag;
+            return corner_ref::bottom_flag;
     }
 }
 
@@ -47,7 +47,7 @@ void vertex_selection::insert(vertex_ref& element)
         }
     }
 
-    container_.push_back(corner{element.block(), &element.corner(), flag});
+    container_.push_back(corner_ref{element.block(), &element.corner(), flag});
 }
 
 void vertex_selection::remove(vertex_ref const& element)
@@ -101,38 +101,12 @@ void vertex_selection::restore(backup_type const& backup)
     }
 }
 
-void vertex_selection::corner::translate(cml::vector3f const& units)
-{
-    corner->x += units[0];
-    corner->y += units[1];
-
-    if (flags & top_flag)
-    {
-        corner->top += units[2];
-    }
-
-    if (flags & bottom_flag)
-    {
-        corner->bottom += units[2];
-    }
-}
-
-cml::vector3f const vertex_selection::corner::top_position() const
-{
-    return {corner->x, corner->y, corner->top};
-}
-
-cml::vector3f const vertex_selection::corner::bottom_position() const
-{
-    return {corner->x, corner->y, corner->bottom};
-}
-
-std::vector<vertex_selection::corner>::iterator vertex_selection::begin()
+std::vector<corner_ref>::iterator vertex_selection::begin()
 {
     return container_.begin();
 }
 
-std::vector<vertex_selection::corner>::iterator vertex_selection::end()
+std::vector<corner_ref>::iterator vertex_selection::end()
 {
     return container_.end();
 }

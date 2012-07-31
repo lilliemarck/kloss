@@ -84,16 +84,16 @@ void move_vertex_tool::paint_gl()
 {
     auto const& cursor_vertices = parent_.cursor_vertices();
 
-    for (auto const& vertex : selection_)
+    for (auto const& corner : selection_)
     {
-        if (vertex.flags & vertex_selection::top_flag)
+        if (corner.flags & corner_ref::top_flag)
         {
-            draw(cursor_vertices, vertex.top_position());
+            draw(cursor_vertices, corner.top_position());
         }
 
-        if (vertex.flags & vertex_selection::bottom_flag)
+        if (corner.flags & corner_ref::bottom_flag)
         {
-            draw(cursor_vertices, vertex.bottom_position());
+            draw(cursor_vertices, corner.bottom_position());
         }
     }
 }

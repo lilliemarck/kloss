@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <kloss/block.hpp>
+#include <kloss/corner_ref.hpp>
 
 namespace kloss {
 namespace creator {
@@ -19,28 +20,11 @@ public:
     backup_type backup() const;
     void restore(backup_type const& backup);
 
-    enum flags
-    {
-        top_flag = 1,
-        bottom_flag = 2
-    };
-
-    struct corner
-    {
-        void translate(cml::vector3f const& units);
-        cml::vector3f const top_position() const;
-        cml::vector3f const bottom_position() const;
-
-        block_ptr block;
-        kloss::corner* corner;
-        uint8_t flags;
-    };
-
-    std::vector<corner>::iterator begin();
-    std::vector<corner>::iterator end();
+    std::vector<corner_ref>::iterator begin();
+    std::vector<corner_ref>::iterator end();
 
 private:
-    std::vector<corner> container_;
+    std::vector<corner_ref> container_;
 };
 
 } // namespace creator
