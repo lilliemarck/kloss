@@ -78,25 +78,31 @@ boost::optional<corner_ref> const world::pick_vertex(cml::matrix44f_c const& mod
     float nearest_distance = std::numeric_limits<float>::max();
     boost::optional<corner_ref> nearest_corner_ref;
 
+    auto check_vertex = [&](cml::vector3f const& position, corner_ref const& ref, uint8_t flag)
+    {
+        auto screen_position = project(position, model, projection, viewport);
+
+        if (screen_position)
+        {
+            (*screen_position)[1] = viewport.height - (*screen_position)[1];
+            auto distance = kloss::distance(mouse, to_vector2(*screen_position));
+
+            if (distance < radius && (*screen_position)[2] < nearest_distance)
+            {
+                nearest_distance = (*screen_position)[2];
+                nearest_corner_ref = kloss::corner_ref(ref, flag);
+            }
+        }
+    };
+
     for (auto const& block : blocks_)
     {
         auto corner_refs = to_corner_refs(block);
 
         for (auto const& corner_ref : corner_refs)
         {
-            auto screen_vertex = project(to_vector(corner_ref), model, projection, viewport);
-
-            if (screen_vertex)
-            {
-                (*screen_vertex)[1] = viewport.height - (*screen_vertex)[1];
-                auto distance = kloss::distance(mouse, to_vector2(*screen_vertex));
-
-                if (distance < radius && (*screen_vertex)[2] < nearest_distance)
-                {
-                    nearest_distance = (*screen_vertex)[2];
-                    nearest_corner_ref = corner_ref;
-                }
-            }
+            check_vertex(top(corner_ref),    corner_ref, corner_ref::top_flag);
+            check_vertex(bottom(corner_ref), corner_ref, corner_ref::bottom_flag);
         }
     }
 

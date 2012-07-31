@@ -2,9 +2,17 @@
 
 namespace kloss {
 
-corner_ref::corner_ref(block_ptr const& block, uint8_t corner_index, uint8_t flags)
+corner_ref::corner_ref(block_ptr const& block, uint8_t corner_index)
     : block_(block)
     , corner_(&(*block)[corner_index])
+    , flags_(top_flag | bottom_flag)
+{
+    assert(corner_index < 4);
+}
+
+corner_ref::corner_ref(corner_ref const& rhs, uint8_t flags)
+    : block_(rhs.block_)
+    , corner_(rhs.corner_)
     , flags_(flags)
 {
 }
@@ -87,14 +95,10 @@ std::vector<corner_ref> to_corner_refs(block_ptr const& block)
 {
     return
     {
-        corner_ref(block, 0, corner_ref::top_flag),
-        corner_ref(block, 1, corner_ref::top_flag),
-        corner_ref(block, 2, corner_ref::top_flag),
-        corner_ref(block, 3, corner_ref::top_flag),
-        corner_ref(block, 0, corner_ref::bottom_flag),
-        corner_ref(block, 1, corner_ref::bottom_flag),
-        corner_ref(block, 2, corner_ref::bottom_flag),
-        corner_ref(block, 3, corner_ref::bottom_flag)
+        corner_ref(block, 0),
+        corner_ref(block, 1),
+        corner_ref(block, 2),
+        corner_ref(block, 3)
     };
 }
 

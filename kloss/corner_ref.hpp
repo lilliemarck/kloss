@@ -13,7 +13,8 @@ public:
         bottom_flag = 2
     };
 
-    corner_ref(block_ptr const& block, uint8_t corner_index, uint8_t flags);
+    corner_ref(block_ptr const& block, uint8_t corner_index);
+    corner_ref(corner_ref const& rhs, uint8_t flags);
 
     corner const& operator*() const;
     corner& operator*();
