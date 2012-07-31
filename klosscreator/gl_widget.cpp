@@ -12,7 +12,7 @@
 namespace kloss {
 namespace creator {
 
-gl_widget::gl_widget(document& document)
+gl_widget::gl_widget(struct document& document)
     : QGLWidget(static_cast<QWidget*>(nullptr))
     , document_(document)
     , grid_(make_grid(10))
@@ -27,6 +27,11 @@ gl_widget::gl_widget(document& document)
 
 gl_widget::~gl_widget()
 {
+}
+
+document& gl_widget::document()
+{
+    return document_;
 }
 
 world& gl_widget::world()

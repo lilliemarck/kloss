@@ -12,6 +12,8 @@ struct pick;
 
 namespace creator {
 
+struct document;
+
 class move_block_tool : public tool
 {
 public:
@@ -24,7 +26,7 @@ public:
 
 private:
     gl_widget& parent_;
-    block_selection selection_;
+    document& document_;
     boost::optional<cml::vector3f> reference_;
     boost::optional<block_selection::backup_type> drag_;
 };

@@ -2,13 +2,16 @@
 #include <QMouseEvent>
 #include <kloss/algorithm.hpp>
 #include <kloss/block.hpp>
+#include <klosscreator/document.hpp>
 #include <klosscreator/gl_widget.hpp>
 #include <klosscreator/select_pick.hpp>
 
 namespace kloss {
 namespace creator {
 
-move_block_tool::move_block_tool(gl_widget& parent) : parent_(parent)
+move_block_tool::move_block_tool(gl_widget& parent)
+    : parent_(parent)
+    , document_(parent.document())
 {
 }
 
@@ -16,22 +19,22 @@ void move_block_tool::mouse_press_event(QMouseEvent const& event)
 {
     if (event.button() == Qt::LeftButton)
     {
-        auto pick = parent_.world().pick_block(parent_.mouse_ray(event.x(), event.y()));
+        auto pick = document_.world.pick_block(parent_.mouse_ray(event.x(), event.y()));
         bool did_select;
 
         if (event.modifiers() & Qt::ControlModifier)
         {
-            did_select = multi_select(selection_, pick);
+            did_select = multi_select(document_.block_selection, pick);
         }
         else
         {
-            did_select = single_select(selection_, pick);
+            did_select = single_select(document_.block_selection, pick);
         }
 
         if (did_select)
         {
             reference_ = get_intersection(pick);
-            drag_ = selection_.backup();
+            drag_ = document_.block_selection.backup();
         }
 
         parent_.update();
@@ -61,9 +64,9 @@ void move_block_tool::mouse_move_event(QMouseEvent const& event)
             translation[1] = std::round(translation[1]);
             translation[2] = std::round(translation[2]);
 
-            selection_.restore(*drag_);
+            document_.block_selection.restore(*drag_);
 
-            for (auto& element : selection_)
+            for (auto& element : document_.block_selection)
             {
                 translate(*element, translation);
             }
@@ -79,7 +82,7 @@ void move_block_tool::paint_gl()
 {
     auto const& cursor_vertices = parent_.cursor_vertices();
 
-    for (block_ptr const& pblock : selection_)
+    for (block_ptr const& pblock : document_.block_selection)
     {
         block const& block = *pblock;
 

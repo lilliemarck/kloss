@@ -24,6 +24,7 @@ public:
     gl_widget(document& document);
     ~gl_widget();
 
+    document& document();
     world& world();
     camera& camera();
     ray mouse_ray(float mouse_x, float mouse_y) const;
@@ -50,7 +51,7 @@ private:
     cml::matrix44f_c projection_matrix() const;
     cml::matrix44f_c modelview_matrix() const;
 
-    document& document_;
+    struct document& document_;
     kloss::camera camera_;
     vertex_array grid_;
     vertex_array cursor_;
