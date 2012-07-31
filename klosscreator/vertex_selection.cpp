@@ -8,8 +8,8 @@ bool const vertex_selection::contains(corner_ref const& element) const
 {
     for (auto const& corner_ref : container_)
     {
-        if (corner_ref.corner == element.corner &&
-            corner_ref.flags & element.flags)
+        if (&corner_ref.corner() == &element.corner() &&
+            corner_ref.flags() & element.flags())
         {
             return true;
         }
@@ -22,9 +22,9 @@ void vertex_selection::insert(corner_ref& element)
 {
     for (auto& corner_ref : container_)
     {
-        if (corner_ref.corner == element.corner)
+        if (&corner_ref.corner() == &element.corner())
         {
-            corner_ref.flags |= element.flags;
+            corner_ref.set_flags(element.flags());
             return;
         }
     }
@@ -38,11 +38,11 @@ void vertex_selection::remove(corner_ref const& element)
     {
         auto& corner_ref = *iter;
 
-        if (corner_ref.corner == element.corner)
+        if (&corner_ref.corner() == &element.corner())
         {
-            corner_ref.flags &= ~element.flags;
+            corner_ref.clear_flags(element.flags());
 
-            if (corner_ref.flags == 0)
+            if (corner_ref.flags() == 0)
             {
                 container_.erase(iter);
                 return;
@@ -63,7 +63,7 @@ vertex_selection::backup_type vertex_selection::backup() const
 
     for (auto const& corner_ref : container_)
     {
-        backup.push_back(*corner_ref.corner);
+        backup.push_back(corner_ref.corner());
     }
 
     return backup;
@@ -77,7 +77,7 @@ void vertex_selection::restore(backup_type const& backup)
 
     for (auto const& element : backup)
     {
-        *(out_iter++)->corner = element;
+        (out_iter++)->corner() = element;
     }
 }
 

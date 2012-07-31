@@ -4,8 +4,9 @@
 
 namespace kloss {
 
-struct corner_ref
+class corner_ref
 {
+public:
     enum flags
     {
         top_flag = 1,
@@ -14,12 +15,21 @@ struct corner_ref
 
     corner_ref(block_ptr const& block, uint8_t corner_index, uint8_t flags);
     void translate(cml::vector3f const& units);
+
+    struct corner const& corner() const;
+    struct corner& corner();
+
+    uint8_t flags() const;
+    void set_flags(uint8_t flags);
+    void clear_flags(uint8_t flags);
+
     cml::vector3f const top_position() const;
     cml::vector3f const bottom_position() const;
 
-    block_ptr block;
-    kloss::corner* corner;
-    uint8_t flags;
+private:
+    block_ptr block_;
+    struct corner* corner_;
+    uint8_t flags_;
 };
 
 /**
