@@ -69,22 +69,22 @@ pick const world::pick_block(ray const& ray) const
     return {nearest_block, nearest_triangle, ray.origin + nearest * ray.direction};
 }
 
-boost::optional<vertex_ref> const world::pick_vertex(cml::matrix44f_c const& model,
+boost::optional<corner_ref> const world::pick_vertex(cml::matrix44f_c const& model,
                                                      cml::matrix44f_c const& projection,
                                                      viewport const& viewport,
                                                      cml::vector2f const& mouse) const
 {
     float const radius = 5.0f;
     float nearest_distance = std::numeric_limits<float>::max();
-    boost::optional<vertex_ref> nearest_vertex;
+    boost::optional<corner_ref> nearest_corner_ref;
 
     for (auto const& block : blocks_)
     {
-        auto vertices = to_vertex_refs(block);
+        auto corner_refs = to_corner_refs(block);
 
-        for (auto const& vertex : vertices)
+        for (auto const& corner_ref : corner_refs)
         {
-            auto screen_vertex = project(vertex.to_vector(), model, projection, viewport);
+            auto screen_vertex = project(to_vector(corner_ref), model, projection, viewport);
 
             if (screen_vertex)
             {
@@ -94,13 +94,13 @@ boost::optional<vertex_ref> const world::pick_vertex(cml::matrix44f_c const& mod
                 if (distance < radius && (*screen_vertex)[2] < nearest_distance)
                 {
                     nearest_distance = (*screen_vertex)[2];
-                    nearest_vertex = vertex;
+                    nearest_corner_ref = corner_ref;
                 }
             }
         }
     }
 
-    return nearest_vertex;
+    return nearest_corner_ref;
 }
 
 void world::draw()

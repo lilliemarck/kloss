@@ -3,29 +3,13 @@
 
 namespace kloss {
 namespace creator {
-namespace {
 
-uint8_t side_to_flag(vertex_ref const& vertex)
+bool const vertex_selection::contains(corner_ref const& element) const
 {
-    switch (vertex.side())
+    for (auto const& corner_ref : container_)
     {
-        case block_side::top:
-            return corner_ref::top_flag;
-
-        case block_side::bottom:
-            return corner_ref::bottom_flag;
-    }
-}
-
-} // namespace
-
-bool const vertex_selection::contains(vertex_ref const& element) const
-{
-    auto const flag = side_to_flag(element);
-
-    for (auto const& e : container_)
-    {
-        if (e.corner == &element.corner() && e.flags & flag)
+        if (corner_ref.corner == element.corner &&
+            corner_ref.flags & element.flags)
         {
             return true;
         }
@@ -34,35 +18,31 @@ bool const vertex_selection::contains(vertex_ref const& element) const
     return false;
 }
 
-void vertex_selection::insert(vertex_ref& element)
+void vertex_selection::insert(corner_ref& element)
 {
-    auto const flag = side_to_flag(element);
-
-    for (auto& e : container_)
+    for (auto& corner_ref : container_)
     {
-        if (e.corner == &element.corner())
+        if (corner_ref.corner == element.corner)
         {
-            e.flags |= flag;
+            corner_ref.flags |= element.flags;
             return;
         }
     }
 
-    container_.push_back(corner_ref{element.block(), &element.corner(), flag});
+    container_.push_back(element);
 }
 
-void vertex_selection::remove(vertex_ref const& element)
+void vertex_selection::remove(corner_ref const& element)
 {
-    auto const flag = side_to_flag(element);
-
     for (auto iter = container_.begin(); iter != container_.end(); ++iter)
     {
-        auto& e = *iter;
+        auto& corner_ref = *iter;
 
-        if (e.corner == &element.corner())
+        if (corner_ref.corner == element.corner)
         {
-            e.flags &= ~flag;
+            corner_ref.flags &= ~element.flags;
 
-            if (e.flags == 0)
+            if (corner_ref.flags == 0)
             {
                 container_.erase(iter);
                 return;
@@ -81,9 +61,9 @@ vertex_selection::backup_type vertex_selection::backup() const
     backup_type backup;
     backup.reserve(container_.size());
 
-    for (auto const& element : container_)
+    for (auto const& corner_ref : container_)
     {
-        backup.push_back(*element.corner);
+        backup.push_back(*corner_ref.corner);
     }
 
     return backup;

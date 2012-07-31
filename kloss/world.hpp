@@ -4,6 +4,7 @@
 #include <vector>
 #include <cml/cml.h>
 #include <kloss/block.hpp>
+#include <kloss/corner_ref.hpp>
 
 namespace kloss {
 
@@ -29,7 +30,7 @@ class world
 public:
     void insert(block_ptr const& block);
     pick const pick_block(ray const& ray) const;
-    boost::optional<vertex_ref> const pick_vertex(cml::matrix44f_c const& model,
+    boost::optional<corner_ref> const pick_vertex(cml::matrix44f_c const& model,
                                                   cml::matrix44f_c const& projection,
                                                   viewport const& viewport,
                                                   cml::vector2f const& mouse) const;

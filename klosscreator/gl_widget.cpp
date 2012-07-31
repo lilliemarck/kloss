@@ -65,28 +65,28 @@ constrain_algorithm gl_widget::get_constrain_algorithm() const
     return constrain_algorithm_;
 }
 
-boost::optional<vertex_ref> gl_widget::pick_vertex(float mouse_x, float mouse_y) const
+boost::optional<corner_ref> gl_widget::pick_vertex(float mouse_x, float mouse_y) const
 {
     viewport viewport = {0, 0, width(), height()};
 
-    auto vertex = world_.pick_vertex(modelview_matrix(), projection_matrix(), viewport, {mouse_x, mouse_y});
+    auto corner_ref = world_.pick_vertex(modelview_matrix(), projection_matrix(), viewport, {mouse_x, mouse_y});
 
-    if (vertex)
+    if (corner_ref)
     {
-        auto vertex_vector = vertex->to_vector();
-        auto pick = world_.pick_block(make_ray_to(camera_.get_position(), vertex_vector));
+        auto vertex_position = to_vector(*corner_ref);
+        auto pick = world_.pick_block(make_ray_to(camera_.get_position(), vertex_position));
 
         if (pick.block)
         {
             for (std::size_t i = 0; i < 3; ++i)
             {
-                if (pick.triangle[i] == vertex_vector)
+                if (pick.triangle[i] == vertex_position)
                 {
-                    return vertex;
+                    return corner_ref;
                 }
             }
 
-            if (distance(camera_.get_position(), vertex_vector) >
+            if (distance(camera_.get_position(), vertex_position) >
                 distance(camera_.get_position(), pick.intersection))
             {
                 return {};
@@ -94,7 +94,7 @@ boost::optional<vertex_ref> gl_widget::pick_vertex(float mouse_x, float mouse_y)
         }
     }
 
-    return vertex;
+    return corner_ref;
 }
 
 void gl_widget::use_new_block_tool()

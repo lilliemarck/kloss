@@ -12,9 +12,9 @@ class vertex_selection
 public:
     using backup_type = std::vector<corner>;
 
-    bool const contains(vertex_ref const& element) const;
-    void insert(vertex_ref& element);
-    void remove(vertex_ref const& element);
+    bool const contains(corner_ref const& element) const;
+    void insert(corner_ref& element);
+    void remove(corner_ref const& element);
     void clear();
 
     backup_type backup() const;

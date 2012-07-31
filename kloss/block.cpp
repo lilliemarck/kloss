@@ -12,52 +12,6 @@ cml::vector3f bottom(corner const& corner)
     return {corner.x, corner.y, corner.bottom};
 }
 
-vertex_ref::vertex_ref(block_ptr const& block, uint8_t corner_index, block_side side)
-    : block_(block)
-    , corner_index_(corner_index)
-    , side_(side)
-{
-    assert(block);
-    assert(corner_index < 4);
-}
-
-bool const vertex_ref::operator==(vertex_ref const& rhs) const
-{
-    return block_ == rhs.block_ && corner_index_ == rhs.corner_index_ && side_ == rhs.side_;
-}
-
-bool const vertex_ref::operator!=(vertex_ref const& rhs) const
-{
-    return block_ != rhs.block_ || corner_index_ != rhs.corner_index_ || side_ != rhs.side_;
-}
-
-cml::vector3f const vertex_ref::to_vector() const
-{
-    kloss::corner const& corner = (*block_)[corner_index_];
-    float z = side_ == block_side::top ? corner.top : corner.bottom;
-    return {corner.x, corner.y, z};
-}
-
-block_ptr const vertex_ref::block() const
-{
-    return block_;
-}
-
-corner const& vertex_ref::corner() const
-{
-    return (*block_)[corner_index_];
-}
-
-corner& vertex_ref::corner()
-{
-    return (*block_)[corner_index_];
-}
-
-block_side const vertex_ref::side() const
-{
-    return side_;
-}
-
 void translate(block& block, cml::vector3f const& units)
 {
     for (auto& column : block)
@@ -96,21 +50,6 @@ std::vector<triangle> to_triangles(block const& block)
         // bottom
         {bottom(block[3]), bottom(block[2]), bottom(block[0])},
         {bottom(block[0]), bottom(block[2]), bottom(block[1])}
-    };
-}
-
-std::vector<vertex_ref> to_vertex_refs(block_ptr const& block)
-{
-    return
-    {
-        vertex_ref(block, 0, block_side::top),
-        vertex_ref(block, 1, block_side::top),
-        vertex_ref(block, 2, block_side::top),
-        vertex_ref(block, 3, block_side::top),
-        vertex_ref(block, 0, block_side::bottom),
-        vertex_ref(block, 1, block_side::bottom),
-        vertex_ref(block, 2, block_side::bottom),
-        vertex_ref(block, 3, block_side::bottom)
     };
 }
 

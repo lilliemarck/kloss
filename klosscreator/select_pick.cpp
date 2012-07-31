@@ -18,19 +18,19 @@ cml::vector3f const& get_intersection(pick const& pick)
     return pick.intersection;
 }
 
-bool const is_initialized(boost::optional<vertex_ref> const& pick)
+bool const is_initialized(boost::optional<corner_ref> const& pick)
 {
     return pick;
 }
 
-vertex_ref& get_object(boost::optional<vertex_ref>& pick)
+corner_ref& get_object(boost::optional<corner_ref>& pick)
 {
     return *pick;
 }
 
-cml::vector3f const get_intersection(boost::optional<vertex_ref> const& pick)
+cml::vector3f const get_intersection(boost::optional<corner_ref> const& pick)
 {
-    return pick->to_vector();
+    return to_vector(*pick);
 }
 
 } // namespace creator

@@ -28,7 +28,7 @@ public:
     ray mouse_ray(float mouse_x, float mouse_y) const;
     vertex_array const& cursor_vertices() const;
     constrain_algorithm get_constrain_algorithm() const;
-    boost::optional<vertex_ref> pick_vertex(float mouse_x, float mouse_y) const;
+    boost::optional<corner_ref> pick_vertex(float mouse_x, float mouse_y) const;
 
 public slots:
     void use_new_block_tool();
