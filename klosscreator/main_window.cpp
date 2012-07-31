@@ -18,11 +18,43 @@ main_window::main_window() :
     create_toolbar();
 }
 
+void main_window::cut()
+{
+}
+
+void main_window::copy()
+{
+}
+
+void main_window::paste()
+{
+}
+
+void main_window::del()
+{
+}
+
 void main_window::create_actions()
 {
     quit_action_ = new QAction(QIcon::fromTheme("application-exit"), tr("Q&uit"), this);
     quit_action_->setShortcuts(QKeySequence::Quit);
     connect(quit_action_, SIGNAL(triggered()), this, SLOT(close()));
+
+    cut_action_ = new QAction(tr("Cu&t"), this);
+    cut_action_->setShortcuts(QKeySequence::Cut);
+    connect(cut_action_, SIGNAL(triggered()), this, SLOT(cut()));
+
+    copy_action_ = new QAction(tr("&Copy"), this);
+    copy_action_->setShortcuts(QKeySequence::Copy);
+    connect(copy_action_, SIGNAL(triggered()), this, SLOT(copy()));
+
+    paste_action_ = new QAction(tr("&Paste"), this);
+    paste_action_->setShortcuts(QKeySequence::Paste);
+    connect(paste_action_, SIGNAL(triggered()), this, SLOT(paste()));
+
+    del_action_ = new QAction(tr("Delete"), this);
+    del_action_->setShortcuts(QKeySequence::Delete);
+    connect(del_action_, SIGNAL(triggered()), this, SLOT(del()));
 
     new_block_action_ = new QAction(tr("New Block"), this);
     new_block_action_->setCheckable(true);
@@ -62,6 +94,12 @@ void main_window::create_menus()
 {
     file_menu_ = menuBar()->addMenu(tr("&File"));
     file_menu_->addAction(quit_action_);
+
+    edit_menu_ = menuBar()->addMenu(tr("&Edit"));
+    edit_menu_->addAction(cut_action_);
+    edit_menu_->addAction(copy_action_);
+    edit_menu_->addAction(paste_action_);
+    edit_menu_->addAction(del_action_);
 }
 
 void main_window::create_toolbar()

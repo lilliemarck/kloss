@@ -14,6 +14,12 @@ class main_window : public QMainWindow
 public:
     main_window();
 
+private slots:
+    void cut();
+    void copy();
+    void paste();
+    void del();
+
 private:
     void create_actions();
     void create_menus();
@@ -22,12 +28,17 @@ private:
     document document_;
     gl_widget gl_widget_;
     QAction* quit_action_;
+    QAction* cut_action_;
+    QAction* copy_action_;
+    QAction* paste_action_;
+    QAction* del_action_;
     QAction* new_block_action_;
     QAction* move_block_action_;
     QAction* move_vertex_action_;
     QAction* xy_plane_constraint_action_;
     QAction* z_azis_constraint_action_;
     QMenu* file_menu_;
+    QMenu* edit_menu_;
     QToolBar* tool_bar_;
 };
 
