@@ -101,8 +101,8 @@ boost::optional<corner_ref> const world::pick_vertex(cml::matrix44f_c const& mod
 
         for (auto const& corner_ref : corner_refs)
         {
-            check_vertex(top(corner_ref),    corner_ref, corner_ref::top_flag);
-            check_vertex(bottom(corner_ref), corner_ref, corner_ref::bottom_flag);
+            check_vertex(top(*corner_ref),    corner_ref, corner_ref::top_flag);
+            check_vertex(bottom(*corner_ref), corner_ref, corner_ref::bottom_flag);
         }
     }
 

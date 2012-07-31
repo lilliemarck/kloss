@@ -34,8 +34,6 @@ private:
 
 corner_ref& operator+=(corner_ref& corner_ref, cml::vector3f const& units);
 
-cml::vector3f top(corner_ref const& corner_ref);
-cml::vector3f bottom(corner_ref const& corner_ref);
 /**
  * Return the position of either the top or bottom vertex depending on which
  * flag is set. Should not be used when both flags are set.

@@ -88,12 +88,12 @@ void move_vertex_tool::paint_gl()
     {
         if (corner.flags() & corner_ref::top_flag)
         {
-            draw(cursor_vertices, top(corner));
+            draw(cursor_vertices, top(*corner));
         }
 
         if (corner.flags() & corner_ref::bottom_flag)
         {
-            draw(cursor_vertices, bottom(corner));
+            draw(cursor_vertices, bottom(*corner));
         }
     }
 }

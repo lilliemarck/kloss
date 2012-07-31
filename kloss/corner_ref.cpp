@@ -57,16 +57,6 @@ void corner_ref::clear_flags(uint8_t flags)
     flags_ &= ~flags;
 }
 
-cml::vector3f top(corner_ref const& corner_ref)
-{
-    return {corner_ref->x, corner_ref->y, corner_ref->top};
-}
-
-cml::vector3f bottom(corner_ref const& corner_ref)
-{
-    return {corner_ref->x, corner_ref->y, corner_ref->bottom};
-}
-
 corner_ref& operator+=(corner_ref& corner_ref, cml::vector3f const& units)
 {
     corner_ref->x += units[0];
@@ -88,7 +78,7 @@ corner_ref& operator+=(corner_ref& corner_ref, cml::vector3f const& units)
 cml::vector3f to_vector(corner_ref const& corner_ref)
 {
     bool is_top = corner_ref.flags() & corner_ref::top_flag;
-    return is_top ? top(corner_ref) : bottom(corner_ref);
+    return is_top ? top(*corner_ref) : bottom(*corner_ref);
 }
 
 std::vector<corner_ref> to_corner_refs(block_ptr const& block)
