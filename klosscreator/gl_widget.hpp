@@ -13,6 +13,7 @@
 namespace kloss {
 namespace creator {
 
+struct document;
 class tool;
 
 class gl_widget : public QGLWidget
@@ -20,7 +21,7 @@ class gl_widget : public QGLWidget
     Q_OBJECT
 
 public:
-    gl_widget(QWidget* parent = nullptr);
+    gl_widget(document& document);
     ~gl_widget();
 
     world& world();
@@ -49,7 +50,7 @@ private:
     cml::matrix44f_c projection_matrix() const;
     cml::matrix44f_c modelview_matrix() const;
 
-    kloss::world world_;
+    document& document_;
     kloss::camera camera_;
     vertex_array grid_;
     vertex_array cursor_;

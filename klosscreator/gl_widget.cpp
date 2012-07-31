@@ -2,6 +2,7 @@
 #include <QMouseEvent>
 #include <kloss/geometry.hpp>
 #include <kloss/memory.hpp>
+#include <klosscreator/document.hpp>
 #include <klosscreator/move_block_tool.hpp>
 #include <klosscreator/move_vertex_tool.hpp>
 #include <klosscreator/new_block_tool.hpp>
@@ -11,8 +12,9 @@
 namespace kloss {
 namespace creator {
 
-gl_widget::gl_widget(QWidget* parent)
-    : QGLWidget(parent)
+gl_widget::gl_widget(document& document)
+    : QGLWidget(static_cast<QWidget*>(nullptr))
+    , document_(document)
     , grid_(make_grid(10))
     , cursor_(make_cursor(0.125f))
     , constrain_algorithm_(constrain_algorithm::xy_plane)
@@ -29,7 +31,7 @@ gl_widget::~gl_widget()
 
 world& gl_widget::world()
 {
-    return world_;
+    return document_.world;
 }
 
 camera& gl_widget::camera()
@@ -69,12 +71,12 @@ boost::optional<corner_ref> gl_widget::pick_vertex(float mouse_x, float mouse_y)
 {
     viewport viewport = {0, 0, width(), height()};
 
-    auto corner_ref = world_.pick_vertex(modelview_matrix(), projection_matrix(), viewport, {mouse_x, mouse_y});
+    auto corner_ref = document_.world.pick_vertex(modelview_matrix(), projection_matrix(), viewport, {mouse_x, mouse_y});
 
     if (corner_ref)
     {
         auto vertex_position = to_vector(*corner_ref);
-        auto pick = world_.pick_block(make_ray_to(camera_.get_position(), vertex_position));
+        auto pick = document_.world.pick_block(make_ray_to(camera_.get_position(), vertex_position));
 
         if (pick.block)
         {
@@ -185,7 +187,7 @@ void gl_widget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     draw(grid_);
-    world_.draw();
+    document_.world.draw();
 
     if (tool_)
     {

@@ -7,7 +7,8 @@
 namespace kloss {
 namespace creator {
 
-main_window::main_window()
+main_window::main_window() :
+    gl_widget_(document_)
 {
     setCentralWidget(&gl_widget_);
     gl_widget_.setFocus(Qt::OtherFocusReason);
