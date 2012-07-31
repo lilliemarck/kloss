@@ -13,6 +13,7 @@ qt4_wrap_cpp(klosscreator_MOC_SOURCES
 add_executable(klosscreator
     block_selection.cpp
     constrain.cpp
+    corner_selection.cpp
     gl_widget.cpp
     main.cpp
     main_window.cpp
@@ -23,7 +24,6 @@ add_executable(klosscreator
     select_pick.cpp
     turn_camera_tool.cpp
     vertex_array.cpp
-    vertex_selection.cpp
     ${klosscreator_MOC_SOURCES})
 
 target_link_libraries(klosscreator kloss ${QT_LIBRARIES})

@@ -1,10 +1,10 @@
-#include "vertex_selection.hpp"
+#include "corner_selection.hpp"
 #include <kloss/algorithm.hpp>
 
 namespace kloss {
 namespace creator {
 
-bool const vertex_selection::contains(corner_ref const& element) const
+bool const corner_selection::contains(corner_ref const& element) const
 {
     for (auto const& corner_ref : container_)
     {
@@ -18,7 +18,7 @@ bool const vertex_selection::contains(corner_ref const& element) const
     return false;
 }
 
-void vertex_selection::insert(corner_ref& element)
+void corner_selection::insert(corner_ref& element)
 {
     for (auto& corner_ref : container_)
     {
@@ -32,7 +32,7 @@ void vertex_selection::insert(corner_ref& element)
     container_.push_back(element);
 }
 
-void vertex_selection::remove(corner_ref const& element)
+void corner_selection::remove(corner_ref const& element)
 {
     for (auto iter = container_.begin(); iter != container_.end(); ++iter)
     {
@@ -51,12 +51,12 @@ void vertex_selection::remove(corner_ref const& element)
     }
 }
 
-void vertex_selection::clear()
+void corner_selection::clear()
 {
     container_.clear();
 }
 
-vertex_selection::backup_type vertex_selection::backup() const
+corner_selection::backup_type corner_selection::backup() const
 {
     backup_type backup;
     backup.reserve(container_.size());
@@ -69,7 +69,7 @@ vertex_selection::backup_type vertex_selection::backup() const
     return backup;
 }
 
-void vertex_selection::restore(backup_type const& backup)
+void corner_selection::restore(backup_type const& backup)
 {
     assert(backup.size() == container_.size());
 
@@ -81,12 +81,12 @@ void vertex_selection::restore(backup_type const& backup)
     }
 }
 
-std::vector<corner_ref>::iterator vertex_selection::begin()
+std::vector<corner_ref>::iterator corner_selection::begin()
 {
     return container_.begin();
 }
 
-std::vector<corner_ref>::iterator vertex_selection::end()
+std::vector<corner_ref>::iterator corner_selection::end()
 {
     return container_.end();
 }

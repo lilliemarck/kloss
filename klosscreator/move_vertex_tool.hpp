@@ -2,8 +2,8 @@
 
 #include <cml/cml.h>
 #include <kloss/block.hpp>
+#include <klosscreator/corner_selection.hpp>
 #include <klosscreator/tool.hpp>
-#include <klosscreator/vertex_selection.hpp>
 
 namespace kloss {
 namespace creator {
@@ -20,9 +20,9 @@ public:
 
 private:
     gl_widget& parent_;
-    vertex_selection selection_;
+    corner_selection selection_;
     boost::optional<cml::vector3f> reference_;
-    boost::optional<vertex_selection::backup_type> drag_;
+    boost::optional<corner_selection::backup_type> drag_;
 };
 
 } // namespace creator

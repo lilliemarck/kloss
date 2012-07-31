@@ -7,7 +7,7 @@
 namespace kloss {
 namespace creator {
 
-class vertex_selection
+class corner_selection
 {
 public:
     using backup_type = std::vector<corner>;
