@@ -15,8 +15,11 @@ public:
 
     corner_ref(block_ptr const& block, uint8_t corner_index, uint8_t flags);
 
-    struct corner const& corner() const;
-    struct corner& corner();
+    corner const& operator*() const;
+    corner& operator*();
+    corner const* operator->() const;
+    corner* operator->();
+    corner const* get() const;
 
     uint8_t flags() const;
     void set_flags(uint8_t flags);
@@ -24,7 +27,7 @@ public:
 
 private:
     block_ptr block_;
-    struct corner* corner_;
+    corner* corner_;
     uint8_t flags_;
 };
 
