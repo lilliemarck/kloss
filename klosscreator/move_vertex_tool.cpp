@@ -7,8 +7,11 @@
 
 namespace kloss {
 namespace creator {
+namespace {
 
 static float const snap_size = 1.0f / 8.0f;
+
+} // namespace
 
 move_vertex_tool::move_vertex_tool(gl_widget& parent) : parent_(parent)
 {
@@ -83,7 +86,15 @@ void move_vertex_tool::paint_gl()
 
     for (auto const& vertex : selection_)
     {
-        draw(cursor_vertices, vertex.to_vector());
+        if (vertex.flags & vertex_selection::top_flag)
+        {
+            draw(cursor_vertices, vertex.top_position());
+        }
+
+        if (vertex.flags & vertex_selection::bottom_flag)
+        {
+            draw(cursor_vertices, vertex.bottom_position());
+        }
     }
 }
 

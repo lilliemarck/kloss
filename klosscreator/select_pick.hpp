@@ -7,19 +7,19 @@ namespace kloss {
 namespace creator {
 
 bool const is_initialized(pick const& pick);
-block_ptr const& get_object(pick const& pick);
+block_ptr& get_object(pick& pick);
 cml::vector3f const& get_intersection(pick const& pick);
 
 bool const is_initialized(boost::optional<vertex_ref> const& pick);
-vertex_ref const& get_object(boost::optional<vertex_ref> const& pick);
+vertex_ref& get_object(boost::optional<vertex_ref>& pick);
 cml::vector3f const get_intersection(boost::optional<vertex_ref> const& pick);
 
 template <typename Selection, typename Pick>
-bool const single_select(Selection& selection, Pick const& pick)
+bool const single_select(Selection& selection, Pick& pick)
 {
     if (is_initialized(pick))
     {
-        auto const& element = get_object(pick);
+        auto& element = get_object(pick);
 
         if (!selection.contains(element))
         {
@@ -38,11 +38,11 @@ bool const single_select(Selection& selection, Pick const& pick)
 }
 
 template <typename Selection, typename Pick>
-bool const multi_select(Selection& selection, Pick const& pick)
+bool const multi_select(Selection& selection, Pick& pick)
 {
     if (is_initialized(pick))
     {
-        auto const& element = get_object(pick);
+        auto& element = get_object(pick);
 
         if (!selection.contains(element))
         {

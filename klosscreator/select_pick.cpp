@@ -8,7 +8,7 @@ bool const is_initialized(pick const& pick)
     return pick.block != nullptr;
 }
 
-block_ptr const& get_object(pick const& pick)
+block_ptr& get_object(pick& pick)
 {
     return pick.block;
 }
@@ -23,7 +23,7 @@ bool const is_initialized(boost::optional<vertex_ref> const& pick)
     return pick;
 }
 
-vertex_ref const& get_object(boost::optional<vertex_ref> const& pick)
+vertex_ref& get_object(boost::optional<vertex_ref>& pick)
 {
     return *pick;
 }

@@ -31,30 +31,16 @@ bool const vertex_ref::operator!=(vertex_ref const& rhs) const
     return block_ != rhs.block_ || corner_index_ != rhs.corner_index_ || side_ != rhs.side_;
 }
 
-void vertex_ref::translate(cml::vector3f const& units)
-{
-    kloss::corner& corner = (*block_)[corner_index_];
-
-    corner.x += units[0];
-    corner.y += units[1];
-
-    switch (side_)
-    {
-        case block_side::top:
-            corner.top += units[2];
-            break;
-
-        case block_side::bottom:
-            corner.bottom += units[2];
-            break;
-    }
-}
-
 cml::vector3f const vertex_ref::to_vector() const
 {
     kloss::corner const& corner = (*block_)[corner_index_];
     float z = side_ == block_side::top ? corner.top : corner.bottom;
     return {corner.x, corner.y, z};
+}
+
+block_ptr const vertex_ref::block() const
+{
+    return block_;
 }
 
 corner const& vertex_ref::corner() const
@@ -65,6 +51,11 @@ corner const& vertex_ref::corner() const
 corner& vertex_ref::corner()
 {
     return (*block_)[corner_index_];
+}
+
+block_side const vertex_ref::side() const
+{
+    return side_;
 }
 
 void translate(block& block, cml::vector3f const& units)

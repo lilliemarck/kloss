@@ -32,10 +32,11 @@ public:
     vertex_ref(block_ptr const& block, uint8_t corner_index, block_side side);
     bool const operator==(vertex_ref const& rhs) const;
     bool const operator!=(vertex_ref const& rhs) const;
-    void translate(cml::vector3f const& units);
     cml::vector3f const to_vector() const;
+    block_ptr const block() const;
     kloss::corner const& corner() const;
     kloss::corner& corner();
+    block_side const side() const;
 
 private:
     block_ptr block_;
