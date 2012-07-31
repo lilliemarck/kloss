@@ -4,7 +4,7 @@ namespace kloss {
 
 cml::vector3f make_normal(triangle const& triangle)
 {
-    return cross(triangle.b - triangle.a, triangle.c - triangle.a);
+    return normalize(cross(triangle.b - triangle.a, triangle.c - triangle.a));
 }
 
 ray make_ray_to(cml::vector3f const& origin, cml::vector3f const& target)
