@@ -70,7 +70,7 @@ void move_vertex_tool::mouse_move_event(QMouseEvent const& event)
 
             for (auto& element : selection_)
             {
-                element.translate(translation);
+                element += translation;
             }
 
             parent_.world().update_vertex_array();
@@ -88,12 +88,12 @@ void move_vertex_tool::paint_gl()
     {
         if (corner.flags() & corner_ref::top_flag)
         {
-            draw(cursor_vertices, corner.top_position());
+            draw(cursor_vertices, top(corner));
         }
 
         if (corner.flags() & corner_ref::bottom_flag)
         {
-            draw(cursor_vertices, corner.bottom_position());
+            draw(cursor_vertices, bottom(corner));
         }
     }
 }

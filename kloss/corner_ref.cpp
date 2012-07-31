@@ -9,22 +9,6 @@ corner_ref::corner_ref(block_ptr const& block, uint8_t corner_index, uint8_t fla
 {
 }
 
-void corner_ref::translate(cml::vector3f const& units)
-{
-    corner_->x += units[0];
-    corner_->y += units[1];
-
-    if (flags_ & top_flag)
-    {
-        corner_->top += units[2];
-    }
-
-    if (flags_ & bottom_flag)
-    {
-        corner_->bottom += units[2];
-    }
-}
-
 corner const& corner_ref::corner() const
 {
     return *corner_;
@@ -50,21 +34,42 @@ void corner_ref::clear_flags(uint8_t flags)
     flags_ &= ~flags;
 }
 
-cml::vector3f const corner_ref::top_position() const
+cml::vector3f top(corner_ref const& corner_ref)
 {
-    return {corner_->x, corner_->y, corner_->top};
+    corner const& corner = corner_ref.corner();
+    return {corner.x, corner.y, corner.top};
 }
 
-cml::vector3f const corner_ref::bottom_position() const
+cml::vector3f bottom(corner_ref const& corner_ref)
 {
-    return {corner_->x, corner_->y, corner_->bottom};
+    corner const& corner = corner_ref.corner();
+    return {corner.x, corner.y, corner.bottom};
+}
+
+corner_ref& operator+=(corner_ref& corner_ref, cml::vector3f const& units)
+{
+    corner& corner = corner_ref.corner();
+
+    corner.x += units[0];
+    corner.y += units[1];
+
+    if (corner_ref.flags() & corner_ref::top_flag)
+    {
+        corner.top += units[2];
+    }
+
+    if (corner_ref.flags() & corner_ref::bottom_flag)
+    {
+        corner.bottom += units[2];
+    }
+
+    return corner_ref;
 }
 
 cml::vector3f to_vector(corner_ref const& corner_ref)
 {
-    bool top = corner_ref.flags() & corner_ref::top_flag;
-    float z = top ? corner_ref.corner().top : corner_ref.corner().bottom;
-    return {corner_ref.corner().x, corner_ref.corner().y, z};
+    bool is_top = corner_ref.flags() & corner_ref::top_flag;
+    return is_top ? top(corner_ref) : bottom(corner_ref);
 }
 
 std::vector<corner_ref> to_corner_refs(block_ptr const& block)
