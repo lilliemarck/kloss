@@ -16,6 +16,11 @@ move_block_tool::move_block_tool(gl_widget& parent)
 {
 }
 
+move_block_tool::~move_block_tool()
+{
+    document_.block_selection.clear();
+}
+
 void move_block_tool::mouse_press_event(QMouseEvent const& event)
 {
     if (event.button() == Qt::LeftButton)

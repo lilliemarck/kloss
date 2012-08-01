@@ -19,6 +19,7 @@ class move_block_tool : public tool
 {
 public:
     move_block_tool(gl_widget& parent);
+    ~move_block_tool();
 
     void mouse_press_event(QMouseEvent const& event) override;
     void mouse_release_event(QMouseEvent const& event) override;
