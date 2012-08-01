@@ -20,6 +20,8 @@ main_window::main_window() :
 
 void main_window::cut()
 {
+    document_.cut();
+    gl_widget_.update();
 }
 
 void main_window::copy()
@@ -35,6 +37,8 @@ void main_window::paste()
 
 void main_window::del()
 {
+    document_.del();
+    gl_widget_.update();
 }
 
 void main_window::create_actions()

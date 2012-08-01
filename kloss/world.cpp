@@ -1,6 +1,7 @@
 #include "world.hpp"
 #include <cassert>
 #include <limits>
+#include <kloss/algorithm.hpp>
 #include <kloss/math.hpp>
 #include <GL/gl.h>
 
@@ -40,6 +41,11 @@ void world::insert(block_ptr const& block)
 
     blocks_.push_back(block);
     append_vertices(*block);
+}
+
+void world::remove(block_ptr const& block)
+{
+    kloss::remove(blocks_, block);
 }
 
 pick const world::pick_block(ray const& ray) const

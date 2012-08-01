@@ -29,6 +29,7 @@ class world
 {
 public:
     void insert(block_ptr const& block);
+    void remove(block_ptr const& block);
     pick const pick_block(ray const& ray) const;
     boost::optional<corner_ref> const pick_vertex(cml::matrix44f_c const& model,
                                                   cml::matrix44f_c const& projection,

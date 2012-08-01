@@ -17,8 +17,10 @@ public:
     void unlock() noexcept;
     bool is_locked() const;
 
+    void cut();
     void copy();
     void paste();
+    void del();
 
     world world;
     block_selection block_selection;
