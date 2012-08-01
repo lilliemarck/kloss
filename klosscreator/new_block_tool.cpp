@@ -28,7 +28,7 @@ void new_block_tool::mouse_press_event(QMouseEvent const& event)
             (*block)[2] = {x + 1.0f, y + 1.0f, top, bottom};
             (*block)[3] = {x,        y + 1.0f, top, bottom};
 
-            parent_.world().insert(block);
+            parent_.group().insert(block);
             parent_.update();
         }
     }

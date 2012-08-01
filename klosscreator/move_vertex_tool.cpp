@@ -77,7 +77,7 @@ void move_vertex_tool::mouse_move_event(QMouseEvent const& event)
                 element += translation;
             }
 
-            parent_.world().update_vertex_array();
+            parent_.group().update_vertex_array();
         }
 
         parent_.update();

@@ -61,7 +61,7 @@ void document::paste()
     for (auto const& block : copied_blocks_)
     {
         auto new_block = std::make_shared<kloss::block>(block);
-        world.insert(new_block);
+        group.insert(new_block);
         block_selection.insert(new_block);
     }
 }
@@ -75,11 +75,11 @@ void document::del()
 
     for (auto block : block_selection)
     {
-        world.remove(block);
+        group.remove(block);
     }
 
     block_selection.clear();
-    world.update_vertex_array();
+    group.update_vertex_array();
 }
 
 } // namespace creator

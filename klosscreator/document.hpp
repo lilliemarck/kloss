@@ -1,7 +1,7 @@
 #pragma once
 
 #include <boost/noncopyable.hpp>
-#include <kloss/world.hpp>
+#include <kloss/group.hpp>
 #include <klosscreator/block_selection.hpp>
 
 namespace kloss {
@@ -22,7 +22,7 @@ public:
     void paste();
     void del();
 
-    world world;
+    group group;
     block_selection block_selection;
 
 private:

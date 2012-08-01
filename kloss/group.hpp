@@ -25,7 +25,7 @@ struct viewport
     int height;
 };
 
-class world
+class group
 {
 public:
     void insert(block_ptr const& block);

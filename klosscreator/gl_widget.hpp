@@ -5,7 +5,7 @@
 #include <boost/optional.hpp>
 #include <kloss/camera.hpp>
 #include <kloss/memory.hpp>
-#include <kloss/world.hpp>
+#include <kloss/group.hpp>
 #include <klosscreator/constrain.hpp>
 #include <klosscreator/move_camera_tool.hpp>
 #include <klosscreator/turn_camera_tool.hpp>
@@ -26,7 +26,7 @@ public:
     ~gl_widget();
 
     document& document();
-    world& world();
+    group& group();
     camera& camera();
     ray mouse_ray(float mouse_x, float mouse_y) const;
     vertex_array const& cursor_vertices() const;

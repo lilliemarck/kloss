@@ -33,9 +33,9 @@ document& gl_widget::document()
     return document_;
 }
 
-world& gl_widget::world()
+group& gl_widget::group()
 {
-    return document_.world;
+    return document_.group;
 }
 
 camera& gl_widget::camera()
@@ -75,12 +75,12 @@ boost::optional<corner_ref> gl_widget::pick_vertex(float mouse_x, float mouse_y)
 {
     viewport viewport = {0, 0, width(), height()};
 
-    auto corner_ref = document_.world.pick_vertex(modelview_matrix(), projection_matrix(), viewport, {mouse_x, mouse_y});
+    auto corner_ref = document_.group.pick_vertex(modelview_matrix(), projection_matrix(), viewport, {mouse_x, mouse_y});
 
     if (corner_ref)
     {
         auto vertex_position = to_vector(*corner_ref);
-        auto pick = document_.world.pick_block(make_ray_to(camera_.get_position(), vertex_position));
+        auto pick = document_.group.pick_block(make_ray_to(camera_.get_position(), vertex_position));
 
         if (pick.block)
         {
@@ -191,7 +191,7 @@ void gl_widget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     draw(grid_);
-    document_.world.draw();
+    document_.group.draw();
 
     if (tool_)
     {

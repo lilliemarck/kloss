@@ -1,4 +1,4 @@
-#include "world.hpp"
+#include "group.hpp"
 #include <cassert>
 #include <limits>
 #include <kloss/algorithm.hpp>
@@ -35,7 +35,7 @@ boost::optional<cml::vector3f> project(cml::vector3f const& point,
 
 } // namespace
 
-void world::insert(block_ptr const& block)
+void group::insert(block_ptr const& block)
 {
     assert(block);
 
@@ -43,12 +43,12 @@ void world::insert(block_ptr const& block)
     append_vertices(*block);
 }
 
-void world::remove(block_ptr const& block)
+void group::remove(block_ptr const& block)
 {
     kloss::remove(blocks_, block);
 }
 
-pick const world::pick_block(ray const& ray) const
+pick const group::pick_block(ray const& ray) const
 {
     float nearest = std::numeric_limits<float>::max();
     block_ptr nearest_block;
@@ -64,9 +64,9 @@ pick const world::pick_block(ray const& ray) const
             {
                 /*
                  * Use <= for distance comparsion here so that when there are
-                 * multiple candidates for selection the last one added to the
-                 * world will be selected. It is useful after pasting that the
-                 * new blocks can be dragged to a new location.
+                 * multiple candidates for selection the last block added will
+                 * be selected. It is useful after pasting that the new blocks
+                 * can be dragged to a new location.
                  */
                 if (*temp <= nearest)
                 {
@@ -81,7 +81,7 @@ pick const world::pick_block(ray const& ray) const
     return {nearest_block, nearest_triangle, ray.origin + nearest * ray.direction};
 }
 
-boost::optional<corner_ref> const world::pick_vertex(cml::matrix44f_c const& model,
+boost::optional<corner_ref> const group::pick_vertex(cml::matrix44f_c const& model,
                                                      cml::matrix44f_c const& projection,
                                                      viewport const& viewport,
                                                      cml::vector2f const& mouse) const
@@ -121,7 +121,7 @@ boost::optional<corner_ref> const world::pick_vertex(cml::matrix44f_c const& mod
     return nearest_corner_ref;
 }
 
-void world::draw()
+void group::draw()
 {
     if (!vertices_.empty())
     {
@@ -143,7 +143,7 @@ void world::draw()
     }
 }
 
-void world::update_vertex_array()
+void group::update_vertex_array()
 {
     vertices_.clear();
 
@@ -153,7 +153,7 @@ void world::update_vertex_array()
     }
 }
 
-void world::append_vertices(block const& block)
+void group::append_vertices(block const& block)
 {
     auto triangles = to_triangles(block);
 
@@ -166,7 +166,7 @@ void world::append_vertices(block const& block)
     }
 }
 
-void world::setup_light()
+void group::setup_light()
 {
     cml::vector4f position = {-1.0f, -2.0f, 3.0f, 0.0f};
 

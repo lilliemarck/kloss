@@ -25,7 +25,7 @@ void move_block_tool::mouse_press_event(QMouseEvent const& event)
 {
     if (event.button() == Qt::LeftButton)
     {
-        auto pick = document_.world.pick_block(parent_.mouse_ray(event.x(), event.y()));
+        auto pick = document_.group.pick_block(parent_.mouse_ray(event.x(), event.y()));
         bool did_select;
 
         if (event.modifiers() & Qt::ControlModifier)
@@ -79,7 +79,7 @@ void move_block_tool::mouse_move_event(QMouseEvent const& event)
                 translate(*element, translation);
             }
 
-            parent_.world().update_vertex_array();
+            parent_.group().update_vertex_array();
         }
 
         parent_.update();

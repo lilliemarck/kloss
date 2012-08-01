@@ -1,7 +1,7 @@
 #pragma once
 
 #include <kloss/block.hpp>
-#include <kloss/world.hpp>
+#include <kloss/group.hpp>
 
 namespace kloss {
 namespace creator {

@@ -2,7 +2,6 @@
 
 #include <cml/cml.h>
 #include <kloss/block.hpp>
-#include <kloss/world.hpp>
 #include <klosscreator/block_selection.hpp>
 #include <klosscreator/document_lock.hpp>
 #include <klosscreator/tool.hpp>
