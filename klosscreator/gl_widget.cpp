@@ -1,7 +1,6 @@
 #include "gl_widget.hpp"
 #include <QMouseEvent>
 #include <kloss/geometry.hpp>
-#include <kloss/memory.hpp>
 #include <klosscreator/document.hpp>
 #include <klosscreator/move_block_tool.hpp>
 #include <klosscreator/move_vertex_tool.hpp>
@@ -106,17 +105,17 @@ boost::optional<corner_ref> gl_widget::pick_vertex(float mouse_x, float mouse_y)
 
 void gl_widget::use_new_block_tool()
 {
-    tool_ = make_unique<new_block_tool>(*this);
+    use_tool<new_block_tool>();
 }
 
 void gl_widget::use_move_block_tool()
 {
-    tool_ = make_unique<move_block_tool>(*this);
+    use_tool<move_block_tool>();
 }
 
 void gl_widget::use_move_vertex_tool()
 {
-    tool_ = make_unique<move_vertex_tool>(*this);
+    use_tool<move_vertex_tool>();
 }
 
 void gl_widget::use_xy_plane_constraint()

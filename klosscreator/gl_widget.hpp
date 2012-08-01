@@ -4,6 +4,7 @@
 #include <QGLWidget>
 #include <boost/optional.hpp>
 #include <kloss/camera.hpp>
+#include <kloss/memory.hpp>
 #include <kloss/world.hpp>
 #include <klosscreator/constrain.hpp>
 #include <klosscreator/move_camera_tool.hpp>
@@ -50,6 +51,13 @@ private:
     void paintGL() override;
     cml::matrix44f_c projection_matrix() const;
     cml::matrix44f_c modelview_matrix() const;
+
+    template <typename Tool>
+    void use_tool()
+    {
+        tool_ = make_unique<Tool>(*this);
+        update();
+    }
 
     class document& document_;
     kloss::camera camera_;
