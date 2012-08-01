@@ -19,6 +19,8 @@ private slots:
     void copy();
     void paste();
     void del();
+    void group();
+    void ungroup();
 
 private:
     void create_actions();
@@ -32,6 +34,8 @@ private:
     QAction* copy_action_;
     QAction* paste_action_;
     QAction* del_action_;
+    QAction* group_action_;
+    QAction* ungroup_action_;
     QAction* new_block_action_;
     QAction* move_block_action_;
     QAction* move_vertex_action_;

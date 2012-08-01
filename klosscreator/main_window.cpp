@@ -41,6 +41,14 @@ void main_window::del()
     gl_widget_.update();
 }
 
+void main_window::group()
+{
+}
+
+void main_window::ungroup()
+{
+}
+
 void main_window::create_actions()
 {
     quit_action_ = new QAction(QIcon::fromTheme("application-exit"), tr("Q&uit"), this);
@@ -62,6 +70,14 @@ void main_window::create_actions()
     del_action_ = new QAction(tr("Delete"), this);
     del_action_->setShortcuts(QKeySequence::Delete);
     connect(del_action_, SIGNAL(triggered()), this, SLOT(del()));
+
+    group_action_ = new QAction(tr("&Group"), this);
+    group_action_->setShortcut(tr("Ctrl+G"));
+    connect(group_action_, SIGNAL(triggered()), this, SLOT(group()));
+
+    ungroup_action_ = new QAction(tr("&Ungroup"), this);
+    ungroup_action_->setShortcut(tr("Ctrl+Alt+G"));
+    connect(ungroup_action_, SIGNAL(triggered()), this, SLOT(ungroup()));
 
     new_block_action_ = new QAction(tr("New Block"), this);
     new_block_action_->setCheckable(true);
@@ -107,6 +123,9 @@ void main_window::create_menus()
     edit_menu_->addAction(copy_action_);
     edit_menu_->addAction(paste_action_);
     edit_menu_->addAction(del_action_);
+    edit_menu_->addSeparator();
+    edit_menu_->addAction(group_action_);
+    edit_menu_->addAction(ungroup_action_);
 }
 
 void main_window::create_toolbar()
