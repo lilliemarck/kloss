@@ -24,10 +24,13 @@ void main_window::cut()
 
 void main_window::copy()
 {
+    document_.copy();
 }
 
 void main_window::paste()
 {
+    document_.paste();
+    gl_widget_.update();
 }
 
 void main_window::del()

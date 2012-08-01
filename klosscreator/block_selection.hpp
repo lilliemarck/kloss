@@ -15,6 +15,7 @@ public:
     void insert(block_ptr const& element);
     void remove(block_ptr const& element);
     void clear();
+    bool empty() const;
 
     backup_type backup() const;
     void restore(backup_type const& backup);

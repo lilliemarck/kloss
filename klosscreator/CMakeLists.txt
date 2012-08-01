@@ -14,6 +14,8 @@ add_executable(klosscreator
     block_selection.cpp
     constrain.cpp
     corner_selection.cpp
+    document.cpp
+    document_lock.cpp
     gl_widget.cpp
     main.cpp
     main_window.cpp

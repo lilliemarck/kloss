@@ -12,6 +12,7 @@ namespace creator {
 move_block_tool::move_block_tool(gl_widget& parent)
     : parent_(parent)
     , document_(parent.document())
+    , document_lock_(parent.document())
 {
 }
 
@@ -35,6 +36,7 @@ void move_block_tool::mouse_press_event(QMouseEvent const& event)
         {
             reference_ = get_intersection(pick);
             drag_ = document_.block_selection.backup();
+            document_lock_.lock();
         }
 
         parent_.update();
@@ -45,6 +47,7 @@ void move_block_tool::mouse_release_event(QMouseEvent const& event)
 {
     if (event.button() == Qt::LeftButton)
     {
+        document_lock_.unlock();
         drag_.reset();
     }
 }

@@ -4,6 +4,7 @@
 #include <kloss/block.hpp>
 #include <kloss/world.hpp>
 #include <klosscreator/block_selection.hpp>
+#include <klosscreator/document_lock.hpp>
 #include <klosscreator/tool.hpp>
 
 namespace kloss {
@@ -12,7 +13,7 @@ struct pick;
 
 namespace creator {
 
-struct document;
+class document;
 
 class move_block_tool : public tool
 {
@@ -29,6 +30,7 @@ private:
     document& document_;
     boost::optional<cml::vector3f> reference_;
     boost::optional<block_selection::backup_type> drag_;
+    document_lock document_lock_;
 };
 
 } // namespace creator

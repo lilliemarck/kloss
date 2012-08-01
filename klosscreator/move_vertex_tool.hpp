@@ -3,6 +3,7 @@
 #include <cml/cml.h>
 #include <kloss/block.hpp>
 #include <klosscreator/corner_selection.hpp>
+#include <klosscreator/document_lock.hpp>
 #include <klosscreator/tool.hpp>
 
 namespace kloss {
@@ -23,6 +24,7 @@ private:
     corner_selection selection_;
     boost::optional<cml::vector3f> reference_;
     boost::optional<corner_selection::backup_type> drag_;
+    document_lock document_lock_;
 };
 
 } // namespace creator

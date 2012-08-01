@@ -13,7 +13,9 @@ static float const snap_size = 1.0f / 8.0f;
 
 } // namespace
 
-move_vertex_tool::move_vertex_tool(gl_widget& parent) : parent_(parent)
+move_vertex_tool::move_vertex_tool(gl_widget& parent)
+    : parent_(parent)
+    , document_lock_(parent.document())
 {
 }
 
@@ -37,6 +39,7 @@ void move_vertex_tool::mouse_press_event(QMouseEvent const& event)
         {
             reference_ = get_intersection(pick);
             drag_ = selection_.backup();
+            document_lock_.lock();
         }
 
         parent_.update();
@@ -47,6 +50,7 @@ void move_vertex_tool::mouse_release_event(QMouseEvent const& event)
 {
     if (event.button() == Qt::LeftButton)
     {
+        document_lock_.unlock();
         drag_.reset();
     }
 }

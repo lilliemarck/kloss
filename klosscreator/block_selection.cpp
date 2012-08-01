@@ -24,6 +24,11 @@ void block_selection::clear()
     container_.clear();
 }
 
+bool block_selection::empty() const
+{
+    return container_.empty();
+}
+
 block_selection::backup_type block_selection::backup() const
 {
     backup_type backup;
