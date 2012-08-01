@@ -62,7 +62,13 @@ pick const world::pick_block(ray const& ray) const
         {
             if (auto temp = intersect(ray, triangle))
             {
-                if (*temp < nearest)
+                /*
+                 * Use <= for distance comparsion here so that when there are
+                 * multiple candidates for selection the last one added to the
+                 * world will be selected. It is useful after pasting that the
+                 * new blocks can be dragged to a new location.
+                 */
+                if (*temp <= nearest)
                 {
                     nearest = *temp;
                     nearest_block = block;
