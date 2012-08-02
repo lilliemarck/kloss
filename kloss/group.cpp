@@ -2,6 +2,7 @@
 #include <cassert>
 #include <limits>
 #include <kloss/algorithm.hpp>
+#include <kloss/group_instance.hpp>
 #include <kloss/math.hpp>
 #include <GL/gl.h>
 
@@ -46,6 +47,11 @@ void group::insert(block_ptr const& block)
 void group::remove(block_ptr const& block)
 {
     kloss::remove(blocks_, block);
+}
+
+void group::insert(group_instance&& group_instance)
+{
+    group_instances_.push_back(std::move(group_instance));
 }
 
 pick const group::pick_block(ray const& ray) const
@@ -121,25 +127,18 @@ boost::optional<corner_ref> const group::pick_vertex(cml::matrix44f_c const& mod
     return nearest_corner_ref;
 }
 
-void group::draw()
+void group::draw() const
 {
     if (!vertices_.empty())
     {
-        glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING_BIT);
-
-        setup_light();
-        glEnable(GL_DEPTH_TEST);
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-
-        glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_NORMAL_ARRAY);
         glNormalPointer(GL_FLOAT, sizeof(vertex), vertices_.front().normal.data());
         glVertexPointer(3, GL_FLOAT, sizeof(vertex), vertices_.front().position.data());
         glDrawArrays(GL_TRIANGLES, 0, vertices_.size());
-        glPopClientAttrib();
+    }
 
-        glPopAttrib();
+    for (auto const& group_instance : group_instances_)
+    {
+        group_instance.draw();
     }
 }
 
@@ -166,13 +165,26 @@ void group::append_vertices(block const& block)
     }
 }
 
-void group::setup_light()
+void draw(group const& group)
 {
-    cml::vector4f position = {-1.0f, -2.0f, 3.0f, 0.0f};
+    glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING_BIT);
 
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-    glLightfv(GL_LIGHT0, GL_POSITION, position.data());
+    cml::vector4f light_position = {-1.0f, -2.0f, 3.0f, 0.0f};
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position.data());
+
+    glEnable(GL_DEPTH_TEST);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+    glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+
+    group.draw();
+
+    glPopClientAttrib();
+    glPopAttrib();
 }
 
 } // namespace kloss

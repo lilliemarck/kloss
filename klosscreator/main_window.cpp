@@ -43,6 +43,8 @@ void main_window::del()
 
 void main_window::group()
 {
+    document_.group_selection();
+    gl_widget_.update();
 }
 
 void main_window::ungroup()

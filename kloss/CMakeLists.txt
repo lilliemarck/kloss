@@ -4,4 +4,5 @@ add_library(kloss
     corner_ref.cpp
     geometry.cpp
     group.cpp
+    group_instance.cpp
     key_pair.cpp)

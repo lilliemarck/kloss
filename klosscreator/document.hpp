@@ -22,6 +22,8 @@ public:
     void paste();
     void del();
 
+    void group_selection();
+
     group group;
     block_selection block_selection;
 

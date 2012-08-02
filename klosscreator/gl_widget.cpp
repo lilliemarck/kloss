@@ -191,7 +191,7 @@ void gl_widget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     draw(grid_);
-    document_.group.draw();
+    draw(document_.group);
 
     if (tool_)
     {

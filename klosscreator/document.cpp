@@ -1,4 +1,5 @@
 #include "document.hpp"
+#include <kloss/group_instance.hpp>
 
 namespace kloss {
 namespace creator {
@@ -80,6 +81,33 @@ void document::del()
 
     block_selection.clear();
     group.update_vertex_array();
+}
+
+void document::group_selection()
+{
+    if (is_locked() || block_selection.empty())
+    {
+        return;
+    }
+
+    for (auto block : block_selection)
+    {
+        group.remove(block);
+    }
+
+    group_ptr new_group = std::make_shared<kloss::group>();
+
+    for (auto block : block_selection)
+    {
+        new_group->insert(block);
+    }
+
+    block_selection.clear();
+
+    group.update_vertex_array();
+    new_group->update_vertex_array();
+
+    group.insert(group_instance(new_group));
 }
 
 } // namespace creator
