@@ -2,6 +2,7 @@
 #include <cassert>
 #include <limits>
 #include <kloss/algorithm.hpp>
+#include <kloss/bounding_box.hpp>
 #include <kloss/group_instance.hpp>
 #include <kloss/math.hpp>
 #include <GL/gl.h>
@@ -125,6 +126,46 @@ boost::optional<corner_ref> const group::pick_vertex(cml::matrix44f_c const& mod
     }
 
     return nearest_corner_ref;
+}
+
+namespace {
+
+void expand(bounding_box& bbox, corner const& corner)
+{
+    min(bbox.lower[0], corner.x);
+    max(bbox.upper[0], corner.x);
+    min(bbox.lower[1], corner.y);
+    max(bbox.upper[1], corner.y);
+    min(bbox.lower[2], corner.bottom);
+    max(bbox.upper[2], corner.top);
+}
+
+} // namespace
+
+bounding_box group::bounding_box(cml::vector3f const& group_position) const
+{
+    kloss::bounding_box bbox;
+
+    if (!blocks_.empty())
+    {
+        for (auto const& block : blocks_)
+        {
+            for (auto corner : *block)
+            {
+                expand(bbox, corner);
+            }
+        }
+
+        // Don't translate if there are no blocks
+        translate(bbox, group_position);
+    }
+
+    for (auto const& group_instance : group_instances_)
+    {
+        expand(bbox, group_instance.bounding_box(group_position));
+    }
+
+    return bbox;
 }
 
 void group::draw() const

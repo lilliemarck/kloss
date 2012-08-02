@@ -30,13 +30,42 @@ public:
     void insert(block_ptr const& block);
     void remove(block_ptr const& block);
 
+    template <typename Function>
+    void for_each_block(Function const& function) const
+    {
+        for (auto const& block : blocks_)
+        {
+            function(block);
+        }
+    }
+
     void insert(group_instance&& group_instance);
+
+    template <typename Function>
+    void for_each_group_instance(Function const& function) const
+    {
+        for (auto const& group_instance : group_instances_)
+        {
+            function(group_instance);
+        }
+    }
+
+    template <typename Function>
+    void for_each_group_instance(Function const& function)
+    {
+        for (auto& group_instance : group_instances_)
+        {
+            function(group_instance);
+        }
+    }
 
     pick const pick_block(ray const& ray) const;
     boost::optional<corner_ref> const pick_vertex(cml::matrix44f_c const& model,
                                                   cml::matrix44f_c const& projection,
                                                   viewport const& viewport,
                                                   cml::vector2f const& mouse) const;
+    bounding_box bounding_box(cml::vector3f const& group_position) const;
+
     void draw() const;
     void update_vertex_array();
 

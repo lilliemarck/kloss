@@ -16,6 +16,7 @@ struct corner
 
 cml::vector3f top(corner const& corner);
 cml::vector3f bottom(corner const& corner);
+void translate(corner& corner, cml::vector3f const& units);
 
 using block = std::array<corner,4>;
 using block_ptr = std::shared_ptr<block>;

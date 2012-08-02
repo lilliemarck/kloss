@@ -1,5 +1,6 @@
 add_library(kloss
     block.cpp
+    bounding_box.cpp
     camera.cpp
     corner_ref.cpp
     geometry.cpp

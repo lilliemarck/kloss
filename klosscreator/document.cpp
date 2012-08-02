@@ -1,4 +1,5 @@
 #include "document.hpp"
+#include <kloss/bounding_box.hpp>
 #include <kloss/group_instance.hpp>
 
 namespace kloss {
@@ -104,10 +105,14 @@ void document::group_selection()
 
     block_selection.clear();
 
+    group_instance new_group_instance(new_group);
+    bounding_box bbox = new_group_instance.bounding_box();
+    new_group_instance.move_origin(bbox.lower);
+
     group.update_vertex_array();
     new_group->update_vertex_array();
 
-    group.insert(group_instance(new_group));
+    group.insert(std::move(new_group_instance));
 }
 
 } // namespace creator

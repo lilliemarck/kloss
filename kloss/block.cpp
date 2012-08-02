@@ -12,14 +12,19 @@ cml::vector3f bottom(corner const& corner)
     return {corner.x, corner.y, corner.bottom};
 }
 
+void translate(corner& corner, cml::vector3f const& units)
+{
+    corner.x      += units[0];
+    corner.y      += units[1];
+    corner.top    += units[2];
+    corner.bottom += units[2];
+}
+
 void translate(block& block, cml::vector3f const& units)
 {
-    for (auto& column : block)
+    for (auto& corner : block)
     {
-        column.x      += units[0];
-        column.y      += units[1];
-        column.top    += units[2];
-        column.bottom += units[2];
+        translate(corner, units);
     }
 }
 

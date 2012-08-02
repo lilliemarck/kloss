@@ -16,4 +16,22 @@ void remove(Container& container, T const& value)
     container.erase(std::remove(begin(container), end(container), value), end(container));
 }
 
+template <typename T>
+void min(T& a, T const& b)
+{
+    if (b < a)
+    {
+        a = b;
+    }
+}
+
+template <typename T>
+void max(T& a, T const& b)
+{
+    if (b > a)
+    {
+        a = b;
+    }
+}
+
 } // namespace kloss
