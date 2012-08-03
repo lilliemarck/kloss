@@ -51,6 +51,7 @@ void group_instance::move_origin(cml::vector3f const& position)
     });
 
     position_ = position;
+    group_->update_vertex_array();
 }
 
 } // namespace kloss

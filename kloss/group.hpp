@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <cml/cml.h>
+#include <kloss/algorithm.hpp>
 #include <kloss/block.hpp>
 #include <kloss/corner_ref.hpp>
 #include <kloss/group_instance.hpp>
@@ -28,7 +29,28 @@ class group
 {
 public:
     void insert(block_ptr const& block);
+
+    template <typename Iterator>
+    void insert(Iterator first, Iterator last)
+    {
+        for (auto iter = first; iter != last; ++iter)
+        {
+            insert(*iter);
+        }
+    }
+
     void remove(block_ptr const& block);
+
+    template <typename Iterator>
+    void remove(Iterator first, Iterator last)
+    {
+        for (auto iter = first; iter != last; ++iter)
+        {
+            remove(*iter);
+        }
+
+        update_vertex_array();
+    }
 
     template <typename Function>
     void for_each_block(Function const& function) const

@@ -75,13 +75,8 @@ void document::del()
         return;
     }
 
-    for (auto block : block_selection)
-    {
-        group.remove(block);
-    }
-
+    group.remove(block_selection.begin(), block_selection.end());
     block_selection.clear();
-    group.update_vertex_array();
 }
 
 void document::group_selection()
@@ -91,26 +86,14 @@ void document::group_selection()
         return;
     }
 
-    for (auto block : block_selection)
-    {
-        group.remove(block);
-    }
-
+    group.remove(block_selection.begin(), block_selection.end());
     group_ptr new_group = std::make_shared<kloss::group>();
-
-    for (auto block : block_selection)
-    {
-        new_group->insert(block);
-    }
-
+    new_group->insert(block_selection.begin(), block_selection.end());
     block_selection.clear();
 
     group_instance new_group_instance(new_group);
     bounding_box bbox = new_group_instance.bounding_box();
     new_group_instance.move_origin(bbox.lower);
-
-    group.update_vertex_array();
-    new_group->update_vertex_array();
 
     group.insert(std::move(new_group_instance));
 }

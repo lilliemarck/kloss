@@ -1,7 +1,6 @@
 #include "group.hpp"
 #include <cassert>
 #include <limits>
-#include <kloss/algorithm.hpp>
 #include <kloss/bounding_box.hpp>
 #include <kloss/group_instance.hpp>
 #include <kloss/math.hpp>
