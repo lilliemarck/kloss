@@ -8,7 +8,7 @@ set(CML_INCLUDE_DIR "" CACHE PATH "Path to CML headers")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${CML_INCLUDE_DIR}")
 include_directories(${CML_INCLUDE_DIR})
 
-find_package(Boost 1.50.0)
+find_package(Boost 1.51.0)
 include_directories(${Boost_INCLUDE_DIRS})
 
 add_subdirectory(kloss)
