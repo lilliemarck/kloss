@@ -6,4 +6,5 @@ add_library(kloss
     geometry.cpp
     group.cpp
     group_instance.cpp
-    key_pair.cpp)
+    key_pair.cpp
+    math.c)

@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <boost/optional.hpp>
-#include <cml/cml.h>
+#include <kloss/math.h>
 
 namespace kloss {
 
@@ -18,15 +18,9 @@ T const square(T const& x)
     return x * x;
 }
 
-template <typename Vector>
-float const distance(Vector const& a, Vector const& b)
+inline Vec2 const to_vector2(Vec3 const& v)
 {
-    return length(b - a);
-}
-
-inline cml::vector2f const to_vector2(cml::vector3f const& v)
-{
-    return {v[0], v[1]};
+    return {v.X, v.Y};
 }
 
 } // namespace kloss

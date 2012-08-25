@@ -32,13 +32,13 @@ private:
     uint8_t flags_;
 };
 
-corner_ref& operator+=(corner_ref& corner_ref, cml::vector3f const& units);
+corner_ref& operator+=(corner_ref& corner_ref, Vec3 const& units);
 
 /**
  * Return the position of either the top or bottom vertex depending on which
  * flag is set. Should not be used when both flags are set.
  */
-cml::vector3f to_vector(corner_ref const& corner_ref);
+Vec3 to_vector(corner_ref const& corner_ref);
 std::vector<corner_ref> to_corner_refs(block_ptr const& block);
 
 } // namespace kloss

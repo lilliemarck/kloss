@@ -64,11 +64,12 @@ void move_vertex_tool::mouse_move_event(QMouseEvent const& event)
 
         if (position)
         {
-            cml::vector3f translation = *position - *reference_;
+            Vec3 translation;
+            Vec3Subtract(&translation, &*position, &*reference_);
 
-            translation[0] = round(translation[0], snap_size);
-            translation[1] = round(translation[1], snap_size);
-            translation[2] = round(translation[2], snap_size);
+            translation.X = round(translation.X, snap_size);
+            translation.Y = round(translation.Y, snap_size);
+            translation.Z = round(translation.Z, snap_size);
 
             selection_.restore(*drag_);
 

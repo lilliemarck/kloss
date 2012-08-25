@@ -1,7 +1,7 @@
 #pragma once
 
 #include <boost/optional.hpp>
-#include <cml/cml.h>
+#include <kloss/math.h>
 #include <klosscreator/tool.hpp>
 
 namespace kloss {
@@ -18,7 +18,7 @@ public:
 
 private:
     gl_widget& parent_;
-    boost::optional<cml::vector3f> cursor_position_;
+    boost::optional<Vec3> cursor_position_;
 };
 
 } // namespace creator

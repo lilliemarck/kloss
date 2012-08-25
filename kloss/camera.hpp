@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cml/cml.h>
 #include <kloss/geometry.hpp>
+#include <kloss/math.h>
 
 namespace kloss {
 
@@ -10,8 +10,8 @@ class camera
 public:
     camera();
 
-    cml::vector3f get_position() const;
-    void set_position(cml::vector3f const& units);
+    Vec3 get_position() const;
+    void set_position(Vec3 const& units);
 
     float get_yaw() const;
     void set_yaw(float radians);
@@ -20,7 +20,7 @@ public:
     void set_pitch(float radians);
 
 private:
-    cml::vector3f position_;
+    Vec3 position_;
     float yaw_;
     float pitch_;
 };
@@ -30,9 +30,9 @@ void move_sideways(camera& camera, float units);
 void rotate_yaw(camera& camera, float radians);
 void rotate_pitch(camera& camera, float radians);
 
-cml::vector3f look_direction(camera const& camera);
-cml::matrix44f_c rotation_matrix(camera const& camera);
-cml::matrix44f_c world_transform(camera const& camera);
+Vec3 look_direction(camera const& camera);
+Mat4 rotation_matrix(camera const& camera);
+Mat4 world_transform(camera const& camera);
 
 /**
  * Create a ray from the camera's position and look direction.

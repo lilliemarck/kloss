@@ -6,8 +6,8 @@
 namespace kloss {
 
 group_instance::group_instance(group_ptr const& group)
-    : position_(0.0f, 0.0f, 0.0f)
-    , group_(group)
+    : position_{0.0f, 0.0f, 0.0f}
+    , group_{group}
 {
     assert(group);
 }
@@ -15,7 +15,7 @@ group_instance::group_instance(group_ptr const& group)
 void group_instance::draw() const
 {
     glPushMatrix();
-    glTranslatef(position_[0], position_[1], position_[2]);
+    glTranslatef(position_.X, position_.Y, position_.Z);
 
     group_->draw();
 
@@ -27,15 +27,17 @@ bounding_box group_instance::bounding_box() const
     return bounding_box({0.0f, 0.0f, 0.0f});
 }
 
-bounding_box group_instance::bounding_box(cml::vector3f const& parent_translation) const
+bounding_box group_instance::bounding_box(Vec3 const& parent_translation) const
 {
-    cml::vector3f total_translation = parent_translation + position_;
+    Vec3 total_translation;
+    Vec3Add(&total_translation, &parent_translation, &position_);
     return group_->bounding_box(total_translation);
 }
 
-void group_instance::move_origin(cml::vector3f const& position)
+void group_instance::move_origin(Vec3 const& position)
 {
-    cml::vector3f translation = position_ - position;
+    Vec3 translation;
+    Vec3Subtract(&translation, &position_, &position);
 
     group_->for_each_block([&](block_ptr const& block)
     {
@@ -47,7 +49,7 @@ void group_instance::move_origin(cml::vector3f const& position)
 
     group_->for_each_group_instance([&](kloss::group_instance& group_instance)
     {
-        group_instance.position_ += translation;
+        Vec3Add(&group_instance.position_, &group_instance.position_, &translation);
     });
 
     position_ = position;

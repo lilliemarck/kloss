@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <vector>
-#include <cml/cml.h>
+#include <boost/optional.hpp>
 #include <kloss/algorithm.hpp>
 #include <kloss/block.hpp>
 #include <kloss/corner_ref.hpp>
@@ -13,8 +13,8 @@ namespace kloss {
 struct pick
 {
     block_ptr block;
-    kloss::triangle triangle;
-    cml::vector3f intersection;
+    triangle triangle;
+    Vec3 intersection;
 };
 
 struct viewport
@@ -82,11 +82,11 @@ public:
     }
 
     pick const pick_block(ray const& ray) const;
-    boost::optional<corner_ref> const pick_vertex(cml::matrix44f_c const& model,
-                                                  cml::matrix44f_c const& projection,
+    boost::optional<corner_ref> const pick_vertex(Mat4 const& model,
+                                                  Mat4 const& projection,
                                                   viewport const& viewport,
-                                                  cml::vector2f const& mouse) const;
-    bounding_box bounding_box(cml::vector3f const& group_position) const;
+                                                  Vec2 const& mouse) const;
+    bounding_box bounding_box(Vec3 const& group_position) const;
 
     void draw() const;
     void update_vertex_array();
@@ -96,8 +96,8 @@ private:
 
     struct vertex
     {
-        cml::vector3f normal;
-        cml::vector3f position;
+        Vec3 normal;
+        Vec3 position;
     };
 
     std::vector<block_ptr> blocks_;

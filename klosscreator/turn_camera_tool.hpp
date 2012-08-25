@@ -2,7 +2,6 @@
 
 #include <QPoint>
 #include <boost/optional.hpp>
-#include <cml/cml.h>
 
 QT_BEGIN_NAMESPACE
 class QMouseEvent;

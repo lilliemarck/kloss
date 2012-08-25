@@ -8,11 +8,11 @@ namespace creator {
 
 bool const is_initialized(pick const& pick);
 block_ptr& get_object(pick& pick);
-cml::vector3f const& get_intersection(pick const& pick);
+Vec3 const& get_intersection(pick const& pick);
 
 bool const is_initialized(boost::optional<corner_ref> const& pick);
 corner_ref& get_object(boost::optional<corner_ref>& pick);
-cml::vector3f const get_intersection(boost::optional<corner_ref> const& pick);
+Vec3 get_intersection(boost::optional<corner_ref> const& pick);
 
 template <typename Selection, typename Pick>
 bool const single_select(Selection& selection, Pick& pick)

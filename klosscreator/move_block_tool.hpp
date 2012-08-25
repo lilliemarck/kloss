@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cml/cml.h>
 #include <kloss/block.hpp>
 #include <klosscreator/block_selection.hpp>
 #include <klosscreator/document_lock.hpp>
@@ -28,7 +27,7 @@ public:
 private:
     gl_widget& parent_;
     document& document_;
-    boost::optional<cml::vector3f> reference_;
+    boost::optional<Vec3> reference_;
     boost::optional<block_selection::backup_type> drag_;
     document_lock document_lock_;
 };

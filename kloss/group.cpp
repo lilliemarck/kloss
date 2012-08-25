@@ -9,29 +9,37 @@
 namespace kloss {
 namespace {
 
-boost::optional<cml::vector3f> project(cml::vector3f const& point,
-                                       cml::matrix44f_c const& model,
-                                       cml::matrix44f_c const& projection,
-                                       viewport const& viewport)
+boost::optional<Vec3> project(Vec3 const& point,
+                               Mat4 const& model,
+                               Mat4 const& projection,
+                               viewport const& viewport)
 {
-    cml::vector4f point4 = {point[0], point[1], point[2], 1.0f};
-    cml::vector4f out = projection * model * point4;
+    Mat4 transform;
+    Vec3 out;
 
-    if (out[2] < -out[3] || out[2] > out[3])
+    Mat4Transform(&transform, &model, &projection);
+    Vec3Transform(&out, &point, &transform);
+
+    float w = transform.X.W * point.X +
+              transform.Y.W * point.Y +
+              transform.Z.W * point.Z +
+              transform.T.W;
+
+    if (out.Z < -w || out.Z > w)
     {
         return {};
     }
 
-    out[0] /= out[3];
-    out[1] /= out[3];
-    out[2] /= out[3];
+    out.X /= w;
+    out.Y /= w;
+    out.Z /= w;
 
-    out[0] = out[0] * 0.5 + 0.5f;
-    out[1] = out[1] * 0.5 + 0.5f;
-    out[0] = out[0] * viewport.width + viewport.x;
-    out[1] = out[1] * viewport.height + viewport.y;
+    out.X = out.X * 0.5f + 0.5f;
+    out.Y = out.Y * 0.5f + 0.5f;
+    out.X = out.X * viewport.width + viewport.x;
+    out.Y = out.Y * viewport.height + viewport.y;
 
-    return boost::optional<cml::vector3f>({out[0], out[1], out[2]});
+    return boost::optional<Vec3>({out.X, out.Y, out.Z});
 }
 
 } // namespace
@@ -84,30 +92,33 @@ pick const group::pick_block(ray const& ray) const
         }
     }
 
-    return {nearest_block, nearest_triangle, ray.origin + nearest * ray.direction};
+    Vec3 intersection;
+    Vec3AddScaled(&intersection, &ray.origin, &ray.direction, nearest);
+    return {nearest_block, nearest_triangle, intersection};
 }
 
-boost::optional<corner_ref> const group::pick_vertex(cml::matrix44f_c const& model,
-                                                     cml::matrix44f_c const& projection,
+boost::optional<corner_ref> const group::pick_vertex(Mat4 const& model,
+                                                     Mat4 const& projection,
                                                      viewport const& viewport,
-                                                     cml::vector2f const& mouse) const
+                                                     Vec2 const& mouse) const
 {
     float const radius = 5.0f;
     float nearest_distance = std::numeric_limits<float>::max();
     boost::optional<corner_ref> nearest_corner_ref;
 
-    auto check_vertex = [&](cml::vector3f const& position, corner_ref const& ref, uint8_t flag)
+    auto check_vertex = [&](Vec3 const& position, corner_ref const& ref, uint8_t flag)
     {
         auto screen_position = project(position, model, projection, viewport);
 
         if (screen_position)
         {
-            (*screen_position)[1] = viewport.height - (*screen_position)[1];
-            auto distance = kloss::distance(mouse, to_vector2(*screen_position));
+            Vec2 screen_position_xy = {screen_position->X, viewport.height - screen_position->Y};
 
-            if (distance < radius && (*screen_position)[2] < nearest_distance)
+            auto distance = Vec2SquaredDistance(&mouse, &screen_position_xy);
+
+            if (distance < radius && screen_position->Z < nearest_distance)
             {
-                nearest_distance = (*screen_position)[2];
+                nearest_distance = screen_position->Z;
                 nearest_corner_ref = kloss::corner_ref(ref, flag);
             }
         }
@@ -131,17 +142,17 @@ namespace {
 
 void expand(bounding_box& bbox, corner const& corner)
 {
-    min(bbox.lower[0], corner.x);
-    max(bbox.upper[0], corner.x);
-    min(bbox.lower[1], corner.y);
-    max(bbox.upper[1], corner.y);
-    min(bbox.lower[2], corner.bottom);
-    max(bbox.upper[2], corner.top);
+    min(bbox.lower.X, corner.x);
+    max(bbox.upper.X, corner.x);
+    min(bbox.lower.Y, corner.y);
+    max(bbox.upper.Y, corner.y);
+    min(bbox.lower.Z, corner.bottom);
+    max(bbox.upper.Z, corner.top);
 }
 
 } // namespace
 
-bounding_box group::bounding_box(cml::vector3f const& group_position) const
+bounding_box group::bounding_box(Vec3 const& group_position) const
 {
     kloss::bounding_box bbox;
 
@@ -171,8 +182,8 @@ void group::draw() const
 {
     if (!vertices_.empty())
     {
-        glNormalPointer(GL_FLOAT, sizeof(vertex), vertices_.front().normal.data());
-        glVertexPointer(3, GL_FLOAT, sizeof(vertex), vertices_.front().position.data());
+        glNormalPointer(GL_FLOAT, sizeof(vertex), &vertices_.front().normal);
+        glVertexPointer(3, GL_FLOAT, sizeof(vertex), &vertices_.front().position);
         glDrawArrays(GL_TRIANGLES, 0, vertices_.size());
     }
 
@@ -198,7 +209,7 @@ void group::append_vertices(block const& block)
 
     for (auto const& triangle : triangles)
     {
-        cml::vector3f normal = make_normal(triangle);
+        Vec3 normal = make_normal(triangle);
         vertices_.push_back({normal, triangle.a});
         vertices_.push_back({normal, triangle.b});
         vertices_.push_back({normal, triangle.c});
@@ -211,8 +222,8 @@ void draw(group const& group)
 
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-    cml::vector4f light_position = {-1.0f, -2.0f, 3.0f, 0.0f};
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position.data());
+    Vec4 light_position = {-1.0f, -2.0f, 3.0f, 0.0f};
+    glLightfv(GL_LIGHT0, GL_POSITION, &light_position.X);
 
     glEnable(GL_DEPTH_TEST);
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);

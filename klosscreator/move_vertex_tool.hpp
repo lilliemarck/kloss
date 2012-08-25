@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cml/cml.h>
 #include <kloss/block.hpp>
 #include <klosscreator/corner_selection.hpp>
 #include <klosscreator/document_lock.hpp>
@@ -22,7 +21,7 @@ public:
 private:
     gl_widget& parent_;
     corner_selection selection_;
-    boost::optional<cml::vector3f> reference_;
+    boost::optional<Vec3> reference_;
     boost::optional<corner_selection::backup_type> drag_;
     document_lock document_lock_;
 };

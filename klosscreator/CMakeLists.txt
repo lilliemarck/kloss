@@ -1,4 +1,5 @@
 find_package(Qt4 REQUIRED QtCore QtGui QtOpenGl)
+find_package(OpenGL)
 
 include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
@@ -28,4 +29,4 @@ add_executable(klosscreator
     vertex_array.cpp
     ${klosscreator_MOC_SOURCES})
 
-target_link_libraries(klosscreator kloss ${QT_LIBRARIES})
+target_link_libraries(klosscreator GL kloss ${QT_LIBRARIES} ${OPENGL_glu_LIBRARY})

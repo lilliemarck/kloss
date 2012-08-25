@@ -17,8 +17,8 @@ void new_block_tool::mouse_press_event(QMouseEvent const& event)
     {
         if (cursor_position_)
         {
-            float x      = (*cursor_position_)[0];
-            float y      = (*cursor_position_)[1];
+            float x      = cursor_position_->X;
+            float y      = cursor_position_->Y;
             float top    = 1.0f;
             float bottom = 0.0f;
 
@@ -40,8 +40,8 @@ void new_block_tool::mouse_move_event(QMouseEvent const& event)
 
     if (cursor_position_)
     {
-        (*cursor_position_)[0] = std::round((*cursor_position_)[0]);
-        (*cursor_position_)[1] = std::round((*cursor_position_)[1]);
+        cursor_position_->X = std::round(cursor_position_->X);
+        cursor_position_->Y = std::round(cursor_position_->Y);
     }
 
     parent_.update();

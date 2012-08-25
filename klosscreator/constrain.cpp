@@ -5,7 +5,7 @@
 namespace kloss {
 namespace creator {
 
-boost::optional<cml::vector3f> constrain_to_z_axis(ray const& ray, cml::vector3f const& reference)
+static boost::optional<Vec3> constrain_to_z_axis(ray const& ray, Vec3 const& reference)
 {
     /*
      * Find the z value of the intersection between the ray and a y-axis
@@ -17,24 +17,26 @@ boost::optional<cml::vector3f> constrain_to_z_axis(ray const& ray, cml::vector3f
      * near clipping plane a small error is introduced when the camera turns
      * towards the sides.
      */
-    auto radius = distance(to_vector2(ray.origin), to_vector2(reference));
-    auto denom = sqrt(square(ray.direction[0]) + square(ray.direction[1]));
+    auto denom = sqrt(square(ray.direction.X) + square(ray.direction.Y));
 
     if (denom > 0.0f)
     {
+        Vec2 ray_origin_xy = to_vector2(ray.origin);
+        Vec2 reference_xy = to_vector2(reference);
+        auto radius = Vec2Distance(&ray_origin_xy, &reference_xy);
         float u = radius / denom;
-        return boost::optional<cml::vector3f>({reference[0], reference[1], ray.origin[2] + u * ray.direction[2]});
+        return boost::optional<Vec3>({reference.X, reference.Y, ray.origin.Z + u * ray.direction.Z});
     }
 
     return {};
 }
 
-boost::optional<cml::vector3f> constrain(constrain_algorithm algorithm, ray const& ray, cml::vector3f const& reference)
+boost::optional<Vec3> constrain(constrain_algorithm algorithm, ray const& ray, Vec3 const& reference)
 {
     switch (algorithm)
     {
         case constrain_algorithm::xy_plane:
-            return intersect_xy_plane(ray, reference[2]);
+            return intersect_xy_plane(ray, reference.Z);
 
         case constrain_algorithm::z_axis:
             return constrain_to_z_axis(ray, reference);

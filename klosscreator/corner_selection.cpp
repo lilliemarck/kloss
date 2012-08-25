@@ -1,5 +1,6 @@
 #include "corner_selection.hpp"
 #include <kloss/algorithm.hpp>
+#include <cassert>
 
 namespace kloss {
 namespace creator {

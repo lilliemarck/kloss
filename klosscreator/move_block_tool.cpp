@@ -66,11 +66,12 @@ void move_block_tool::mouse_move_event(QMouseEvent const& event)
 
         if (position)
         {
-            cml::vector3f translation = *position - *reference_;
+            Vec3 translation;
+            Vec3Subtract(&translation, &*position, &*reference_);
 
-            translation[0] = std::round(translation[0]);
-            translation[1] = std::round(translation[1]);
-            translation[2] = std::round(translation[2]);
+            translation.X = std::round(translation.X);
+            translation.Y = std::round(translation.Y);
+            translation.Z = std::round(translation.Z);
 
             document_.block_selection.restore(*drag_);
 

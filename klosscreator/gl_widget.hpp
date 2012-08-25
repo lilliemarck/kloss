@@ -49,8 +49,8 @@ private:
     void initializeGL() override;
     void resizeGL(int width, int height) override;
     void paintGL() override;
-    cml::matrix44f_c projection_matrix() const;
-    cml::matrix44f_c modelview_matrix() const;
+    Mat4 projection_matrix() const;
+    Mat4 modelview_matrix() const;
 
     template <typename Tool>
     void use_tool()

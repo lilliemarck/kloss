@@ -57,25 +57,25 @@ void corner_ref::clear_flags(uint8_t flags)
     flags_ &= ~flags;
 }
 
-corner_ref& operator+=(corner_ref& corner_ref, cml::vector3f const& units)
+corner_ref& operator+=(corner_ref& corner_ref, Vec3 const& units)
 {
-    corner_ref->x += units[0];
-    corner_ref->y += units[1];
+    corner_ref->x += units.X;
+    corner_ref->y += units.Y;
 
     if (corner_ref.flags() & corner_ref::top_flag)
     {
-        corner_ref->top += units[2];
+        corner_ref->top += units.Z;
     }
 
     if (corner_ref.flags() & corner_ref::bottom_flag)
     {
-        corner_ref->bottom += units[2];
+        corner_ref->bottom += units.Z;
     }
 
     return corner_ref;
 }
 
-cml::vector3f to_vector(corner_ref const& corner_ref)
+Vec3 to_vector(corner_ref const& corner_ref)
 {
     bool is_top = corner_ref.flags() & corner_ref::top_flag;
     return is_top ? top(*corner_ref) : bottom(*corner_ref);

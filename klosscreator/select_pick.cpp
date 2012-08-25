@@ -13,7 +13,7 @@ block_ptr& get_object(pick& pick)
     return pick.block;
 }
 
-cml::vector3f const& get_intersection(pick const& pick)
+Vec3 const& get_intersection(pick const& pick)
 {
     return pick.intersection;
 }
@@ -28,7 +28,7 @@ corner_ref& get_object(boost::optional<corner_ref>& pick)
     return *pick;
 }
 
-cml::vector3f const get_intersection(boost::optional<corner_ref> const& pick)
+Vec3 get_intersection(boost::optional<corner_ref> const& pick)
 {
     return to_vector(*pick);
 }

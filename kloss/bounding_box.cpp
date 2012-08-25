@@ -12,18 +12,18 @@ bounding_box::bounding_box()
 
 void expand(bounding_box& lhs, bounding_box const& rhs)
 {
-    min(lhs.lower[0], rhs.lower[0]);
-    min(lhs.lower[1], rhs.lower[1]);
-    min(lhs.lower[2], rhs.lower[2]);
-    max(lhs.upper[0], rhs.upper[0]);
-    max(lhs.upper[1], rhs.upper[1]);
-    max(lhs.upper[2], rhs.upper[2]);
+    min(lhs.lower.X, rhs.lower.X);
+    min(lhs.lower.Y, rhs.lower.Y);
+    min(lhs.lower.Z, rhs.lower.Z);
+    max(lhs.upper.X, rhs.upper.X);
+    max(lhs.upper.Y, rhs.upper.Y);
+    max(lhs.upper.Z, rhs.upper.Z);
 }
 
-void translate(bounding_box& bbox, cml::vector3f const& units)
+void translate(bounding_box& bbox, Vec3 const& units)
 {
-    bbox.lower += units;
-    bbox.upper += units;
+    Vec3Add(&bbox.lower, &bbox.lower, &units);
+    Vec3Add(&bbox.upper, &bbox.upper, &units);
 }
 
 } // namespace kloss

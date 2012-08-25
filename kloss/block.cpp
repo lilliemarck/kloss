@@ -2,25 +2,25 @@
 
 namespace kloss {
 
-cml::vector3f top(corner const& corner)
+Vec3 top(corner const& corner)
 {
     return {corner.x, corner.y, corner.top};
 }
 
-cml::vector3f bottom(corner const& corner)
+Vec3 bottom(corner const& corner)
 {
     return {corner.x, corner.y, corner.bottom};
 }
 
-void translate(corner& corner, cml::vector3f const& units)
+void translate(corner& corner, Vec3 const& units)
 {
-    corner.x      += units[0];
-    corner.y      += units[1];
-    corner.top    += units[2];
-    corner.bottom += units[2];
+    corner.x      += units.X;
+    corner.y      += units.Y;
+    corner.top    += units.Z;
+    corner.bottom += units.Z;
 }
 
-void translate(block& block, cml::vector3f const& units)
+void translate(block& block, Vec3 const& units)
 {
     for (auto& corner : block)
     {

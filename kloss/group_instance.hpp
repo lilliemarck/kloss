@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <cml/cml.h>
+#include <kloss/math.h>
 
 namespace kloss {
 
@@ -16,11 +16,11 @@ public:
 
     void draw() const;
     kloss::bounding_box bounding_box() const;
-    kloss::bounding_box bounding_box(cml::vector3f const& parent_translation) const;
-    void move_origin(cml::vector3f const& position);
+    kloss::bounding_box bounding_box(Vec3 const& parent_translation) const;
+    void move_origin(Vec3 const& position);
 
 private:
-    cml::vector3f position_;
+    Vec3 position_;
     group_ptr group_;
 };
 
