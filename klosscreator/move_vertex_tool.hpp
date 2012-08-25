@@ -1,9 +1,12 @@
 #pragma once
 
-#include <kloss/block.hpp>
-#include <klosscreator/corner_selection.hpp>
+#include <boost/optional.hpp>
+#include <kloss/block.h>
+#include <klosscreator/cornerselection.h>
 #include <klosscreator/document_lock.hpp>
 #include <klosscreator/tool.hpp>
+
+struct CornerSelection;
 
 namespace kloss {
 namespace creator {
@@ -12,6 +15,7 @@ class move_vertex_tool : public tool
 {
 public:
     move_vertex_tool(gl_widget& parent);
+    ~move_vertex_tool();
 
     void mouse_press_event(QMouseEvent const& event) override;
     void mouse_release_event(QMouseEvent const& event) override;
@@ -20,9 +24,9 @@ public:
 
 private:
     gl_widget& parent_;
-    corner_selection selection_;
+    CornerSelection* selection_;
     boost::optional<Vec3> reference_;
-    boost::optional<corner_selection::backup_type> drag_;
+    Buffer* drag_;
     document_lock document_lock_;
 };
 

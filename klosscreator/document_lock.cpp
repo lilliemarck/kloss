@@ -1,11 +1,11 @@
 #include "document_lock.hpp"
 
-#include <klosscreator/document.hpp>
+#include <klosscreator/document.h>
 
 namespace kloss {
 namespace creator {
 
-document_lock::document_lock(document& document)
+document_lock::document_lock(Document* document)
     : document_(document)
     , locked_(false)
 {
@@ -20,7 +20,7 @@ void document_lock::lock() noexcept
 {
     if (!locked_)
     {
-        document_.lock();
+        LockDocument(document_);
         locked_ = true;
     }
 }
@@ -29,7 +29,7 @@ void document_lock::unlock() noexcept
 {
     if (locked_)
     {
-        document_.unlock();
+        UnlockDocument(document_);
         locked_ = false;
     }
 }

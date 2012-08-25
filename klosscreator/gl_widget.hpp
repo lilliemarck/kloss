@@ -3,18 +3,19 @@
 #include <memory>
 #include <QGLWidget>
 #include <boost/optional.hpp>
-#include <kloss/camera.hpp>
 #include <kloss/memory.hpp>
-#include <kloss/group.hpp>
-#include <klosscreator/constrain.hpp>
+#include <kloss/group.h>
+#include <klosscreator/constrain.h>
 #include <klosscreator/move_camera_tool.hpp>
 #include <klosscreator/turn_camera_tool.hpp>
 #include <klosscreator/vertex_array.hpp>
 
+struct Camera;
+struct Document;
+
 namespace kloss {
 namespace creator {
 
-class document;
 class tool;
 
 class gl_widget : public QGLWidget
@@ -22,16 +23,16 @@ class gl_widget : public QGLWidget
     Q_OBJECT
 
 public:
-    gl_widget(document& document);
+    gl_widget(Document* document);
     ~gl_widget();
 
-    document& document();
-    group& group();
-    camera& camera();
-    ray mouse_ray(float mouse_x, float mouse_y) const;
+    Document* document();
+    Group* group();
+    Camera* camera();
+    Ray mouse_ray(float mouse_x, float mouse_y) const;
     vertex_array const& cursor_vertices() const;
-    constrain_algorithm get_constrain_algorithm() const;
-    boost::optional<corner_ref> pick_vertex(float mouse_x, float mouse_y) const;
+    ConstrainAlgorithm get_constrain_algorithm() const;
+    boost::optional<CornerRef> pick_vertex(float mouse_x, float mouse_y) const;
 
 public slots:
     void use_new_block_tool();
@@ -59,11 +60,11 @@ private:
         update();
     }
 
-    class document& document_;
-    kloss::camera camera_;
+    Document* document_;
+    std::shared_ptr<Camera> camera_;
     vertex_array grid_;
     vertex_array cursor_;
-    constrain_algorithm constrain_algorithm_;
+    ConstrainAlgorithm constrain_algorithm_;
     move_camera_tool move_camera_tool_;
     turn_camera_tool turn_camera_tool_;
     std::unique_ptr<tool> tool_;

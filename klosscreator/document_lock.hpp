@@ -2,22 +2,22 @@
 
 #include <boost/noncopyable.hpp>
 
+struct Document;
+
 namespace kloss {
 namespace creator {
-
-class document;
 
 class document_lock : boost::noncopyable
 {
 public:
-    document_lock(document& document);
+    document_lock(Document* document);
     ~document_lock();
 
     void lock() noexcept;
     void unlock() noexcept;
 
 private:
-    document& document_;
+    Document* document_;
     bool locked_;
 };
 

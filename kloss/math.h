@@ -54,6 +54,7 @@ void Vec3Subtract(Vec3 *out, Vec3 const *lhs, Vec3 const *rhs);
 void Vec3Transform(Vec3 *out, Vec3 const *vec, Mat4 const *x);
 
 void Vec4Scale(Vec4 *out, Vec4 const *vec, float scale);
+void Vec4XYZ(Vec3 *out, Vec4 const *vec);
 
 void Mat4Identity(Mat4 *out);
 bool Mat4Inverse(Mat4 *out, Mat4 const *mat);

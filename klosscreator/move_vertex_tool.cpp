@@ -1,9 +1,10 @@
 #include "move_vertex_tool.hpp"
 #include <QMouseEvent>
 #include <kloss/algorithm.hpp>
+#include <kloss/buffer.h>
 #include <kloss/math.hpp>
 #include <klosscreator/gl_widget.hpp>
-#include <klosscreator/select_pick.hpp>
+#include <klosscreator/pick.h>
 
 namespace kloss {
 namespace creator {
@@ -15,8 +16,16 @@ static float const snap_size = 1.0f / 8.0f;
 
 move_vertex_tool::move_vertex_tool(gl_widget& parent)
     : parent_(parent)
+    , selection_(CreateCornerSelection())
+    , drag_(nullptr)
     , document_lock_(parent.document())
 {
+}
+
+move_vertex_tool::~move_vertex_tool()
+{
+    DestroyBuffer(drag_);
+    DestroyCornerSelection(selection_);
 }
 
 void move_vertex_tool::mouse_press_event(QMouseEvent const& event)
@@ -28,17 +37,21 @@ void move_vertex_tool::mouse_press_event(QMouseEvent const& event)
 
         if (event.modifiers() & Qt::ControlModifier)
         {
-            did_select = multi_select(selection_, pick);
+            did_select = MultiPickCorner(selection_, pick.get_ptr());
         }
         else
         {
-            did_select = single_select(selection_, pick);
+            did_select = SinglePickCorner(selection_, pick.get_ptr());
         }
 
         if (did_select)
         {
-            reference_ = get_intersection(pick);
-            drag_ = selection_.backup();
+            reference_ = CornerRefPosition(pick.get_ptr());
+
+            DestroyBuffer(drag_);
+            drag_ = CreateBuffer();
+            BackupCornerSelection(selection_, drag_);
+
             document_lock_.lock();
         }
 
@@ -51,7 +64,8 @@ void move_vertex_tool::mouse_release_event(QMouseEvent const& event)
     if (event.button() == Qt::LeftButton)
     {
         document_lock_.unlock();
-        drag_.reset();
+        DestroyBuffer(drag_);
+        drag_ = nullptr;
     }
 }
 
@@ -60,25 +74,28 @@ void move_vertex_tool::mouse_move_event(QMouseEvent const& event)
     if (drag_)
     {
         auto mouse_ray = parent_.mouse_ray(event.x(), event.y());
-        auto position = constrain(parent_.get_constrain_algorithm(), mouse_ray, *reference_);
+        Vec3 position;
 
-        if (position)
+        if (ConstrainRay(parent_.get_constrain_algorithm(), &mouse_ray, reference_.get_ptr(), &position))
         {
             Vec3 translation;
-            Vec3Subtract(&translation, &*position, &*reference_);
+            Vec3Subtract(&translation, &position, reference_.get_ptr());
 
             translation.X = round(translation.X, snap_size);
             translation.Y = round(translation.Y, snap_size);
             translation.Z = round(translation.Z, snap_size);
 
-            selection_.restore(*drag_);
+            RestoreCornerSelection(selection_, drag_);
 
-            for (auto& element : selection_)
+            CornerRef* cornerRefs = SelectedCorners(selection_);
+            size_t count = SelectedCornerCount(selection_);
+
+            for (size_t i = 0; i < count; ++i)
             {
-                element += translation;
+                TranslateCornerRef(cornerRefs + i, &translation);
             }
 
-            parent_.group().update_vertex_array();
+            UpdateGroupVertexArray(parent_.group());
         }
 
         parent_.update();
@@ -88,17 +105,21 @@ void move_vertex_tool::mouse_move_event(QMouseEvent const& event)
 void move_vertex_tool::paint_gl()
 {
     auto const& cursor_vertices = parent_.cursor_vertices();
+    CornerRef const* cornerRefs = SelectedCorners(selection_);
+    size_t count = SelectedCornerCount(selection_);
 
-    for (auto const& corner : selection_)
+    for (size_t i = 0; i < count; ++i)
     {
-        if (corner.flags() & corner_ref::top_flag)
+        CornerRef const* corner = cornerRefs + i;
+
+        if (corner->Flags & CORNER_REF_TOP)
         {
-            draw(cursor_vertices, top(*corner));
+            draw(cursor_vertices, CornerTop(corner->Corner));
         }
 
-        if (corner.flags() & corner_ref::bottom_flag)
+        if (corner->Flags & CORNER_REF_BOTTOM)
         {
-            draw(cursor_vertices, bottom(*corner));
+            draw(cursor_vertices, CornerBottom(corner->Corner));
         }
     }
 }

@@ -1,14 +1,15 @@
 #pragma once
 
-#include <kloss/block.hpp>
-#include <klosscreator/block_selection.hpp>
+#include <boost/optional.hpp>
+#include <kloss/block.h>
+#include <klosscreator/blockselection.h>
 #include <klosscreator/document_lock.hpp>
 #include <klosscreator/tool.hpp>
 
+struct Document;
+struct Pick;
+
 namespace kloss {
-
-struct pick;
-
 namespace creator {
 
 class document;
@@ -26,9 +27,9 @@ public:
 
 private:
     gl_widget& parent_;
-    document& document_;
+    Document* document_;
     boost::optional<Vec3> reference_;
-    boost::optional<block_selection::backup_type> drag_;
+    Buffer* drag_;
     document_lock document_lock_;
 };
 

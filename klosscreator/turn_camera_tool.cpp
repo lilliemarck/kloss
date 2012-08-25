@@ -1,5 +1,6 @@
 #include "turn_camera_tool.hpp"
 #include <QMouseEvent>
+#include <kloss/camera.h>
 #include <klosscreator/gl_widget.hpp>
 
 namespace kloss {
@@ -32,9 +33,9 @@ void turn_camera_tool::mouse_move_event(QMouseEvent const& event)
         QPoint turn = event.pos() - *mouse_origin_;
         float degrees_per_pixel = 1.0f / minor_size(parent_);
 
-        camera& camera = parent_.camera();
-        rotate_yaw(camera, -turn.x() * degrees_per_pixel);
-        rotate_pitch(camera, -turn.y() * degrees_per_pixel);
+        Camera* camera = parent_.camera();
+        RotateCameraYaw(camera, -turn.x() * degrees_per_pixel);
+        RotateCameraPitch(camera, -turn.y() * degrees_per_pixel);
 
         mouse_origin_ = event.pos();
         parent_.update();

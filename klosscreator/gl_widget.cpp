@@ -1,7 +1,8 @@
 #include "gl_widget.hpp"
 #include <QMouseEvent>
-#include <kloss/geometry.hpp>
-#include <klosscreator/document.hpp>
+#include <kloss/camera.h>
+#include <kloss/geometry.h>
+#include <klosscreator/document.h>
 #include <klosscreator/move_block_tool.hpp>
 #include <klosscreator/move_vertex_tool.hpp>
 #include <klosscreator/new_block_tool.hpp>
@@ -13,36 +14,39 @@
 namespace kloss {
 namespace creator {
 
-gl_widget::gl_widget(creator::document& document)
+gl_widget::gl_widget(Document* document)
     : QGLWidget(static_cast<QWidget*>(nullptr))
     , document_(document)
+    , camera_(CreateCamera(), DestroyCamera)
     , grid_(make_grid(10))
     , cursor_(make_cursor(0.125f))
-    , constrain_algorithm_(constrain_algorithm::xy_plane)
+    , constrain_algorithm_(ConstrainAlgorithm::CONSTRAIN_TO_XY_PLANE)
     , move_camera_tool_(*this)
     , turn_camera_tool_(*this)
 {
     setMouseTracking(true);
-    camera_.set_position({0.0f, -4.0f, 2.0f});
+
+    Vec3 camera_pos = {0.0f, -4.0f, 2.0f};
+    SetCameraPosition(camera_.get(), &camera_pos);
 }
 
 gl_widget::~gl_widget()
 {
 }
 
-document& gl_widget::document()
+Document* gl_widget::document()
 {
     return document_;
 }
 
-group& gl_widget::group()
+Group* gl_widget::group()
 {
-    return document_.group;
+    return GetRootGroup(document_);
 }
 
-camera& gl_widget::camera()
+Camera* gl_widget::camera()
 {
-    return camera_;
+    return camera_.get();
 }
 
 static void doubles_to_floats(double *doubles, float const *floats, size_t n)
@@ -53,11 +57,11 @@ static void doubles_to_floats(double *doubles, float const *floats, size_t n)
     }
 }
 
-static ray make_pick_ray(float mouse_x,
+static Ray make_pick_ray(float mouse_x,
                          float mouse_y,
                          Mat4 const& model,
                          Mat4 const& projection,
-                         viewport const& viewport)
+                         Viewport const& viewport)
 {
     double wx = mouse_x;
     double wy = viewport.height - mouse_y;
@@ -73,11 +77,11 @@ static ray make_pick_ray(float mouse_x,
     return {{float(px1), float(py1), float(pz1)}, {float(px2), float(py2), float(pz2)}};
 }
 
-ray gl_widget::mouse_ray(float mouse_x, float mouse_y) const
+Ray gl_widget::mouse_ray(float mouse_x, float mouse_y) const
 {
     Mat4 model = modelview_matrix();
     Mat4 projection = projection_matrix();
-    viewport viewport = {0, 0, width(), height()};
+    Viewport viewport = {0, 0, width(), height()};
 
     return make_pick_ray(mouse_x, mouse_y, model, projection, viewport);
 }
@@ -87,43 +91,51 @@ vertex_array const& gl_widget::cursor_vertices() const
     return cursor_;
 }
 
-constrain_algorithm gl_widget::get_constrain_algorithm() const
+ConstrainAlgorithm gl_widget::get_constrain_algorithm() const
 {
     return constrain_algorithm_;
 }
 
-boost::optional<corner_ref> gl_widget::pick_vertex(float mouse_x, float mouse_y) const
+boost::optional<CornerRef> gl_widget::pick_vertex(float mouse_x, float mouse_y) const
 {
-    viewport viewport = {0, 0, width(), height()};
+    Group*   group      = GetRootGroup(document_);
+    Mat4     model      = modelview_matrix();
+    Mat4     projection = projection_matrix();
+    Viewport viewport   = {0, 0, width(), height()};
+    Vec2     mouse      = {mouse_x, mouse_y};
 
-    auto corner_ref = document_.group.pick_vertex(modelview_matrix(), projection_matrix(), viewport, {mouse_x, mouse_y});
-
-    if (corner_ref)
+    CornerRef corner_ref;
+    if (PickGroupVertex(group, &model, &projection, &viewport, &mouse, &corner_ref))
     {
-        auto vertex_position = to_vector(*corner_ref);
-        auto pick = document_.group.pick_block(make_ray_to(camera_.get_position(), vertex_position));
+        Vec3 camera_position;
+        GetCameraPosition(camera_.get(), &camera_position);
+        Vec3 vertex_position = CornerRefPosition(&corner_ref);
+        Ray camera_ray;
+        RayFromPointToPoint(&camera_ray, &camera_position, &vertex_position);
+        Pick pick = PickGroupBlock(group, &camera_ray);
 
         if (pick.block)
         {
-            for (std::size_t i = 0; i < 3; ++i)
+            if (Vec3Equals(&pick.triangle.A, &vertex_position) ||
+                Vec3Equals(&pick.triangle.B, &vertex_position) ||
+                Vec3Equals(&pick.triangle.C, &vertex_position))
             {
-                if (Vec3Equals(&pick.triangle[i], &vertex_position))
-                {
-                    return corner_ref;
-                }
+                return corner_ref;
             }
 
-            Vec3 camera_pos = camera_.get_position();
-
-            if (Vec3Distance(&camera_pos, &vertex_position) >
-                Vec3Distance(&camera_pos, &pick.intersection))
+            if (Vec3Distance(&camera_position, &vertex_position) >
+                Vec3Distance(&camera_position, &pick.intersection))
             {
                 return {};
             }
         }
+        else
+        {
+            return corner_ref;
+        }
     }
 
-    return corner_ref;
+    return {};
 }
 
 void gl_widget::use_new_block_tool()
@@ -143,12 +155,12 @@ void gl_widget::use_move_vertex_tool()
 
 void gl_widget::use_xy_plane_constraint()
 {
-    constrain_algorithm_ = constrain_algorithm::xy_plane;
+    constrain_algorithm_ = ConstrainAlgorithm::CONSTRAIN_TO_XY_PLANE;
 }
 
 void gl_widget::use_z_axis_constraint()
 {
-    constrain_algorithm_ = constrain_algorithm::z_axis;
+    constrain_algorithm_ = ConstrainAlgorithm::CONSTRAIN_TO_Z_AXIS;
 }
 
 void gl_widget::initializeGL()
@@ -214,7 +226,7 @@ void gl_widget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     draw(grid_);
-    draw(document_.group);
+    DrawGroup(GetRootGroup(document_));
 
     if (tool_)
     {
@@ -237,10 +249,11 @@ Mat4 gl_widget::projection_matrix() const
 
 Mat4 gl_widget::modelview_matrix() const
 {
-    Mat4 transform = world_transform(camera_);
-    Mat4 inv;
-    Mat4Inverse(&inv, &transform);
-    return inv;
+    Mat4 transform, inverse;
+
+    CameraWorldTransform(camera_.get(), &transform);
+    Mat4Inverse(&inverse, &transform);
+    return inverse;
 }
 
 float minor_size(QWidget const& widget)

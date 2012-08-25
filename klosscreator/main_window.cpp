@@ -7,8 +7,9 @@
 namespace kloss {
 namespace creator {
 
-main_window::main_window() :
-    gl_widget_(document_)
+main_window::main_window()
+    : document_(CreateDocument())
+    , gl_widget_(document_)
 {
     setCentralWidget(&gl_widget_);
     gl_widget_.setFocus(Qt::OtherFocusReason);
@@ -18,32 +19,38 @@ main_window::main_window() :
     create_toolbar();
 }
 
+main_window::~main_window()
+{
+    DestroyDocument(document_);
+}
+
 void main_window::cut()
 {
-    document_.cut();
+    CopySelectedBlocks(document_);
+    DeleteSelectedBlocks(document_);
     gl_widget_.update();
 }
 
 void main_window::copy()
 {
-    document_.copy();
+    CopySelectedBlocks(document_);
 }
 
 void main_window::paste()
 {
-    document_.paste();
+    PasteSelectedBlocks(document_);
     gl_widget_.update();
 }
 
 void main_window::del()
 {
-    document_.del();
+    DeleteSelectedBlocks(document_);
     gl_widget_.update();
 }
 
 void main_window::group()
 {
-    document_.group_selection();
+    GroupSelectedBlocks(document_);
     gl_widget_.update();
 }
 

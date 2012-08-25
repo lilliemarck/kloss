@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
-#include <klosscreator/document.hpp>
+#include <klosscreator/document.h>
 #include <klosscreator/gl_widget.hpp>
 
 namespace kloss {
@@ -13,6 +13,7 @@ class main_window : public QMainWindow
 
 public:
     main_window();
+    ~main_window();
 
 private slots:
     void cut();
@@ -27,7 +28,7 @@ private:
     void create_menus();
     void create_toolbar();
 
-    document document_;
+    Document* document_;
     gl_widget gl_widget_;
     QAction* quit_action_;
     QAction* cut_action_;

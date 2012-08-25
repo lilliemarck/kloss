@@ -1,10 +1,11 @@
 #include "move_block_tool.hpp"
 #include <QMouseEvent>
 #include <kloss/algorithm.hpp>
-#include <kloss/block.hpp>
-#include <klosscreator/document.hpp>
+#include <kloss/block.h>
+#include <kloss/buffer.h>
+#include <klosscreator/document.h>
 #include <klosscreator/gl_widget.hpp>
-#include <klosscreator/select_pick.hpp>
+#include <klosscreator/pick.h>
 
 namespace kloss {
 namespace creator {
@@ -12,35 +13,43 @@ namespace creator {
 move_block_tool::move_block_tool(gl_widget& parent)
     : parent_(parent)
     , document_(parent.document())
+    , drag_(nullptr)
     , document_lock_(parent.document())
 {
 }
 
 move_block_tool::~move_block_tool()
 {
-    document_.block_selection.clear();
+    DestroyBuffer(drag_);
+    DeselectAllBlocks(GetBlockSelection(document_));
 }
 
 void move_block_tool::mouse_press_event(QMouseEvent const& event)
 {
     if (event.button() == Qt::LeftButton)
     {
-        auto pick = document_.group.pick_block(parent_.mouse_ray(event.x(), event.y()));
+        BlockSelection* selection = GetBlockSelection(document_);
+        Ray mouse = parent_.mouse_ray(event.x(), event.y());
+        Pick pick = PickGroupBlock(GetRootGroup(document_), &mouse);
         bool did_select;
 
         if (event.modifiers() & Qt::ControlModifier)
         {
-            did_select = multi_select(document_.block_selection, pick);
+            did_select = MultiPickBlock(selection, pick.block);
         }
         else
         {
-            did_select = single_select(document_.block_selection, pick);
+            did_select = SinglePickBlock(selection, pick.block);
         }
 
         if (did_select)
         {
-            reference_ = get_intersection(pick);
-            drag_ = document_.block_selection.backup();
+            reference_ = pick.intersection;
+
+            DestroyBuffer(drag_);
+            drag_ = CreateBuffer();
+            BackupBlockSelection(selection, drag_);
+
             document_lock_.lock();
         }
 
@@ -53,7 +62,8 @@ void move_block_tool::mouse_release_event(QMouseEvent const& event)
     if (event.button() == Qt::LeftButton)
     {
         document_lock_.unlock();
-        drag_.reset();
+        DestroyBuffer(drag_);
+        drag_ = nullptr;
     }
 }
 
@@ -62,25 +72,29 @@ void move_block_tool::mouse_move_event(QMouseEvent const& event)
     if (drag_)
     {
         auto mouse_ray = parent_.mouse_ray(event.x(), event.y());
-        auto position = constrain(parent_.get_constrain_algorithm(), mouse_ray, *reference_);
+        Vec3 position;
 
-        if (position)
+        if (ConstrainRay(parent_.get_constrain_algorithm(), &mouse_ray, reference_.get_ptr(), &position))
         {
+            BlockSelection* selection = GetBlockSelection(document_);
+            RestoreBlockSelection(selection, drag_);
+
             Vec3 translation;
-            Vec3Subtract(&translation, &*position, &*reference_);
+            Vec3Subtract(&translation, &position, reference_.get_ptr());
 
             translation.X = std::round(translation.X);
             translation.Y = std::round(translation.Y);
             translation.Z = std::round(translation.Z);
 
-            document_.block_selection.restore(*drag_);
+            Block** blocks = SelectedBlocks(selection);
+            size_t count = SelectedBlockCount(selection);
 
-            for (auto& element : document_.block_selection)
+            for (size_t i = 0; i < count; ++i)
             {
-                translate(*element, translation);
+                TranslateBlock(blocks[i], &translation);
             }
 
-            parent_.group().update_vertex_array();
+            UpdateGroupVertexArray(parent_.group());
         }
 
         parent_.update();
@@ -90,19 +104,22 @@ void move_block_tool::mouse_move_event(QMouseEvent const& event)
 void move_block_tool::paint_gl()
 {
     auto const& cursor_vertices = parent_.cursor_vertices();
+    BlockSelection* selection = GetBlockSelection(document_);
+    Block** blocks = SelectedBlocks(selection);
+    size_t count = SelectedBlockCount(selection);
 
-    for (block_ptr const& pblock : document_.block_selection)
+    for (size_t i = 0; i < count; ++i)
     {
-        block const& block = *pblock;
+        Block const *block = blocks[i];
 
-        draw(cursor_vertices, {block[0].x, block[0].y, block[0].top});
-        draw(cursor_vertices, {block[1].x, block[1].y, block[1].top});
-        draw(cursor_vertices, {block[2].x, block[2].y, block[2].top});
-        draw(cursor_vertices, {block[3].x, block[3].y, block[3].top});
-        draw(cursor_vertices, {block[0].x, block[0].y, block[0].bottom});
-        draw(cursor_vertices, {block[1].x, block[1].y, block[1].bottom});
-        draw(cursor_vertices, {block[2].x, block[2].y, block[2].bottom});
-        draw(cursor_vertices, {block[3].x, block[3].y, block[3].bottom});
+        draw(cursor_vertices, {block->Corners[0].X, block->Corners[0].Y, block->Corners[0].Top});
+        draw(cursor_vertices, {block->Corners[1].X, block->Corners[1].Y, block->Corners[1].Top});
+        draw(cursor_vertices, {block->Corners[2].X, block->Corners[2].Y, block->Corners[2].Top});
+        draw(cursor_vertices, {block->Corners[3].X, block->Corners[3].Y, block->Corners[3].Top});
+        draw(cursor_vertices, {block->Corners[0].X, block->Corners[0].Y, block->Corners[0].Bottom});
+        draw(cursor_vertices, {block->Corners[1].X, block->Corners[1].Y, block->Corners[1].Bottom});
+        draw(cursor_vertices, {block->Corners[2].X, block->Corners[2].Y, block->Corners[2].Bottom});
+        draw(cursor_vertices, {block->Corners[3].X, block->Corners[3].Y, block->Corners[3].Bottom});
     }
 }
 

@@ -1,8 +1,8 @@
 #include "new_block_tool.hpp"
-#include <memory>
 #include <QMouseEvent>
-#include <kloss/block.hpp>
+#include <kloss/block.h>
 #include <klosscreator/gl_widget.hpp>
+#include <memory>
 
 namespace kloss {
 namespace creator {
@@ -22,13 +22,13 @@ void new_block_tool::mouse_press_event(QMouseEvent const& event)
             float top    = 1.0f;
             float bottom = 0.0f;
 
-            block_ptr block = std::make_shared<kloss::block>();
-            (*block)[0] = {x,        y,        top, bottom};
-            (*block)[1] = {x + 1.0f, y,        top, bottom};
-            (*block)[2] = {x + 1.0f, y + 1.0f, top, bottom};
-            (*block)[3] = {x,        y + 1.0f, top, bottom};
+            Block *block = CreateBlock();
+            block->Corners[0] = {x,        y,        top, bottom};
+            block->Corners[1] = {x + 1.0f, y,        top, bottom};
+            block->Corners[2] = {x + 1.0f, y + 1.0f, top, bottom};
+            block->Corners[3] = {x,        y + 1.0f, top, bottom};
 
-            parent_.group().insert(block);
+            InsertBlocksInGroup(parent_.group(), &block, 1);
             parent_.update();
         }
     }
@@ -36,12 +36,18 @@ void new_block_tool::mouse_press_event(QMouseEvent const& event)
 
 void new_block_tool::mouse_move_event(QMouseEvent const& event)
 {
-    cursor_position_ = intersect_xy_plane(parent_.mouse_ray(event.x(), event.y()));
+    Ray mouse_ray = parent_.mouse_ray(event.x(), event.y());
+    Vec3 temp;
 
-    if (cursor_position_)
+    if (RayIntersectXYPlane(&temp, &mouse_ray, 0.0f))
     {
-        cursor_position_->X = std::round(cursor_position_->X);
-        cursor_position_->Y = std::round(cursor_position_->Y);
+        cursor_position_ = temp;
+        cursor_position_->X = std::round(temp.X);
+        cursor_position_->Y = std::round(temp.Y);
+    }
+    else
+    {
+        cursor_position_.reset();
     }
 
     parent_.update();

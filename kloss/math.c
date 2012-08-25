@@ -122,6 +122,13 @@ void Vec4Scale(Vec4 *out, Vec4 const *vec, float scale)
     out->W = vec->W * scale;
 }
 
+void Vec4XYZ(Vec3 *out, Vec4 const *vec)
+{
+    out->X = vec->X;
+    out->Y = vec->Y;
+    out->Z = vec->Z;
+}
+
 void Mat4Identity(Mat4 *out)
 {
     out->X.X = 1.0f;

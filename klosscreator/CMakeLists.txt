@@ -12,10 +12,10 @@ qt4_wrap_cpp(klosscreator_MOC_SOURCES
     main_window.hpp)
 
 add_executable(klosscreator
-    block_selection.cpp
-    constrain.cpp
-    corner_selection.cpp
-    document.cpp
+    blockselection.c
+    constrain.c
+    cornerselection.c
+    document.c
     document_lock.cpp
     gl_widget.cpp
     main.cpp
@@ -24,7 +24,7 @@ add_executable(klosscreator
     move_camera_tool.cpp
     move_vertex_tool.cpp
     new_block_tool.cpp
-    select_pick.cpp
+    pick.c
     turn_camera_tool.cpp
     vertex_array.cpp
     ${klosscreator_MOC_SOURCES})
