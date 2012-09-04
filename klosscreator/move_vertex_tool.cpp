@@ -1,5 +1,4 @@
 #include "move_vertex_tool.hpp"
-#include <QMouseEvent>
 #include <kloss/algorithm.hpp>
 #include <kloss/buffer.h>
 #include <kloss/math.hpp>
@@ -28,14 +27,14 @@ move_vertex_tool::~move_vertex_tool()
     DestroyCornerSelection(selection_);
 }
 
-void move_vertex_tool::mouse_press_event(QMouseEvent const& event)
+void move_vertex_tool::mouse_press_event(ui_mouseevent const *event)
 {
-    if (event.button() == Qt::LeftButton)
+    if (event->button == UI_MOUSEBUTTON_LEFT)
     {
-        auto pick = parent_.pick_vertex(event.x(), event.y());
+        auto pick = parent_.pick_vertex(event->x, event->y);
         bool did_select;
 
-        if (event.modifiers() & Qt::ControlModifier)
+        if (event->modifiers & UI_MODIFIER_CTRL)
         {
             did_select = MultiPickCorner(selection_, pick.get_ptr());
         }
@@ -55,13 +54,13 @@ void move_vertex_tool::mouse_press_event(QMouseEvent const& event)
             document_lock_.lock();
         }
 
-        parent_.update();
+        ui_update_widget(parent_.glwidget());
     }
 }
 
-void move_vertex_tool::mouse_release_event(QMouseEvent const& event)
+void move_vertex_tool::mouse_release_event(ui_mouseevent const *event)
 {
-    if (event.button() == Qt::LeftButton)
+    if (event->button == UI_MOUSEBUTTON_LEFT)
     {
         document_lock_.unlock();
         DestroyBuffer(drag_);
@@ -69,11 +68,11 @@ void move_vertex_tool::mouse_release_event(QMouseEvent const& event)
     }
 }
 
-void move_vertex_tool::mouse_move_event(QMouseEvent const& event)
+void move_vertex_tool::mouse_move_event(ui_mouseevent const *event)
 {
     if (drag_)
     {
-        auto mouse_ray = parent_.mouse_ray(event.x(), event.y());
+        auto mouse_ray = parent_.mouse_ray(event->x, event->y);
         Vec3 position;
 
         if (ConstrainRay(parent_.get_constrain_algorithm(), &mouse_ray, reference_.get_ptr(), &position))
@@ -98,7 +97,7 @@ void move_vertex_tool::mouse_move_event(QMouseEvent const& event)
             UpdateGroupVertexArray(parent_.group());
         }
 
-        parent_.update();
+        ui_update_widget(parent_.glwidget());
     }
 }
 

@@ -1,5 +1,4 @@
 #include "move_block_tool.hpp"
-#include <QMouseEvent>
 #include <kloss/algorithm.hpp>
 #include <kloss/block.h>
 #include <kloss/buffer.h>
@@ -24,16 +23,16 @@ move_block_tool::~move_block_tool()
     DeselectAllBlocks(GetBlockSelection(document_));
 }
 
-void move_block_tool::mouse_press_event(QMouseEvent const& event)
+void move_block_tool::mouse_press_event(ui_mouseevent const *event)
 {
-    if (event.button() == Qt::LeftButton)
+    if (event->button == UI_MOUSEBUTTON_LEFT)
     {
         BlockSelection* selection = GetBlockSelection(document_);
-        Ray mouse = parent_.mouse_ray(event.x(), event.y());
+        Ray mouse = parent_.mouse_ray(event->x, event->y);
         Pick pick = PickGroupBlock(GetRootGroup(document_), &mouse);
         bool did_select;
 
-        if (event.modifiers() & Qt::ControlModifier)
+        if (event->modifiers & UI_MODIFIER_CTRL)
         {
             did_select = MultiPickBlock(selection, pick.block);
         }
@@ -53,13 +52,13 @@ void move_block_tool::mouse_press_event(QMouseEvent const& event)
             document_lock_.lock();
         }
 
-        parent_.update();
+        ui_update_widget(parent_.glwidget());
     }
 }
 
-void move_block_tool::mouse_release_event(QMouseEvent const& event)
+void move_block_tool::mouse_release_event(ui_mouseevent const *event)
 {
-    if (event.button() == Qt::LeftButton)
+    if (event->button == UI_MOUSEBUTTON_LEFT)
     {
         document_lock_.unlock();
         DestroyBuffer(drag_);
@@ -67,11 +66,11 @@ void move_block_tool::mouse_release_event(QMouseEvent const& event)
     }
 }
 
-void move_block_tool::mouse_move_event(QMouseEvent const& event)
+void move_block_tool::mouse_move_event(ui_mouseevent const *event)
 {
     if (drag_)
     {
-        auto mouse_ray = parent_.mouse_ray(event.x(), event.y());
+        auto mouse_ray = parent_.mouse_ray(event->x, event->y);
         Vec3 position;
 
         if (ConstrainRay(parent_.get_constrain_algorithm(), &mouse_ray, reference_.get_ptr(), &position))
@@ -97,7 +96,7 @@ void move_block_tool::mouse_move_event(QMouseEvent const& event)
             UpdateGroupVertexArray(parent_.group());
         }
 
-        parent_.update();
+        ui_update_widget(parent_.glwidget());
     }
 }
 

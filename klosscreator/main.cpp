@@ -1,15 +1,19 @@
-#include <QApplication>
 #include <klosscreator/main_window.hpp>
+#include <ui/ui.h>
 
 using namespace kloss::creator;
 
 int main(int argc, char* argv[])
 {
-    QApplication app(argc, argv);
+    ui_app *app = ui_create_app(&argc, argv);
 
-    main_window main_window;
-    main_window.resize(800, 600);
-    main_window.show();
+    {
+        main_window main_window;
+        main_window.show();
+        ui_run_app(app);
+    }
 
-    return app.exec();
+    ui_destroy_app(app);
+
+    return 0;
 }

@@ -1,34 +1,29 @@
 #pragma once
 
-#include <QBasicTimer>
-#include <QObject>
 #include <kloss/keypair.h>
-
-QT_BEGIN_NAMESPACE
-class QKeyEvent;
-QT_END_NAMESPACE
+#include <ui/ui.h>
 
 namespace kloss {
 namespace creator {
 
 class gl_widget;
 
-class move_camera_tool : private QObject
+class move_camera_tool
 {
 public:
     move_camera_tool(gl_widget& parent);
     virtual ~move_camera_tool();
 
-    void key_press_event(QKeyEvent const& event);
-    void key_release_event(QKeyEvent const& event);
+    void key_press_event(ui_key key);
+    void key_release_event(ui_key key);
 
 private:
-    void timerEvent(QTimerEvent* event) override;
+    static void on_timer(void* data, ui_timer* timer);
 
     gl_widget& parent_;
     KeyPair* backward_forward_;
     KeyPair* left_right_;
-    QBasicTimer timer_;
+    ui_timer* timer_;
 };
 
 } // namespace creator

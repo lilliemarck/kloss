@@ -10,3 +10,4 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 add_subdirectory(kloss)
 add_subdirectory(klosscreator)
+add_subdirectory(ui)

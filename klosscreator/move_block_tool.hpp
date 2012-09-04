@@ -20,9 +20,9 @@ public:
     move_block_tool(gl_widget& parent);
     ~move_block_tool();
 
-    void mouse_press_event(QMouseEvent const& event) override;
-    void mouse_release_event(QMouseEvent const& event) override;
-    void mouse_move_event(QMouseEvent const& event) override;
+    void mouse_press_event(ui_mouseevent const *event) override;
+    void mouse_release_event(ui_mouseevent const *event) override;
+    void mouse_move_event(ui_mouseevent const *event) override;
     void paint_gl() override;
 
 private:

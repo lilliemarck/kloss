@@ -12,8 +12,8 @@ class new_block_tool : public tool
 public:
     new_block_tool(gl_widget& parent);
 
-    void mouse_press_event(QMouseEvent const& event) override;
-    void mouse_move_event(QMouseEvent const& event) override;
+    void mouse_press_event(ui_mouseevent const *event) override;
+    void mouse_move_event(ui_mouseevent const *event) override;
     void paint_gl() override;
 
 private:

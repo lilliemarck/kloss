@@ -1,5 +1,4 @@
 #include "move_camera_tool.hpp"
-#include <QKeyEvent>
 #include <kloss/camera.h>
 #include <klosscreator/gl_widget.hpp>
 
@@ -9,13 +8,13 @@ namespace {
 
 float const delta_time = 1.0f / 10.0f;
 
-void update_key_pair(KeyPair* key_pair, bool pressed, QKeyEvent const& event, Qt::Key first, Qt::Key second)
+void update_key_pair(KeyPair* key_pair, bool pressed, ui_key event, ui_key first, ui_key second)
 {
-    if (event.key() == first)
+    if (event == first)
     {
         KeyPairSetFirst(key_pair, pressed);
     }
-    else if (event.key() == second)
+    else if (event == second)
     {
         KeyPairSetSecond(key_pair, pressed);
     }
@@ -27,47 +26,53 @@ move_camera_tool::move_camera_tool(gl_widget& parent)
     : parent_(parent)
     , backward_forward_(CreateKeyPair())
     , left_right_(CreateKeyPair())
+    , timer_(nullptr)
 {
 }
 
 move_camera_tool::~move_camera_tool()
 {
+    ui_stop_timer(timer_);
     DestroyKeyPair(backward_forward_);
     DestroyKeyPair(left_right_);
 }
 
-void move_camera_tool::key_press_event(QKeyEvent const& event)
+void move_camera_tool::key_press_event(ui_key key)
 {
-    update_key_pair(backward_forward_, true, event, Qt::Key_S, Qt::Key_W);
-    update_key_pair(left_right_,       true, event, Qt::Key_A, Qt::Key_D);
+    update_key_pair(backward_forward_, true, key, UI_KEY_S, UI_KEY_W);
+    update_key_pair(left_right_,       true, key, UI_KEY_A, UI_KEY_D);
 
     if (KeyPairValue(backward_forward_) != 0.0f || KeyPairValue(left_right_) != 0.0f)
     {
-        timer_.start(1.0f / delta_time, this);
+        if (!timer_)
+        {
+            timer_ = ui_start_timer(1.0f / delta_time, &move_camera_tool::on_timer, this);
+        }
     }
 }
 
-void move_camera_tool::key_release_event(QKeyEvent const& event)
+void move_camera_tool::key_release_event(ui_key key)
 {
-    update_key_pair(backward_forward_, false, event, Qt::Key_S, Qt::Key_W);
-    update_key_pair(left_right_,       false, event, Qt::Key_A, Qt::Key_D);
+    update_key_pair(backward_forward_, false, key, UI_KEY_S, UI_KEY_W);
+    update_key_pair(left_right_,       false, key, UI_KEY_A, UI_KEY_D);
 
     if (KeyPairValue(backward_forward_) == 0.0f && KeyPairValue(left_right_) == 0.0f)
     {
-        timer_.stop();
+        ui_stop_timer(timer_);
+        timer_ = nullptr;
     }
 }
 
-void move_camera_tool::timerEvent(QTimerEvent* event)
+void move_camera_tool::on_timer(void* data, ui_timer* timer)
 {
-    QObject::timerEvent(event);
+    move_camera_tool *self = static_cast<move_camera_tool*>(data);
 
-    if (event->timerId() == timer_.timerId())
+    if (timer == self->timer_)
     {
-        Camera* camera = parent_.camera();
-        MoveCameraForward(camera, KeyPairValue(backward_forward_) * delta_time);
-        MoveCameraSideways(camera, KeyPairValue(left_right_) * delta_time);
-        parent_.update();
+        Camera* camera = self->parent_.camera();
+        MoveCameraForward(camera, KeyPairValue(self->backward_forward_) * delta_time);
+        MoveCameraSideways(camera, KeyPairValue(self->left_right_) * delta_time);
+        ui_update_widget(self->parent_.glwidget());
     }
 }
 

@@ -1,5 +1,4 @@
 #include "gl_widget.hpp"
-#include <QMouseEvent>
 #include <kloss/camera.h>
 #include <kloss/geometry.h>
 #include <klosscreator/document.h>
@@ -14,8 +13,28 @@
 namespace kloss {
 namespace creator {
 
+ui_glprocs gl_widget::glprocs_ =
+{
+    &gl_widget::init_gl,
+    &gl_widget::resize_gl,
+    &gl_widget::draw_gl
+};
+
+ui_keyprocs gl_widget::keyprocs_ =
+{
+    &gl_widget::key_pressed,
+    &gl_widget::key_released
+};
+
+ui_mouseprocs gl_widget::mouseprocs_ =
+{
+    &gl_widget::mouse_pressed,
+    &gl_widget::mouse_released,
+    &gl_widget::mouse_moved,
+};
+
 gl_widget::gl_widget(Document* document)
-    : QGLWidget(static_cast<QWidget*>(nullptr))
+    : glwidget_(ui_create_glwidget(&glprocs_, this))
     , document_(document)
     , camera_(CreateCamera(), DestroyCamera)
     , grid_(make_grid(10))
@@ -24,7 +43,8 @@ gl_widget::gl_widget(Document* document)
     , move_camera_tool_(*this)
     , turn_camera_tool_(*this)
 {
-    setMouseTracking(true);
+    ui_set_keyprocs(glwidget_, &keyprocs_, this);
+    ui_set_mouseprocs(glwidget_, &mouseprocs_, this);
 
     Vec3 camera_pos = {0.0f, -4.0f, 2.0f};
     SetCameraPosition(camera_.get(), &camera_pos);
@@ -32,6 +52,11 @@ gl_widget::gl_widget(Document* document)
 
 gl_widget::~gl_widget()
 {
+}
+
+ui_glwidget *gl_widget::glwidget()
+{
+    return glwidget_;
 }
 
 Document* gl_widget::document()
@@ -81,7 +106,7 @@ Ray gl_widget::mouse_ray(float mouse_x, float mouse_y) const
 {
     Mat4 model = modelview_matrix();
     Mat4 projection = projection_matrix();
-    Viewport viewport = {0, 0, width(), height()};
+    Viewport viewport = {0, 0, ui_widget_width(glwidget_), ui_widget_height(glwidget_)};
 
     return make_pick_ray(mouse_x, mouse_y, model, projection, viewport);
 }
@@ -101,7 +126,7 @@ boost::optional<CornerRef> gl_widget::pick_vertex(float mouse_x, float mouse_y) 
     Group*   group      = GetRootGroup(document_);
     Mat4     model      = modelview_matrix();
     Mat4     projection = projection_matrix();
-    Viewport viewport   = {0, 0, width(), height()};
+    Viewport viewport   = {0, 0, ui_widget_width(glwidget_), ui_widget_height(glwidget_)};
     Vec2     mouse      = {mouse_x, mouse_y};
 
     CornerRef corner_ref;
@@ -163,74 +188,83 @@ void gl_widget::use_z_axis_constraint()
     constrain_algorithm_ = ConstrainAlgorithm::CONSTRAIN_TO_Z_AXIS;
 }
 
-void gl_widget::initializeGL()
+void gl_widget::key_pressed(void *data, ui_key key)
+{
+    gl_widget *self = static_cast<gl_widget*>(data);
+    self->move_camera_tool_.key_press_event(key);
+}
+
+void gl_widget::key_released(void *data, ui_key key)
+{
+    gl_widget *self = static_cast<gl_widget*>(data);
+    self->move_camera_tool_.key_release_event(key);
+}
+
+void gl_widget::mouse_pressed(void *data, ui_mouseevent const *event)
+{
+    gl_widget *self = static_cast<gl_widget*>(data);
+    self->turn_camera_tool_.mouse_press_event(event);
+
+    if (self->tool_)
+    {
+        self->tool_->mouse_press_event(event);
+    }
+}
+
+void gl_widget::mouse_released(void *data, ui_mouseevent const *event)
+{
+    gl_widget *self = static_cast<gl_widget*>(data);
+    self->turn_camera_tool_.mouse_release_event(event);
+
+    if (self->tool_)
+    {
+        self->tool_->mouse_release_event(event);
+    }
+}
+
+void gl_widget::mouse_moved(void *data, ui_mouseevent const *event)
+{
+    gl_widget *self = static_cast<gl_widget*>(data);
+    self->turn_camera_tool_.mouse_move_event(event);
+
+    if (self->tool_)
+    {
+        self->tool_->mouse_move_event(event);
+    }
+}
+
+void gl_widget::init_gl(void *data)
 {
     glEnable(GL_CULL_FACE);
 }
 
-void gl_widget::keyPressEvent(QKeyEvent* event)
+void gl_widget::resize_gl(void *data, int width, int height)
 {
-    move_camera_tool_.key_press_event(*event);
-}
+    gl_widget *self = static_cast<gl_widget*>(data);
 
-void gl_widget::keyReleaseEvent(QKeyEvent* event)
-{
-    move_camera_tool_.key_release_event(*event);
-}
-
-void gl_widget::mousePressEvent(QMouseEvent* event)
-{
-    turn_camera_tool_.mouse_press_event(*event);
-
-    if (tool_)
-    {
-        tool_->mouse_press_event(*event);
-    }
-}
-
-void gl_widget::mouseReleaseEvent(QMouseEvent* event)
-{
-    turn_camera_tool_.mouse_release_event(*event);
-
-    if (tool_)
-    {
-        tool_->mouse_release_event(*event);
-    }
-}
-
-void gl_widget::mouseMoveEvent(QMouseEvent* event)
-{
-    turn_camera_tool_.mouse_move_event(*event);
-
-    if (tool_)
-    {
-        tool_->mouse_move_event(*event);
-    }
-}
-
-void gl_widget::resizeGL(int width, int height)
-{
     glViewport(0, 0, width, height);
 
     glMatrixMode(GL_PROJECTION);
-    Mat4 matrix = projection_matrix();
+    Mat4 matrix = self->projection_matrix();
     glLoadMatrixf(&matrix.X.X);
 }
 
-void gl_widget::paintGL()
+void gl_widget::draw_gl(void *data)
 {
+    gl_widget *self = static_cast<gl_widget*>(data);
+
     glMatrixMode(GL_MODELVIEW);
-    auto matrix = modelview_matrix();
+    auto matrix = self->modelview_matrix();
     glLoadMatrixf(&matrix.X.X);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    draw(grid_);
-    DrawGroup(GetRootGroup(document_));
+    draw(self->grid_);
+    DrawGroup(GetRootGroup(self->document_));
 
-    if (tool_)
+    if (self->tool_)
     {
-        tool_->paint_gl();
+        self->tool_->paint_gl();
     }
 }
 
@@ -240,7 +274,11 @@ Mat4 gl_widget::projection_matrix() const
     Mat4RotationX(&axis_adjust, -M_TAU_4);
 
     Mat4 perspective;
-    Mat4Perspective(&perspective, 60.0f, float(width()) / float(height()), 0.1f, 1000.0f);
+    Mat4Perspective(&perspective,
+                    60.0f,
+                    float(ui_widget_width(glwidget_)) / float(ui_widget_height(glwidget_)),
+                    0.1f,
+                    1000.0f);
 
     Mat4 proj;
     Mat4Transform(&proj, &axis_adjust, &perspective);
@@ -254,11 +292,6 @@ Mat4 gl_widget::modelview_matrix() const
     CameraWorldTransform(camera_.get(), &transform);
     Mat4Inverse(&inverse, &transform);
     return inverse;
-}
-
-float minor_size(QWidget const& widget)
-{
-    return std::min(widget.width(), widget.height());
 }
 
 } // namespace kloss

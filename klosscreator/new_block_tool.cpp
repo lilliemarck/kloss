@@ -1,5 +1,4 @@
 #include "new_block_tool.hpp"
-#include <QMouseEvent>
 #include <kloss/block.h>
 #include <klosscreator/gl_widget.hpp>
 #include <memory>
@@ -11,9 +10,9 @@ new_block_tool::new_block_tool(gl_widget& parent) : parent_(parent)
 {
 }
 
-void new_block_tool::mouse_press_event(QMouseEvent const& event)
+void new_block_tool::mouse_press_event(ui_mouseevent const *event)
 {
-    if (event.button() == Qt::LeftButton)
+    if (event->button == UI_MOUSEBUTTON_LEFT)
     {
         if (cursor_position_)
         {
@@ -29,14 +28,14 @@ void new_block_tool::mouse_press_event(QMouseEvent const& event)
             block->Corners[3] = {x,        y + 1.0f, top, bottom};
 
             InsertBlocksInGroup(parent_.group(), &block, 1);
-            parent_.update();
+            ui_update_widget(parent_.glwidget());
         }
     }
 }
 
-void new_block_tool::mouse_move_event(QMouseEvent const& event)
+void new_block_tool::mouse_move_event(ui_mouseevent const *event)
 {
-    Ray mouse_ray = parent_.mouse_ray(event.x(), event.y());
+    Ray mouse_ray = parent_.mouse_ray(event->x, event->y);
     Vec3 temp;
 
     if (RayIntersectXYPlane(&temp, &mouse_ray, 0.0f))
@@ -50,7 +49,7 @@ void new_block_tool::mouse_move_event(QMouseEvent const& event)
         cursor_position_.reset();
     }
 
-    parent_.update();
+    ui_update_widget(parent_.glwidget());
 }
 
 void new_block_tool::paint_gl()
