@@ -45,7 +45,7 @@ static void mouse_released(void *data, ui_mouseevent const *event)
 
 static float minor_size(ui_glwidget const* widget)
 {
-    return Mini(ui_widget_width(widget), ui_widget_height(widget));
+    return mini(ui_widget_width(widget), ui_widget_height(widget));
 }
 
 static void mouse_moved(void *data, ui_mouseevent const *event)
@@ -54,13 +54,13 @@ static void mouse_moved(void *data, ui_mouseevent const *event)
 
     if (tool->isdragging)
     {
-        Camera *camera      = get_camera(tool->window);
+        camera *camera      = get_camera(tool->window);
         float   rotx        = event->x - tool->mouseoriginx;
         float   roty        = event->y - tool->mouseoriginy;
         float   degperpixel = 1.0f / minor_size(get_glwidget(tool->window));
 
-        RotateCameraYaw   (camera, -rotx * degperpixel);
-        RotateCameraPitch (camera, -roty * degperpixel);
+        rotate_camera_yaw   (camera, -rotx * degperpixel);
+        rotate_camera_pitch (camera, -roty * degperpixel);
 
         tool->mouseoriginx = event->x;
         tool->mouseoriginy = event->y;

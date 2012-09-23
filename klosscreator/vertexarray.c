@@ -2,10 +2,10 @@
 #include <kloss/buffer.h>
 #include <GL/gl.h>
 
-void draw(struct Buffer *array)
+void draw(struct buffer *array)
 {
-    vertex *data = BufferData(array);
-    size_t count = BufferSize(array) / sizeof(vertex);
+    vertex *data = buffer_data(array);
+    size_t count = buffer_size(array) / sizeof(vertex);
 
     glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
     glEnableClientState(GL_COLOR_ARRAY);
@@ -16,18 +16,18 @@ void draw(struct Buffer *array)
     glPopClientAttrib();
 }
 
-void draw_at(struct Buffer *array, Vec3 position)
+void draw_at(struct buffer *array, vec3 position)
 {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glTranslatef(position.X, position.Y, position.Z);
+    glTranslatef(position.x, position.y, position.z);
     draw(array);
     glPopMatrix();
 }
 
-Buffer *create_grid(int size)
+buffer *create_grid(int size)
 {
-    Buffer *array = CreateBuffer();
+    buffer *array = create_buffer();
 
     for (float i = -size; i <= size; ++i)
     {
@@ -42,7 +42,7 @@ Buffer *create_grid(int size)
             {{255, 255, 255}, {max, i, 0.0f}},
         };
 
-        AppendToBuffer(array, lines, sizeof(lines));
+        append_buffer(array, lines, sizeof(lines));
    }
 
     {
@@ -54,15 +54,15 @@ Buffer *create_grid(int size)
             {{0, 255, 0}, {0.0f, size, 0.0f}},
         };
 
-        AppendToBuffer(array, lines, sizeof(lines));
+        append_buffer(array, lines, sizeof(lines));
     }
 
     return array;
 }
 
-Buffer *create_cursor(float size)
+buffer *create_cursor(float size)
 {
-    Buffer *array = CreateBuffer();
+    buffer *array = create_buffer();
 
     vertex lines[] =
     {
@@ -74,6 +74,6 @@ Buffer *create_cursor(float size)
         {{0, 0, 255}, { 0.0f,  0.0f,  size}},
     };
 
-    AppendToBuffer(array, lines, sizeof(lines));
+    append_buffer(array, lines, sizeof(lines));
     return array;
 }

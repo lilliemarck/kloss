@@ -3,20 +3,20 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-struct Block;
-struct Buffer;
+struct block;
+struct buffer;
 
-typedef struct BlockSelection BlockSelection;
+typedef struct blockselection blockselection;
 
-struct BlockSelection *CreateBlockSelection(void);
-void DestroyBlockSelection(BlockSelection *selection);
-void SelectBlock(BlockSelection *selection, struct Block *block);
-void DeselectAllBlocks(BlockSelection *selection);
-size_t SelectedBlockCount(BlockSelection *selection);
-struct Block **SelectedBlocks(BlockSelection *Selection);
+struct blockselection *create_blockselection(void);
+void destroy_blockselection(blockselection *selection);
+void select_block(blockselection *selection, struct block *block);
+void deselect_all_blocks(blockselection *selection);
+size_t selected_block_count(blockselection *selection);
+struct block **selected_blocks(blockselection *selection);
 
-void BackupBlockSelection(BlockSelection *selection, struct Buffer *buffer);
-void RestoreBlockSelection(BlockSelection *selection, struct Buffer *buffer);
+void backup_blockselection(blockselection *selection, struct buffer *buffer);
+void restore_blockselection(blockselection *selection, struct buffer *buffer);
 
-bool SinglePickBlock(BlockSelection *selection, struct Block *pick);
-bool MultiPickBlock(BlockSelection *selection, struct Block *pick);
+bool single_pick_block(blockselection *selection, struct block *pick);
+bool multi_pick_block(blockselection *selection, struct block *pick);

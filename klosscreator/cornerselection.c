@@ -7,64 +7,64 @@
 #include <assert.h>
 #include <stdlib.h>
 
-struct CornerSelection
+struct cornerselection
 {
-    DECLARE_TARRAY(CornerRef, CornerRefs);
+    DECLARE_TARRAY(cornerref, cornerrefs);
 };
 
-CornerSelection *CreateCornerSelection(void)
+cornerselection *create_cornerselection(void)
 {
-    return calloc(1, sizeof(CornerSelection));
+    return calloc(1, sizeof(cornerselection));
 }
 
-void DestroyCornerSelection(CornerSelection *selection)
+void destroy_cornerselection(cornerselection *selection)
 {
     if (selection)
     {
-        FREE_TARRAY(selection->CornerRefs);
+        FREE_TARRAY(selection->cornerrefs);
         free(selection);
     }
 }
 
-size_t SelectedCornerCount(CornerSelection *selection)
+size_t selected_corner_count(cornerselection *selection)
 {
-    return TARRAY_LENGTH(selection->CornerRefs);
+    return TARRAY_LENGTH(selection->cornerrefs);
 }
 
-CornerRef *SelectedCorners(CornerSelection *selection)
+cornerref *selected_corners(cornerselection *selection)
 {
-    return selection->CornerRefs.Begin;
+    return selection->cornerrefs.begin;
 }
 
-void BackupCornerSelection(CornerSelection *selection, struct Buffer *buffer)
+void backup_cornerselection(cornerselection *selection, struct buffer *buffer)
 {
-    for (CornerRef *i = selection->CornerRefs.Begin; i != selection->CornerRefs.End; ++i)
+    for (cornerref *i = selection->cornerrefs.begin; i != selection->cornerrefs.end; ++i)
     {
-        AppendToBuffer(buffer, i->Corner, sizeof(Corner));
+        append_buffer(buffer, i->corner, sizeof(corner));
     }
 }
 
-void RestoreCornerSelection(CornerSelection *selection, struct Buffer *buffer)
+void restore_cornerselection(cornerselection *selection, struct buffer *buffer)
 {
-    assert(BufferSize(buffer) / sizeof(Corner) == TARRAY_LENGTH(selection->CornerRefs));
+    assert(buffer_size(buffer) / sizeof(corner) == TARRAY_LENGTH(selection->cornerrefs));
 
-    Corner *backup = BufferData(buffer);
-    size_t cornerCount = TARRAY_LENGTH(selection->CornerRefs);
+    corner *backup = buffer_data(buffer);
+    size_t cornercount = TARRAY_LENGTH(selection->cornerrefs);
 
-    for (size_t i = 0; i < cornerCount; ++i)
+    for (size_t i = 0; i < cornercount; ++i)
     {
-        *selection->CornerRefs.Begin[i].Corner = backup[i];
+        *selection->cornerrefs.begin[i].corner = backup[i];
     }
 }
 
-static bool IsSelected(void *data, void *element)
+static bool is_selected(void *data, void *element)
 {
-    CornerSelection *selection = data;
-    CornerRef *cornerRef = element;
+    cornerselection *selection = data;
+    cornerref *ref = element;
 
-    for (CornerRef *i = selection->CornerRefs.Begin; i != selection->CornerRefs.End; ++i)
+    for (cornerref *i = selection->cornerrefs.begin; i != selection->cornerrefs.end; ++i)
     {
-        if (i->Corner == cornerRef->Corner && i->Flags & cornerRef->Flags)
+        if (i->corner == ref->corner && i->flags & ref->flags)
         {
             return true;
         }
@@ -73,37 +73,37 @@ static bool IsSelected(void *data, void *element)
     return false;
 }
 
-static void Select(void *data, void *element)
+static void select(void *data, void *element)
 {
-    CornerSelection *selection = data;
-    CornerRef *cornerRef = element;
+    cornerselection *selection = data;
+    cornerref *ref = element;
 
-    for (CornerRef *i = selection->CornerRefs.Begin; i != selection->CornerRefs.End; ++i)
+    for (cornerref *i = selection->cornerrefs.begin; i != selection->cornerrefs.end; ++i)
     {
-        if (i->Corner == cornerRef->Corner)
+        if (i->corner == ref->corner)
         {
-            i->Flags |= cornerRef->Flags;
+            i->flags |= ref->flags;
             return;
         }
     }
 
-    PUSH_TARRAY(selection->CornerRefs, *cornerRef);
+    PUSH_TARRAY(selection->cornerrefs, *ref);
 }
 
-static void Deselect(void *data, void *element)
+static void deselect(void *data, void *element)
 {
-    CornerSelection *selection = data;
-    CornerRef *cornerRef = element;
+    cornerselection *selection = data;
+    cornerref *ref = element;
 
-    for (CornerRef *i = selection->CornerRefs.Begin; i != selection->CornerRefs.End; ++i)
+    for (cornerref *i = selection->cornerrefs.begin; i != selection->cornerrefs.end; ++i)
     {
-        if (i->Corner == cornerRef->Corner)
+        if (i->corner == ref->corner)
         {
-            i->Flags &= ~cornerRef->Flags;
+            i->flags &= ~ref->flags;
 
-            if (i->Flags == 0)
+            if (i->flags == 0)
             {
-                ERASE_TARRAY_ITERATOR(selection->CornerRefs, i);
+                ERASE_TARRAY_ITERATOR(selection->cornerrefs, i);
             }
 
             return;
@@ -111,26 +111,26 @@ static void Deselect(void *data, void *element)
     }
 }
 
-static void DeselectAll(void *data)
+static void deselect_all(void *data)
 {
-    CornerSelection *selection = data;
-    CLEAR_TARRAY(selection->CornerRefs);
+    cornerselection *selection = data;
+    CLEAR_TARRAY(selection->cornerrefs);
 }
 
-static PickInterface interface =
+static pickprocs interface =
 {
-    IsSelected,
-    Select,
-    Deselect,
-    DeselectAll
+    is_selected,
+    select,
+    deselect,
+    deselect_all
 };
 
-bool SinglePickCorner(CornerSelection *selection, CornerRef *pick)
+bool single_pick_corner(cornerselection *selection, cornerref *pick)
 {
-    return SinglePick(&interface, selection, pick);
+    return single_pick(&interface, selection, pick);
 }
 
-bool MultiPickCorner(CornerSelection *selection, CornerRef *pick)
+bool multi_pick_corner(cornerselection *selection, cornerref *pick)
 {
-    return MultiPick(&interface, selection, pick);
+    return multi_pick(&interface, selection, pick);
 }

@@ -5,108 +5,108 @@
 #include <math.h>
 #include <stdlib.h>
 
-struct Camera
+struct camera
 {
-    Vec3 Position;
-    float Yaw;
-    float Pitch;
+    vec3 position;
+    float yaw;
+    float pitch;
 };
 
-Camera *CreateCamera(void)
+camera *create_camera(void)
 {
-    return calloc(1, sizeof(Camera));
+    return calloc(1, sizeof(camera));
 }
 
-void DestroyCamera(Camera *camera)
+void destroy_camera(camera *camera)
 {
     free(camera);
 }
 
-void GetCameraPosition(Camera const *camera, Vec3 *out)
+void get_camera_position(camera const *camera, vec3 *out)
 {
-    *out = camera->Position;
+    *out = camera->position;
 }
 
-void SetCameraPosition(Camera *camera, Vec3 *out)
+void set_camera_position(camera *camera, vec3 *out)
 {
-    camera->Position = *out;
+    camera->position = *out;
 }
 
-float GetCameraYaw(Camera const *camera)
+float get_camera_yaw(camera const *camera)
 {
-    return camera->Yaw;
+    return camera->yaw;
 }
 
-void SetCameraYaw(Camera *camera, float radians)
+void set_camera_yaw(camera *camera, float radians)
 {
-    camera->Yaw = fmod(radians, M_TAU);
+    camera->yaw = fmod(radians, M_TAU);
 }
 
-float GetCameraPitch(Camera const *camera)
+float get_camera_pitch(camera const *camera)
 {
-    return camera->Pitch;
+    return camera->pitch;
 }
 
-void SetCameraPitch(Camera *camera, float radians)
+void set_camera_pitch(camera *camera, float radians)
 {
-    camera->Pitch = Clampf(radians, -M_TAU_4, M_TAU_4);
+    camera->pitch = clampf(radians, -M_TAU_4, M_TAU_4);
 }
 
-void MoveCameraForward(Camera *camera, float units)
+void move_camera_forward(camera *camera, float units)
 {
-    Vec3 direction;
+    vec3 direction;
 
-    CameraLookDirection(camera, &direction);
-    Vec3AddScaled(&camera->Position, &camera->Position, &direction, units);
+    camera_lookdirection(camera, &direction);
+    vec3_add_scaled(&camera->position, &camera->position, &direction, units);
 }
 
-void MoveCameraSideways(Camera *camera, float units)
+void move_camera_sideways(camera *camera, float units)
 {
-    Mat4 rotation;
-    Vec3 right;
+    mat4 rotation;
+    vec3 right;
 
-    CameraRotationMatrix(camera, &rotation);
-    Vec4XYZ(&right, &rotation.X);
-    Vec3AddScaled(&camera->Position, &camera->Position, &right, units);
+    camera_rotationmatrix(camera, &rotation);
+    vec4_xyz(&right, &rotation.x);
+    vec3_add_scaled(&camera->position, &camera->position, &right, units);
 }
 
-void RotateCameraYaw(Camera *camera, float radians)
+void rotate_camera_yaw(camera *camera, float radians)
 {
-    SetCameraYaw(camera, camera->Yaw + radians);
+    set_camera_yaw(camera, camera->yaw + radians);
 }
 
-void RotateCameraPitch(Camera *camera, float radians)
+void rotate_camera_pitch(camera *camera, float radians)
 {
-    SetCameraPitch(camera, camera->Pitch + radians);
+    set_camera_pitch(camera, camera->pitch + radians);
 }
 
-void CameraLookDirection(Camera const *camera, Vec3 *out)
+void camera_lookdirection(camera const *camera, vec3 *out)
 {
-    Mat4 rotation;
+    mat4 rotation;
 
-    CameraRotationMatrix(camera, &rotation);
-    Vec4XYZ(out, &rotation.Y);
+    camera_rotationmatrix(camera, &rotation);
+    vec4_xyz(out, &rotation.y);
 }
 
-void CameraRotationMatrix(Camera const *camera, Mat4 *out)
+void camera_rotationmatrix(camera const *camera, mat4 *out)
 {
-    Mat4 rotx, rotz;
+    mat4 rotx, rotz;
 
-    Mat4RotationX(&rotx, camera->Pitch);
-    Mat4RotationZ(&rotz, camera->Yaw);
-    Mat4Transform(out, &rotx, &rotz);
+    mat4_rotationx(&rotx, camera->pitch);
+    mat4_rotationz(&rotz, camera->yaw);
+    mat4_transform(out, &rotx, &rotz);
 }
 
-void CameraWorldTransform(Camera const *camera, Mat4 *out)
+void camera_worldtransform(camera const *camera, mat4 *out)
 {
-    CameraRotationMatrix(camera, out);
-    out->T.X = camera->Position.X;
-    out->T.Y = camera->Position.Y;
-    out->T.Z = camera->Position.Z;
+    camera_rotationmatrix(camera, out);
+    out->t.x = camera->position.x;
+    out->t.y = camera->position.y;
+    out->t.z = camera->position.z;
 }
 
-void CameraRay(Camera const *camera, Ray *out)
+void camera_ray(camera const *camera, ray *out)
 {
-    out->Origin = camera->Position;
-    CameraLookDirection(camera, &out->Direction);
+    out->origin = camera->position;
+    camera_lookdirection(camera, &out->direction);
 }

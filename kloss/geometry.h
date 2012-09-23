@@ -2,21 +2,21 @@
 
 #include <kloss/math.h>
 
-typedef struct Triangle Triangle;
-typedef struct Ray Ray;
+typedef struct triangle triangle;
+typedef struct ray ray;
 
-struct Triangle
+struct triangle
 {
-    Vec3 A, B, C;
+    vec3 a, b, c;
 };
 
-struct Ray
+struct ray
 {
-    Vec3 Origin;
-    Vec3 Direction;
+    vec3 origin;
+    vec3 direction;
 };
 
-void TriangleNormal(Vec3 *out, Triangle const *triangle);
-void RayFromPointToPoint(Ray *out, Vec3 const *origin, Vec3 const *target);
-Vec3 *RayIntersectXYPlane(Vec3 *out, Ray const *ray, float z);
-float *RayIntersectTriangle(float *out, Ray const *ray, Triangle const *triangle);
+void triangle_normal(vec3 *out, triangle const *triangle);
+void ray_from_point_to_point(ray *out, vec3 const *origin, vec3 const *target);
+vec3 *ray_intersect_xyplane(vec3 *out, ray const *ray, float z);
+float *ray_intersect_triangle(float *out, ray const *ray, triangle const *triangle);

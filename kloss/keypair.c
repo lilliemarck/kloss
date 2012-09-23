@@ -5,62 +5,62 @@ typedef struct Key Key;
 
 struct Key
 {
-    bool Pressed;
-    bool Selected;
+    bool pressed;
+    bool selected;
 };
 
-struct KeyPair
+struct keypair
 {
-    Key First;
-    Key Second;
+    Key first;
+    Key second;
 };
 
-KeyPair *CreateKeyPair(void)
+keypair *create_keypair(void)
 {
-    return calloc(1, sizeof(KeyPair));
+    return calloc(1, sizeof(keypair));
 }
 
-void DestroyKeyPair(KeyPair *pair)
+void destroy_keypair(keypair *pair)
 {
     free(pair);
 }
 
 static void SetKeyState(Key *key, Key *other, bool pressed)
 {
-    if (key->Pressed != pressed)
+    if (key->pressed != pressed)
     {
-        key->Pressed = key->Selected = pressed;
+        key->pressed = key->selected = pressed;
 
         if (pressed)
         {
-            other->Selected = false;
+            other->selected = false;
         }
         else
         {
-            other->Selected = other->Pressed;
+            other->selected = other->pressed;
         }
     }
 }
 
-float KeyPairSetFirst(KeyPair *pair, bool pressed)
+float set_keypair_first(keypair *pair, bool pressed)
 {
-    SetKeyState(&pair->First, &pair->Second, pressed);
-    return KeyPairValue(pair);
+    SetKeyState(&pair->first, &pair->second, pressed);
+    return keypair_value(pair);
 }
 
-float KeyPairSetSecond(KeyPair *pair, bool pressed)
+float set_keypair_second(keypair *pair, bool pressed)
 {
-    SetKeyState(&pair->Second, &pair->First, pressed);
-    return KeyPairValue(pair);
+    SetKeyState(&pair->second, &pair->first, pressed);
+    return keypair_value(pair);
 }
 
-float KeyPairValue(KeyPair const *pair)
+float keypair_value(keypair const *pair)
 {
-    if (pair->First.Selected)
+    if (pair->first.selected)
     {
         return -1.0f;
     }
-    else if (pair->Second.Selected)
+    else if (pair->second.selected)
     {
         return 1.0f;
     }

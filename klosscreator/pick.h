@@ -2,15 +2,15 @@
 
 #include <stdbool.h>
 
-typedef struct PickInterface PickInterface;
+typedef struct pickprocs pickprocs;
 
-struct PickInterface
+struct pickprocs
 {
-    bool (*IsSelected)(void *data, void *element);
-    void (*Select)(void *data, void *element);
-    void (*Deselect)(void *data, void *element);
-    void (*DeselectAll)(void *data);
+    bool (*is_selected)(void *data, void *element);
+    void (*select)(void *data, void *element);
+    void (*deselect)(void *data, void *element);
+    void (*deselect_all)(void *data);
 };
 
-bool SinglePick(PickInterface *interface, void *data, void *pick);
-bool MultiPick(PickInterface *interface, void *data, void *pick);
+bool single_pick(pickprocs *interface, void *data, void *pick);
+bool multi_pick(pickprocs *interface, void *data, void *pick);

@@ -11,73 +11,73 @@
 
 struct mainwindow
 {
-    Document* document_;
-    ui_window* window_;
-    ui_glwidget* glwidget_;
-    Camera *camera_;
-    Buffer *gridvertices_;
-    Buffer *cursorvertices_;
-    ConstrainAlgorithm constrainalgorithm_;
-    void *movecameratool_;
-    void *rotatecameratool_;
-    toolprocs const *toolprocs_;
-    void *tooldata_;
-    ui_action* quit_action_;
-    ui_action* cut_action_;
-    ui_action* copy_action_;
-    ui_action* paste_action_;
-    ui_action* del_action_;
-    ui_action* group_action_;
-    ui_action* ungroup_action_;
-    ui_action* new_block_action_;
-    ui_action* move_block_action_;
+    document* document;
+    ui_window* window;
+    ui_glwidget* glwidget;
+    camera *camera;
+    buffer *gridvertices;
+    buffer *cursorvertices;
+    constraint constraint;
+    void *movecameratool;
+    void *rotatecameratool;
+    toolprocs const *toolprocs;
+    void *tooldata;
+    ui_action* quit_action;
+    ui_action* cut_action;
+    ui_action* copy_action;
+    ui_action* paste_action;
+    ui_action* delete_action;
+    ui_action* group_action;
+    ui_action* ungroup_action;
+    ui_action* new_block_action;
+    ui_action* move_block_action;
     ui_action* move_vertex_action_;
-    ui_action* xy_plane_constraint_action_;
-    ui_action* z_azis_constraint_action_;
-    ui_menu* file_menu_;
-    ui_menu* edit_menu_;
-    ui_toolbar* tool_bar_;
+    ui_action* xyplane_constraint_action;
+    ui_action* zaxis_constraint_action;
+    ui_menu* filemenu;
+    ui_menu* editmenu;
+    ui_toolbar* toolbar;
 };
 
 static void close(void* data)
 {
     mainwindow* self = data;
-    ui_close_window(self->window_);
+    ui_close_window(self->window);
 }
 
 static void cut(void* data)
 {
     mainwindow* self = data;
-    CopySelectedBlocks(self->document_);
-    DeleteSelectedBlocks(self->document_);
-    ui_update_widget(self->glwidget_);
+    copy_selected_blocks(self->document);
+    delete_selected_blocks(self->document);
+    ui_update_widget(self->glwidget);
 }
 
 static void copy(void* data)
 {
     mainwindow* self = data;
-    CopySelectedBlocks(self->document_);
+    copy_selected_blocks(self->document);
 }
 
 static void paste(void* data)
 {
     mainwindow* self = data;
-    PasteSelectedBlocks(self->document_);
-    ui_update_widget(self->glwidget_);
+    paste_copied_blocks(self->document);
+    ui_update_widget(self->glwidget);
 }
 
 static void del(void* data)
 {
     mainwindow* self = data;
-    DeleteSelectedBlocks(self->document_);
-    ui_update_widget(self->glwidget_);
+    delete_selected_blocks(self->document);
+    ui_update_widget(self->glwidget);
 }
 
-static void group(void* data)
+static void group_action(void* data)
 {
     mainwindow* self = data;
-    GroupSelectedBlocks(self->document_);
-    ui_update_widget(self->glwidget_);
+    group_selected_blocks(self->document);
+    ui_update_widget(self->glwidget);
 }
 
 static void ungroup(void* data)
@@ -86,10 +86,10 @@ static void ungroup(void* data)
 
 static void free_tool(mainwindow *win)
 {
-    if (win->toolprocs_)
+    if (win->toolprocs)
     {
-        win->toolprocs_->destroy(win->tooldata_);
-        win->toolprocs_ = NULL;
+        win->toolprocs->destroy(win->tooldata);
+        win->toolprocs = NULL;
     }
 }
 
@@ -97,10 +97,10 @@ static void use_tool(mainwindow *win, toolprocs const *procs)
 {
     free_tool(win);
 
-    win->toolprocs_ = procs;
-    win->tooldata_  = procs->create(win);
+    win->toolprocs = procs;
+    win->tooldata  = procs->create(win);
 
-    ui_update_widget(win->glwidget_);
+    ui_update_widget(win->glwidget);
 }
 
 static void use_new_block_tool(void* data)
@@ -120,116 +120,116 @@ static void use_move_vertex_tool(void* data)
 
 static void use_xy_plane_constraint(void* data)
 {
-    ((mainwindow*)data)->constrainalgorithm_ = CONSTRAIN_TO_XY_PLANE;
+    ((mainwindow*)data)->constraint = CONSTRAIN_TO_XY_PLANE;
 }
 
 static void use_z_axis_constraint(void *data)
 {
-    ((mainwindow*)data)->constrainalgorithm_ = CONSTRAIN_TO_Z_AXIS;
+    ((mainwindow*)data)->constraint = CONSTRAIN_TO_Z_AXIS;
 }
 
 static void create_actions(mainwindow *win)
 {
-    win->quit_action_ = ui_create_action(win->window_);
-    ui_set_action_text    (win->quit_action_, "Q&uit");
-    ui_set_action_shortcut(win->quit_action_, "Ctrl+Q");
-    ui_set_actionproc     (win->quit_action_, close, win);
+    win->quit_action = ui_create_action(win->window);
+    ui_set_action_text    (win->quit_action, "Q&uit");
+    ui_set_action_shortcut(win->quit_action, "Ctrl+Q");
+    ui_set_actionproc     (win->quit_action, close, win);
 
-    win->cut_action_ = ui_create_action(win->window_);
-    ui_set_action_text    (win->cut_action_, "Cu&t");
-    ui_set_action_shortcut(win->cut_action_, "Ctrl+X");
-    ui_set_actionproc     (win->cut_action_, cut, win);
+    win->cut_action = ui_create_action(win->window);
+    ui_set_action_text    (win->cut_action, "Cu&t");
+    ui_set_action_shortcut(win->cut_action, "Ctrl+X");
+    ui_set_actionproc     (win->cut_action, cut, win);
 
-    win->copy_action_ = ui_create_action(win->window_);
-    ui_set_action_text    (win->copy_action_, "&Copy");
-    ui_set_action_shortcut(win->copy_action_, "Ctrl+C");
-    ui_set_actionproc     (win->copy_action_, copy, win);
+    win->copy_action = ui_create_action(win->window);
+    ui_set_action_text    (win->copy_action, "&Copy");
+    ui_set_action_shortcut(win->copy_action, "Ctrl+C");
+    ui_set_actionproc     (win->copy_action, copy, win);
 
-    win->paste_action_ = ui_create_action(win->window_);
-    ui_set_action_text    (win->paste_action_, "&Paste");
-    ui_set_action_shortcut(win->paste_action_, "Ctrl+V");
-    ui_set_actionproc     (win->paste_action_, paste, win);
+    win->paste_action = ui_create_action(win->window);
+    ui_set_action_text    (win->paste_action, "&Paste");
+    ui_set_action_shortcut(win->paste_action, "Ctrl+V");
+    ui_set_actionproc     (win->paste_action, paste, win);
 
-    win->del_action_ = ui_create_action(win->window_);
-    ui_set_action_text    (win->del_action_, "Delete");
-    ui_set_action_shortcut(win->del_action_, "Delete");
-    ui_set_actionproc     (win->del_action_, del, win);
+    win->delete_action = ui_create_action(win->window);
+    ui_set_action_text    (win->delete_action, "Delete");
+    ui_set_action_shortcut(win->delete_action, "Delete");
+    ui_set_actionproc     (win->delete_action, del, win);
 
-    win->group_action_ = ui_create_action(win->window_);
-    ui_set_action_text    (win->group_action_, "&Group");
-    ui_set_action_shortcut(win->group_action_, "Ctrl+G");
-    ui_set_actionproc     (win->group_action_, group, win);
+    win->group_action = ui_create_action(win->window);
+    ui_set_action_text    (win->group_action, "&Group");
+    ui_set_action_shortcut(win->group_action, "Ctrl+G");
+    ui_set_actionproc     (win->group_action, group_action, win);
 
-    win->ungroup_action_ = ui_create_action(win->window_);
-    ui_set_action_text    (win->ungroup_action_, "&Ungroup");
-    ui_set_action_shortcut(win->ungroup_action_, "Ctrl+Alt+G");
-    ui_set_actionproc     (win->ungroup_action_, ungroup, win);
+    win->ungroup_action = ui_create_action(win->window);
+    ui_set_action_text    (win->ungroup_action, "&Ungroup");
+    ui_set_action_shortcut(win->ungroup_action, "Ctrl+Alt+G");
+    ui_set_actionproc     (win->ungroup_action, ungroup, win);
 
-    win->new_block_action_ = ui_create_action(win->window_);
-    ui_set_action_text     (win->new_block_action_, "New Block");
-    ui_set_action_checkable(win->new_block_action_, true);
-    ui_set_actionproc      (win->new_block_action_, use_new_block_tool, win);
+    win->new_block_action = ui_create_action(win->window);
+    ui_set_action_text     (win->new_block_action, "New Block");
+    ui_set_action_checkable(win->new_block_action, true);
+    ui_set_actionproc      (win->new_block_action, use_new_block_tool, win);
 
-    win->move_block_action_ = ui_create_action(win->window_);
-    ui_set_action_text     (win->move_block_action_, "Move Block");
-    ui_set_action_checkable(win->move_block_action_, true);
-    ui_set_actionproc      (win->move_block_action_, use_move_block_tool, win);
+    win->move_block_action = ui_create_action(win->window);
+    ui_set_action_text     (win->move_block_action, "Move Block");
+    ui_set_action_checkable(win->move_block_action, true);
+    ui_set_actionproc      (win->move_block_action, use_move_block_tool, win);
 
-    win->move_vertex_action_ = ui_create_action(win->window_);
+    win->move_vertex_action_ = ui_create_action(win->window);
     ui_set_action_text     (win->move_vertex_action_, "Move Vertex");
     ui_set_action_checkable(win->move_vertex_action_, true);
     ui_set_actionproc      (win->move_vertex_action_, use_move_vertex_tool, win);
 
-    ui_actiongroup *toolgroup = ui_create_actiongroup(win->window_);
-    ui_add_action_to_group(toolgroup, win->new_block_action_);
-    ui_add_action_to_group(toolgroup, win->move_block_action_);
+    ui_actiongroup *toolgroup = ui_create_actiongroup(win->window);
+    ui_add_action_to_group(toolgroup, win->new_block_action);
+    ui_add_action_to_group(toolgroup, win->move_block_action);
     ui_add_action_to_group(toolgroup, win->move_vertex_action_);
-    ui_trig_action(win->new_block_action_);
+    ui_trig_action(win->new_block_action);
 
-    win->xy_plane_constraint_action_ = ui_create_action(win->window_);
-    ui_set_action_text     (win->xy_plane_constraint_action_, "XY");
-    ui_set_action_checkable(win->xy_plane_constraint_action_, true);
-    ui_set_action_shortcut (win->xy_plane_constraint_action_, "X");
-    ui_set_actionproc      (win->xy_plane_constraint_action_, use_xy_plane_constraint, win);
+    win->xyplane_constraint_action = ui_create_action(win->window);
+    ui_set_action_text     (win->xyplane_constraint_action, "XY");
+    ui_set_action_checkable(win->xyplane_constraint_action, true);
+    ui_set_action_shortcut (win->xyplane_constraint_action, "X");
+    ui_set_actionproc      (win->xyplane_constraint_action, use_xy_plane_constraint, win);
 
-    win->z_azis_constraint_action_ = ui_create_action(win->window_);
-    ui_set_action_text     (win->z_azis_constraint_action_, "Z");
-    ui_set_action_checkable(win->z_azis_constraint_action_, true);
-    ui_set_action_shortcut (win->z_azis_constraint_action_, "Z");
-    ui_set_actionproc      (win->z_azis_constraint_action_, use_z_axis_constraint, win);
+    win->zaxis_constraint_action = ui_create_action(win->window);
+    ui_set_action_text     (win->zaxis_constraint_action, "Z");
+    ui_set_action_checkable(win->zaxis_constraint_action, true);
+    ui_set_action_shortcut (win->zaxis_constraint_action, "Z");
+    ui_set_actionproc      (win->zaxis_constraint_action, use_z_axis_constraint, win);
 
-    ui_actiongroup *constraintgroup = ui_create_actiongroup(win->window_);
-    ui_add_action_to_group(constraintgroup, win->xy_plane_constraint_action_);
-    ui_add_action_to_group(constraintgroup, win->z_azis_constraint_action_);
-    ui_trig_action(win->xy_plane_constraint_action_);
+    ui_actiongroup *constraintgroup = ui_create_actiongroup(win->window);
+    ui_add_action_to_group(constraintgroup, win->xyplane_constraint_action);
+    ui_add_action_to_group(constraintgroup, win->zaxis_constraint_action);
+    ui_trig_action(win->xyplane_constraint_action);
 }
 
 static void create_menus(mainwindow *win)
 {
-    win->file_menu_ = ui_create_menu(win->window_);
-    ui_set_menu_title  (win->file_menu_, "&File");
-    ui_add_menu_action (win->file_menu_, win->quit_action_);
+    win->filemenu = ui_create_menu(win->window);
+    ui_set_menu_title  (win->filemenu, "&File");
+    ui_add_menu_action (win->filemenu, win->quit_action);
 
-    win->edit_menu_ = ui_create_menu(win->window_);
-    ui_set_menu_title    (win->edit_menu_, "&Edit");
-    ui_add_menu_action   (win->edit_menu_, win->cut_action_);
-    ui_add_menu_action   (win->edit_menu_, win->copy_action_);
-    ui_add_menu_action   (win->edit_menu_, win->paste_action_);
-    ui_add_menu_action   (win->edit_menu_, win->del_action_);
-    ui_add_menu_separator(win->edit_menu_);
-    ui_add_menu_action   (win->edit_menu_, win->group_action_);
-    ui_add_menu_action   (win->edit_menu_, win->ungroup_action_);
+    win->editmenu = ui_create_menu(win->window);
+    ui_set_menu_title    (win->editmenu, "&Edit");
+    ui_add_menu_action   (win->editmenu, win->cut_action);
+    ui_add_menu_action   (win->editmenu, win->copy_action);
+    ui_add_menu_action   (win->editmenu, win->paste_action);
+    ui_add_menu_action   (win->editmenu, win->delete_action);
+    ui_add_menu_separator(win->editmenu);
+    ui_add_menu_action   (win->editmenu, win->group_action);
+    ui_add_menu_action   (win->editmenu, win->ungroup_action);
 }
 
 static void create_toolbar(mainwindow *win)
 {
-    win->tool_bar_ = ui_create_toolbar(win->window_);
-    ui_add_toolbar_action(win->tool_bar_, win->new_block_action_);
-    ui_add_toolbar_action(win->tool_bar_, win->move_block_action_);
-    ui_add_toolbar_action(win->tool_bar_, win->move_vertex_action_);
-    ui_add_toolbar_separator(win->tool_bar_);
-    ui_add_toolbar_action(win->tool_bar_, win->xy_plane_constraint_action_);
-    ui_add_toolbar_action(win->tool_bar_, win->z_azis_constraint_action_);
+    win->toolbar = ui_create_toolbar(win->window);
+    ui_add_toolbar_action(win->toolbar, win->new_block_action);
+    ui_add_toolbar_action(win->toolbar, win->move_block_action);
+    ui_add_toolbar_action(win->toolbar, win->move_vertex_action_);
+    ui_add_toolbar_separator(win->toolbar);
+    ui_add_toolbar_action(win->toolbar, win->xyplane_constraint_action);
+    ui_add_toolbar_action(win->toolbar, win->zaxis_constraint_action);
 }
 
 static void init_gl(void *data)
@@ -243,8 +243,8 @@ static void resize_gl(void *data, int width, int height)
 
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
-    Mat4 matrix = projectionmatrix(win);
-    glLoadMatrixf(&matrix.X.X);
+    mat4 matrix = projectionmatrix(win);
+    glLoadMatrixf(&matrix.x.x);
 }
 
 static void draw_gl(void *data)
@@ -252,17 +252,17 @@ static void draw_gl(void *data)
     mainwindow *win = data;
 
     glMatrixMode(GL_MODELVIEW);
-    Mat4 matrix = modelviewmatrix(win);
-    glLoadMatrixf(&matrix.X.X);
+    mat4 matrix = modelviewmatrix(win);
+    glLoadMatrixf(&matrix.x.x);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    draw(win->gridvertices_);
-    DrawGroup(GetRootGroup(win->document_));
+    draw(win->gridvertices);
+    draw_group(get_root_group(win->document));
 
-    if (win->toolprocs_ && win->toolprocs_->draw_gl)
+    if (win->toolprocs && win->toolprocs->draw_gl)
     {
-        win->toolprocs_->draw_gl(win->tooldata_);
+        win->toolprocs->draw_gl(win->tooldata);
     }
 }
 
@@ -276,13 +276,13 @@ static ui_glprocs glprocs =
 static void key_pressed(void *data, ui_key key)
 {
     mainwindow *win = data;
-    movecamera_toolprocs.key_pressed(win->movecameratool_, key);
+    movecamera_toolprocs.key_pressed(win->movecameratool, key);
 }
 
 static void key_released(void *data, ui_key key)
 {
     mainwindow *win = data;
-    movecamera_toolprocs.key_released(win->movecameratool_, key);
+    movecamera_toolprocs.key_released(win->movecameratool, key);
 }
 
 static ui_keyprocs keyprocs =
@@ -294,33 +294,33 @@ static ui_keyprocs keyprocs =
 static void mouse_pressed(void *data, ui_mouseevent const *event)
 {
     mainwindow *win = data;
-    rotatecamera_toolprocs.mouse_pressed(win->rotatecameratool_, event);
+    rotatecamera_toolprocs.mouse_pressed(win->rotatecameratool, event);
 
-    if (win->toolprocs_ && win->toolprocs_->mouse_pressed)
+    if (win->toolprocs && win->toolprocs->mouse_pressed)
     {
-        win->toolprocs_->mouse_pressed(win->tooldata_, event);
+        win->toolprocs->mouse_pressed(win->tooldata, event);
     }
 }
 
 static void mouse_released(void *data, ui_mouseevent const *event)
 {
     mainwindow *win = data;
-    rotatecamera_toolprocs.mouse_released(win->rotatecameratool_, event);
+    rotatecamera_toolprocs.mouse_released(win->rotatecameratool, event);
 
-    if (win->toolprocs_ && win->toolprocs_->mouse_released)
+    if (win->toolprocs && win->toolprocs->mouse_released)
     {
-        win->toolprocs_->mouse_released(win->tooldata_, event);
+        win->toolprocs->mouse_released(win->tooldata, event);
     }
 }
 
 static void mouse_moved(void *data, ui_mouseevent const *event)
 {
     mainwindow *win = data;
-    rotatecamera_toolprocs.mouse_moved(win->rotatecameratool_, event);
+    rotatecamera_toolprocs.mouse_moved(win->rotatecameratool, event);
 
-    if (win->toolprocs_ && win->toolprocs_->mouse_moved)
+    if (win->toolprocs && win->toolprocs->mouse_moved)
     {
-        win->toolprocs_->mouse_moved(win->tooldata_, event);
+        win->toolprocs->mouse_moved(win->tooldata, event);
     }
 }
 
@@ -335,26 +335,26 @@ mainwindow *create_mainwindow(void)
 {
     mainwindow *win = calloc(1, sizeof(mainwindow));
 
-    win->document_ = CreateDocument();
-    win->window_ = ui_create_window();
-    win->glwidget_ = ui_create_glwidget(&glprocs, win);
-    win->camera_ = CreateCamera();
-    win->gridvertices_ = create_grid(10);
-    win->cursorvertices_ = create_cursor(0.125f);
-    win->constrainalgorithm_ = CONSTRAIN_TO_XY_PLANE;
+    win->document = create_document();
+    win->window = ui_create_window();
+    win->glwidget = ui_create_glwidget(&glprocs, win);
+    win->camera = create_camera();
+    win->gridvertices = create_grid(10);
+    win->cursorvertices = create_cursor(0.125f);
+    win->constraint = CONSTRAIN_TO_XY_PLANE;
 
-    Vec3 camerapos = {0.0f, -4.0f, 2.0f};
-    SetCameraPosition(win->camera_, &camerapos);
+    vec3 camerapos = {0.0f, -4.0f, 2.0f};
+    set_camera_position(win->camera, &camerapos);
 
-    win->movecameratool_ = movecamera_toolprocs.create(win);
-    win->rotatecameratool_ = rotatecamera_toolprocs.create(win);
-    win->toolprocs_ = NULL;
+    win->movecameratool = movecamera_toolprocs.create(win);
+    win->rotatecameratool = rotatecamera_toolprocs.create(win);
+    win->toolprocs = NULL;
 
-    ui_set_keyprocs(win->glwidget_, &keyprocs, win);
-    ui_set_mouseprocs(win->glwidget_, &mouseprocs, win);
-    ui_resize_window(win->window_, 800, 600);
-    ui_set_center_widget(win->window_, win->glwidget_);
-    ui_focus_widget(win->glwidget_);
+    ui_set_keyprocs(win->glwidget, &keyprocs, win);
+    ui_set_mouseprocs(win->glwidget, &mouseprocs, win);
+    ui_resize_window(win->window, 800, 600);
+    ui_set_center_widget(win->window, win->glwidget);
+    ui_focus_widget(win->glwidget);
 
     create_actions(win);
     create_menus(win);
@@ -365,37 +365,37 @@ mainwindow *create_mainwindow(void)
 
 void destroy_mainwindow(mainwindow *win)
 {
-    movecamera_toolprocs.destroy(win->movecameratool_);
-    rotatecamera_toolprocs.destroy(win->rotatecameratool_);
+    movecamera_toolprocs.destroy(win->movecameratool);
+    rotatecamera_toolprocs.destroy(win->rotatecameratool);
     free_tool(win);
 
-    DestroyBuffer(win->cursorvertices_);
-    DestroyBuffer(win->gridvertices_);
-    DestroyCamera(win->camera_);
-    ui_destroy_window(win->window_);
-    DestroyDocument(win->document_);
+    destroy_buffer(win->cursorvertices);
+    destroy_buffer(win->gridvertices);
+    destroy_camera(win->camera);
+    ui_destroy_window(win->window);
+    destroy_document(win->document);
 
     free(win);
 }
 
 void show_mainwindow(mainwindow *win)
 {
-    ui_show_window(win->window_);
+    ui_show_window(win->window);
 }
 
-Document *get_document(mainwindow *win)
+document *get_document(mainwindow *win)
 {
-    return win->document_;
+    return win->document;
 }
 
 ui_glwidget *get_glwidget(mainwindow *win)
 {
-    return win->glwidget_;
+    return win->glwidget;
 }
 
-Camera *get_camera(mainwindow *win)
+camera *get_camera(mainwindow *win)
 {
-    return win->camera_;
+    return win->camera;
 }
 
 static void doubles_to_floats(double *doubles, float const *floats, size_t n)
@@ -406,71 +406,71 @@ static void doubles_to_floats(double *doubles, float const *floats, size_t n)
     }
 }
 
-static Ray make_pick_ray(float           mousex,
+static ray make_pick_ray(float           mousex,
                          float           mousey,
-                         Mat4 const     *model,
-                         Mat4 const     *projection,
-                         Viewport const *viewport)
+                         mat4 const     *model,
+                         mat4 const     *projection,
+                         viewport const *viewport)
 {
     double wx = mousex;
     double wy = viewport->height - mousey;
     double modeld[16], projectiond[16];
     double px1, py1, pz1, px2, py2, pz2;
 
-    doubles_to_floats(modeld, &model->X.X, 16);
-    doubles_to_floats(projectiond, &projection->X.X, 16);
+    doubles_to_floats(modeld, &model->x.x, 16);
+    doubles_to_floats(projectiond, &projection->x.x, 16);
 
     gluUnProject(wx, wy, 0.0, modeld, projectiond, &viewport->x, &px1, &py1, &pz1);
     gluUnProject(wx, wy, 1.0, modeld, projectiond, &viewport->x, &px2, &py2, &pz2);
 
-    return (Ray){{px1, py1, pz1}, {px2, py2, pz2}};
+    return (ray){{px1, py1, pz1}, {px2, py2, pz2}};
 }
 
-Ray make_mouseray(mainwindow const *win, float mousex, float mousey)
+ray make_mouseray(mainwindow const *win, float mousex, float mousey)
 {
-    Mat4 model = modelviewmatrix(win);
-    Mat4 projection = projectionmatrix(win);
-    Viewport viewport = {0, 0, ui_widget_width(win->glwidget_), ui_widget_height(win->glwidget_)};
+    mat4 model = modelviewmatrix(win);
+    mat4 projection = projectionmatrix(win);
+    viewport viewport = {0, 0, ui_widget_width(win->glwidget), ui_widget_height(win->glwidget)};
 
     return make_pick_ray(mousex, mousey, &model, &projection, &viewport);
 }
 
-Buffer *get_cursorvertices(mainwindow const *win)
+buffer *get_cursorvertices(mainwindow const *win)
 {
-    return win->cursorvertices_;
+    return win->cursorvertices;
 }
 
-ConstrainAlgorithm get_constrainalgorithm(mainwindow const *win)
+constraint get_constrainalgorithm(mainwindow const *win)
 {
-    return win->constrainalgorithm_;
+    return win->constraint;
 }
 
-bool pick_vertex(mainwindow const *win, float mousex, float mousey, struct CornerRef *cornerref)
+bool pick_vertex(mainwindow const *win, float mousex, float mousey, struct cornerref *cornerref)
 {
-    Group*   group      = GetRootGroup(win->document_);
-    Mat4     model      = modelviewmatrix(win);
-    Mat4     projection = projectionmatrix(win);
-    Viewport viewport   = {0, 0, ui_widget_width(win->glwidget_), ui_widget_height(win->glwidget_)};
-    Vec2     mouse      = {mousex, mousey};
+    group*   group      = get_root_group(win->document);
+    mat4     model      = modelviewmatrix(win);
+    mat4     projection = projectionmatrix(win);
+    viewport viewport   = {0, 0, ui_widget_width(win->glwidget), ui_widget_height(win->glwidget)};
+    vec2     mouse      = {mousex, mousey};
 
-    if (PickGroupVertex(group, &model, &projection, &viewport, &mouse, cornerref))
+    if (pick_group_vertex(group, &model, &projection, &viewport, &mouse, cornerref))
     {
-        Vec3 camerapos; GetCameraPosition(win->camera_, &camerapos);
-        Vec3 vertexpos = CornerRefPosition(cornerref);
-        Ray cameraray; RayFromPointToPoint(&cameraray, &camerapos, &vertexpos);
-        Pick pick = PickGroupBlock(group, &cameraray);
+        vec3 camerapos; get_camera_position(win->camera, &camerapos);
+        vec3 vertexpos = cornerref_position(cornerref);
+        ray cameraray; ray_from_point_to_point(&cameraray, &camerapos, &vertexpos);
+        pick pick = pick_group_block(group, &cameraray);
 
         if (pick.block)
         {
-            if (Vec3Equals(&pick.triangle.A, &vertexpos) ||
-                Vec3Equals(&pick.triangle.B, &vertexpos) ||
-                Vec3Equals(&pick.triangle.C, &vertexpos))
+            if (vec3_equals(&pick.triangle.a, &vertexpos) ||
+                vec3_equals(&pick.triangle.b, &vertexpos) ||
+                vec3_equals(&pick.triangle.c, &vertexpos))
             {
                 return true;
             }
 
-            if (Vec3Distance(&camerapos, &vertexpos) >
-                Vec3Distance(&camerapos, &pick.intersection))
+            if (vec3_distance(&camerapos, &vertexpos) >
+                vec3_distance(&camerapos, &pick.intersection))
             {
                 return false;
             }
@@ -484,28 +484,28 @@ bool pick_vertex(mainwindow const *win, float mousex, float mousey, struct Corne
     return false;
 }
 
-Mat4 projectionmatrix(mainwindow const *win)
+mat4 projectionmatrix(mainwindow const *win)
 {
-    Mat4 axisadjust;
-    Mat4RotationX(&axisadjust, -M_TAU_4);
+    mat4 axisadjust;
+    mat4_rotationx(&axisadjust, -M_TAU_4);
 
-    Mat4 perspective;
-    Mat4Perspective(&perspective,
+    mat4 perspective;
+    mat4_perspective(&perspective,
                     60.0f,
-                    (float)ui_widget_width(win->glwidget_) / (float)ui_widget_height(win->glwidget_),
+                    (float)ui_widget_width(win->glwidget) / (float)ui_widget_height(win->glwidget),
                     0.1f,
                     1000.0f);
 
-    Mat4 proj;
-    Mat4Transform(&proj, &axisadjust, &perspective);
+    mat4 proj;
+    mat4_transform(&proj, &axisadjust, &perspective);
     return proj;
 }
 
-Mat4 modelviewmatrix(mainwindow const *win)
+mat4 modelviewmatrix(mainwindow const *win)
 {
-    Mat4 transform, inverse;
+    mat4 transform, inverse;
 
-    CameraWorldTransform(win->camera_, &transform);
-    Mat4Inverse(&inverse, &transform);
+    camera_worldtransform(win->camera, &transform);
+    mat4_inverse(&inverse, &transform);
     return inverse;
 }

@@ -1,14 +1,13 @@
 #pragma once
 
-struct BoundingBox;
+struct boundingbox;
+struct group;
+struct vec3;
 
-struct Group;
-struct Vec3;
+typedef struct groupinstance groupinstance;
 
-typedef struct GroupInstance GroupInstance;
-
-GroupInstance *CreateGroupInstance(struct Group *group);
-void DestroyGroupInstance(GroupInstance *instance);
-void DrawGroupInstance(GroupInstance const *instance);
-struct BoundingBox GroupInstanceBoundingBox(GroupInstance const *instance, struct Vec3 const* parentPos);
-void MoveGroupInstanceOrigin(GroupInstance *instance, struct Vec3 const* position);
+groupinstance *create_groupinstance(struct group *group);
+void destroy_groupinstance(groupinstance *instance);
+void draw_groupinstance(groupinstance const *instance);
+struct boundingbox groupinstance_boundingbox(groupinstance const *instance, struct vec3 const* parentPos);
+void move_groupinstance_origin(groupinstance *instance, struct vec3 const* position);

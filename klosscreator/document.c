@@ -4,130 +4,129 @@
 #include <kloss/group.h>
 #include <kloss/groupinstance.h>
 #include <klosscreator/blockselection.h>
-#include <assert.h>
 #include <stdlib.h>
 
-struct Document
+struct document
 {
-    bool IsLocked;
-    Group* Group;
-    BlockSelection* BlockSelection;
-    Buffer* CopiedBlocks;
+    bool islocked;
+    group* group;
+    blockselection *blockselection;
+    buffer *copiedblocks;
 };
 
-Document *CreateDocument(void)
+document *create_document(void)
 {
-    Document *doc = malloc(sizeof(Document));
+    document *doc = malloc(sizeof(document));
 
-    doc->IsLocked = false;
-    doc->Group = CreateGroup();
-    doc->BlockSelection = CreateBlockSelection();
-    doc->CopiedBlocks = CreateBuffer();
+    doc->islocked = false;
+    doc->group = create_group();
+    doc->blockselection = create_blockselection();
+    doc->copiedblocks = create_buffer();
 
     return doc;
 }
 
-void DestroyDocument(Document *doc)
+void destroy_document(document *doc)
 {
     if (doc)
     {
-        DestroyBuffer(doc->CopiedBlocks);
-        DestroyBlockSelection(doc->BlockSelection);
-        ReleaseGroup(doc->Group);
+        destroy_buffer(doc->copiedblocks);
+        destroy_blockselection(doc->blockselection);
+        release_group(doc->group);
         free(doc);
     }
 }
 
-void LockDocument(Document *doc)
+void lock_document(document *doc)
 {
-    doc->IsLocked = true;
+    doc->islocked = true;
 }
 
-void UnlockDocument(Document *doc)
+void unlock_document(document *doc)
 {
-    doc->IsLocked = false;
+    doc->islocked = false;
 }
 
-bool IsDocumentLocked(Document *doc)
+bool is_document_locked(document *doc)
 {
-    return doc->IsLocked;
+    return doc->islocked;
 }
 
-void CopySelectedBlocks(Document *doc)
+void copy_selected_blocks(document *doc)
 {
-    if (IsDocumentLocked(doc) || SelectedBlockCount(doc->BlockSelection) == 0)
+    if (is_document_locked(doc) || selected_block_count(doc->blockselection) == 0)
     {
         return;
     }
 
-    ClearBuffer(doc->CopiedBlocks);
-    BackupBlockSelection(doc->BlockSelection, doc->CopiedBlocks);
+    clear_buffer(doc->copiedblocks);
+    backup_blockselection(doc->blockselection, doc->copiedblocks);
 }
 
-void PasteSelectedBlocks(Document *doc)
+void paste_copied_blocks(document *doc)
 {
-    if (IsDocumentLocked(doc) || BufferSize(doc->CopiedBlocks) == 0)
+    if (is_document_locked(doc) || buffer_size(doc->copiedblocks) == 0)
     {
         return;
     }
 
-    DeselectAllBlocks(doc->BlockSelection);
+    deselect_all_blocks(doc->blockselection);
 
-    Block* blocks = BufferData(doc->CopiedBlocks);
-    size_t blockCount = BufferSize(doc->CopiedBlocks) / sizeof(Block);
+    block* blocks = buffer_data(doc->copiedblocks);
+    size_t blockcount = buffer_size(doc->copiedblocks) / sizeof(block);
 
-    for (size_t i = 0; i < blockCount; ++i)
+    for (size_t i = 0; i < blockcount; ++i)
     {
-        Block *newBlock = CopyBlock(blocks + i);
-        InsertBlocksInGroup(doc->Group, &newBlock, 1);
-        SelectBlock(doc->BlockSelection, newBlock);
+        block *newBlock = copy_block(blocks + i);
+        insert_blocks(doc->group, &newBlock, 1);
+        select_block(doc->blockselection, newBlock);
     }
 }
 
-void DeleteSelectedBlocks(Document *doc)
+void delete_selected_blocks(document *doc)
 {
-    if (IsDocumentLocked(doc) || SelectedBlockCount(doc->BlockSelection) == 0)
-    {
-        return;
-    }
-
-    Block** blocks = SelectedBlocks(doc->BlockSelection);
-    size_t blockCount = SelectedBlockCount(doc->BlockSelection);
-
-    DeleteBlocksFromGroup(doc->Group, blocks, blockCount);
-    DeselectAllBlocks(doc->BlockSelection);
-}
-
-void GroupSelectedBlocks(Document *doc)
-{
-    if (IsDocumentLocked(doc) || SelectedBlockCount(doc->BlockSelection) == 0)
+    if (is_document_locked(doc) || selected_block_count(doc->blockselection) == 0)
     {
         return;
     }
 
-    Block** blocks = SelectedBlocks(doc->BlockSelection);
-    size_t blockCount = SelectedBlockCount(doc->BlockSelection);
+    block **blocks = selected_blocks(doc->blockselection);
+    size_t blockcount = selected_block_count(doc->blockselection);
 
-    DeleteBlocksFromGroup(doc->Group, blocks, blockCount);
-    Group *newGroup = CreateGroup();
-    InsertBlocksInGroup(newGroup, blocks, blockCount);
-    DeselectAllBlocks(doc->BlockSelection);
-
-    Vec3 zero = {0.0f, 0.0f, 0.0f};
-    GroupInstance *instance = CreateGroupInstance(newGroup);
-    BoundingBox bbox = GroupInstanceBoundingBox(instance, &zero);
-    MoveGroupInstanceOrigin(instance, &bbox.Lower);
-
-    InsertGroupInstance(doc->Group, instance);
-    ReleaseGroup(newGroup);
+    delete_blocks(doc->group, blocks, blockcount);
+    deselect_all_blocks(doc->blockselection);
 }
 
-Group *GetRootGroup(Document *doc)
+void group_selected_blocks(document *doc)
 {
-    return doc->Group;
+    if (is_document_locked(doc) || selected_block_count(doc->blockselection) == 0)
+    {
+        return;
+    }
+
+    block **blocks = selected_blocks(doc->blockselection);
+    size_t blockcount = selected_block_count(doc->blockselection);
+
+    delete_blocks(doc->group, blocks, blockcount);
+    group *newgroup = create_group();
+    insert_blocks(newgroup, blocks, blockcount);
+    deselect_all_blocks(doc->blockselection);
+
+    vec3 zero = {0.0f, 0.0f, 0.0f};
+    groupinstance *instance = create_groupinstance(newgroup);
+    boundingbox bbox = groupinstance_boundingbox(instance, &zero);
+    move_groupinstance_origin(instance, &bbox.lower);
+
+    insert_groupinstance(doc->group, instance);
+    release_group(newgroup);
 }
 
-BlockSelection *GetBlockSelection(Document *doc)
+group *get_root_group(document *doc)
 {
-    return doc->BlockSelection;
+    return doc->group;
+}
+
+blockselection *get_blockselection(document *doc)
+{
+    return doc->blockselection;
 }

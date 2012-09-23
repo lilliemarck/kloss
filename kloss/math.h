@@ -6,56 +6,56 @@
 #define M_TAU_2 3.1415926535897932
 #define M_TAU_4 1.5707963267948966
 
-typedef struct Vec2 Vec2;
-typedef struct Vec3 Vec3;
-typedef struct Vec4 Vec4;
-typedef struct Mat4 Mat4;
+typedef struct vec2 vec2;
+typedef struct vec3 vec3;
+typedef struct vec4 vec4;
+typedef struct mat4 mat4;
 
-struct Vec2
+struct vec2
 {
-    float X, Y;
+    float x, y;
 };
 
-struct Vec3
+struct vec3
 {
-    float X, Y, Z;
+    float x, y, z;
 };
 
-struct Vec4
+struct vec4
 {
-    float X, Y, Z, W;
+    float x, y, z, w;
 };
 
-struct Mat4
+struct mat4
 {
-    Vec4 X, Y, Z, T;
+    vec4 x, y, z, t;
 };
 
-float Vec2Length(Vec2 const *vec);
-float Vec2Distance(Vec2 const *lhs, Vec2 const *rhs);
-float Vec2SquaredDistance(Vec2 const *lhs, Vec2 const *rhs);
-float Vec2SquaredLength(Vec2 const *vec);
-void Vec2Subtract(Vec2 *out, Vec2 const *lhs, Vec2 const *rhs);
+float vec2_length(vec2 const *vec);
+float vec2_distance(vec2 const *lhs, vec2 const *rhs);
+float vec2_squared_distance(vec2 const *lhs, vec2 const *rhs);
+float vec2_squared_length(vec2 const *vec);
+void vec2_subtract(vec2 *out, vec2 const *lhs, vec2 const *rhs);
 
-void Vec3Add(Vec3 *out, Vec3 const *lhs, Vec3 const *rhs);
-void Vec3AddScaled(Vec3 *out, Vec3 const *lhs, Vec3 const *rhs, float scale);
-void Vec3Cross(Vec3 *out, Vec3 const *lhs, Vec3 const *rhs);
-float Vec3Distance(Vec3 const *lhs, Vec3 const *rhs);
-float Vec3Dot(Vec3 const *lhs, Vec3 const *rhs);
-bool Vec3Equals(Vec3 const *lhs, Vec3 const *rhs);
-float Vec3Length(Vec3 const *vec);
-void Vec3Normalize(Vec3 *out, Vec3 const *vec);
-void Vec3Scale(Vec3 *out, Vec3 const *vec, float scale);
-void Vec3Subtract(Vec3 *out, Vec3 const *lhs, Vec3 const *rhs);
-void Vec3Transform(Vec3 *out, Vec3 const *vec, Mat4 const *x);
+void vec3_add(vec3 *out, vec3 const *lhs, vec3 const *rhs);
+void vec3_add_scaled(vec3 *out, vec3 const *lhs, vec3 const *rhs, float scale);
+void vec3_cross(vec3 *out, vec3 const *lhs, vec3 const *rhs);
+float vec3_distance(vec3 const *lhs, vec3 const *rhs);
+float vec3_dot(vec3 const *lhs, vec3 const *rhs);
+bool vec3_equals(vec3 const *lhs, vec3 const *rhs);
+float vec3_length(vec3 const *vec);
+void vec3_normalize(vec3 *out, vec3 const *vec);
+void vec3_scale(vec3 *out, vec3 const *vec, float scale);
+void vec3_subtract(vec3 *out, vec3 const *lhs, vec3 const *rhs);
+void vec3_transform(vec3 *out, vec3 const *vec, mat4 const *x);
 
-void Vec4Scale(Vec4 *out, Vec4 const *vec, float scale);
-void Vec4XYZ(Vec3 *out, Vec4 const *vec);
+void vec4_scale(vec4 *out, vec4 const *vec, float scale);
+void vec4_xyz(vec3 *out, vec4 const *vec);
 
-void Mat4Identity(Mat4 *out);
-bool Mat4Inverse(Mat4 *out, Mat4 const *mat);
-void Mat4Perspective(Mat4 *out, float fovy, float aspect, float near, float far);
-void Mat4RotationX(Mat4 *out, float rad);
-void Mat4RotationY(Mat4 *out, float rad);
-void Mat4RotationZ(Mat4 *out, float rad);
-void Mat4Transform(Mat4 *out, Mat4 const *mat, Mat4 const *x);
+void mat4_identity(mat4 *out);
+bool mat4_inverse(mat4 *out, mat4 const *mat);
+void mat4_perspective(mat4 *out, float fovy, float aspect, float near, float far);
+void mat4_rotationx(mat4 *out, float rad);
+void mat4_rotationy(mat4 *out, float rad);
+void mat4_rotationz(mat4 *out, float rad);
+void mat4_transform(mat4 *out, mat4 const *mat, mat4 const *x);

@@ -9,20 +9,20 @@ float const deltatime = 1.0f / 10.0f;
 typedef struct movecamera
 {
     mainwindow *window;
-    KeyPair    *backward_forward;
-    KeyPair    *left_right;
+    keypair    *backward_forward;
+    keypair    *left_right;
     ui_timer   *timer;
 } movecamera;
 
-static void update_keypair(KeyPair* keypair, bool pressed, ui_key event, ui_key first, ui_key second)
+static void update_keypair(keypair* keypair, bool pressed, ui_key event, ui_key first, ui_key second)
 {
     if (event == first)
     {
-        KeyPairSetFirst(keypair, pressed);
+        set_keypair_first(keypair, pressed);
     }
     else if (event == second)
     {
-        KeyPairSetSecond(keypair, pressed);
+        set_keypair_second(keypair, pressed);
     }
 }
 
@@ -32,9 +32,9 @@ static void on_timer(void* data, ui_timer* timer)
 
     if (timer == tool->timer)
     {
-        Camera* camera = get_camera(tool->window);
-        MoveCameraForward(camera, KeyPairValue(tool->backward_forward) * deltatime);
-        MoveCameraSideways(camera, KeyPairValue(tool->left_right) * deltatime);
+        camera* camera = get_camera(tool->window);
+        move_camera_forward(camera, keypair_value(tool->backward_forward) * deltatime);
+        move_camera_sideways(camera, keypair_value(tool->left_right) * deltatime);
         ui_update_widget(get_glwidget(tool->window));
     }
 }
@@ -44,8 +44,8 @@ static void *create(mainwindow *win)
     movecamera *tool = calloc(1, sizeof(movecamera));
 
     tool->window           = win;
-    tool->backward_forward = CreateKeyPair();
-    tool->left_right       = CreateKeyPair();
+    tool->backward_forward = create_keypair();
+    tool->left_right       = create_keypair();
 
     return tool;
 }
@@ -55,8 +55,8 @@ static void destroy(void *data)
     movecamera *tool = data;
 
     ui_stop_timer(tool->timer);
-    DestroyKeyPair(tool->backward_forward);
-    DestroyKeyPair(tool->left_right);
+    destroy_keypair(tool->backward_forward);
+    destroy_keypair(tool->left_right);
 
     free(tool);
 }
@@ -68,8 +68,8 @@ static void key_pressed(void *data, ui_key key)
     update_keypair(tool->backward_forward, true, key, UI_KEY_S, UI_KEY_W);
     update_keypair(tool->left_right,       true, key, UI_KEY_A, UI_KEY_D);
 
-    if (KeyPairValue(tool->backward_forward) != 0.0f ||
-        KeyPairValue(tool->left_right)       != 0.0f)
+    if (keypair_value(tool->backward_forward) != 0.0f ||
+        keypair_value(tool->left_right)       != 0.0f)
     {
         if (!tool->timer)
         {
@@ -85,8 +85,8 @@ static void key_released(void *data, ui_key key)
     update_keypair(tool->backward_forward, false, key, UI_KEY_S, UI_KEY_W);
     update_keypair(tool->left_right,       false, key, UI_KEY_A, UI_KEY_D);
 
-    if (KeyPairValue(tool->backward_forward) == 0.0f &&
-        KeyPairValue(tool->left_right)       == 0.0f)
+    if (keypair_value(tool->backward_forward) == 0.0f &&
+        keypair_value(tool->left_right)       == 0.0f)
     {
         ui_stop_timer(tool->timer);
         tool->timer = NULL;

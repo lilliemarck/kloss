@@ -3,16 +3,16 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef struct PtrArray PtrArray;
+typedef struct ptrarray ptrarray;
 
-PtrArray *CreatePtrArray(void);
-void DestroyPtrArray(PtrArray *array);
-void PushPtrArray(PtrArray *array, void *element);
-void *PopPtrArray(PtrArray *array);
-void *PtrArrayBack(PtrArray *array);
-void *GetPtrArray(PtrArray *array, size_t index);
-void PutPtrArray(PtrArray *array, size_t index, void *element);
-void ErasePtrArray(PtrArray *array, size_t index);
-void RemovePtrArray(PtrArray *array, void const *element);
-void ClearPtrArray(PtrArray *array);
-size_t PtrArrayCount(const PtrArray *array);
+ptrarray *create_ptrarray(void);
+void destroy_ptrarray(ptrarray *array);
+void push_ptrarray(ptrarray *array, void *element);
+void *pop_ptrarray(ptrarray *array);
+void *ptrarray_back(ptrarray *array);
+void *get_ptrarray(ptrarray *array, size_t index);
+void put_ptrarray(ptrarray *array, size_t index, void *element);
+void erase_ptrarray(ptrarray *array, size_t index);
+void remove_ptrarray(ptrarray *array, void const *element);
+void clear_ptrarray(ptrarray *array);
+size_t ptrarray_count(const ptrarray *array);

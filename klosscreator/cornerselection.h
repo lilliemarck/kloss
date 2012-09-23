@@ -3,18 +3,18 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-struct Buffer;
-struct CornerRef;
+struct buffer;
+struct cornerref;
 
-typedef struct CornerSelection CornerSelection;
+typedef struct cornerselection cornerselection;
 
-CornerSelection *CreateCornerSelection(void);
-void DestroyCornerSelection(CornerSelection *selection);
-size_t SelectedCornerCount(CornerSelection *selection);
-struct CornerRef *SelectedCorners(CornerSelection *selection);
+cornerselection *create_cornerselection(void);
+void destroy_cornerselection(cornerselection *selection);
+size_t selected_corner_count(cornerselection *selection);
+struct cornerref *selected_corners(cornerselection *selection);
 
-void BackupCornerSelection(CornerSelection *selection, struct Buffer *buffer);
-void RestoreCornerSelection(CornerSelection *selection, struct Buffer *buffer);
+void backup_cornerselection(cornerselection *selection, struct buffer *buffer);
+void restore_cornerselection(cornerselection *selection, struct buffer *buffer);
 
-bool SinglePickCorner(CornerSelection *selection, struct CornerRef *pick);
-bool MultiPickCorner(CornerSelection *selection, struct CornerRef *pick);
+bool single_pick_corner(cornerselection *selection, struct cornerref *pick);
+bool multi_pick_corner(cornerselection *selection, struct cornerref *pick);

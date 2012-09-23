@@ -4,23 +4,23 @@
 #include <string.h>
 #include "block.h"
 
-struct Buffer
+struct buffer
 {
-    uint8_t *Begin;
-    uint8_t *End;
-    uint8_t *Capacity;
+    uint8_t *begin;
+    uint8_t *end;
+    uint8_t *capacity;
 };
 
-Buffer *CreateBuffer(void)
+buffer *create_buffer(void)
 {
-    return calloc(1, sizeof(Buffer));
+    return calloc(1, sizeof(buffer));
 }
 
-void DestroyBuffer(Buffer *buffer)
+void destroy_buffer(buffer *buffer)
 {
     if (buffer)
     {
-        free(buffer->Begin);
+        free(buffer->begin);
         free(buffer);
     }
 }
@@ -30,46 +30,46 @@ static size_t Max(size_t x, size_t y)
     return x < y ? y : x;
 }
 
-static void GrowCapacity(Buffer *buffer, uint8_t *end)
+static void GrowCapacity(buffer *buffer, uint8_t *end)
 {
-    if (end > buffer->Capacity)
+    if (end > buffer->capacity)
     {
-        size_t length   = buffer->End - buffer->Begin;
-        size_t capacity = buffer->Capacity - buffer->Begin;
+        size_t length   = buffer->end - buffer->begin;
+        size_t capacity = buffer->capacity - buffer->begin;
 
-        capacity = Max(capacity << 1, end - buffer->Begin);
+        capacity = Max(capacity << 1, end - buffer->begin);
 
-        buffer->Begin    = realloc(buffer->Begin, capacity);
-        buffer->End      = buffer->Begin + length;
-        buffer->Capacity = buffer->Begin + capacity;
+        buffer->begin    = realloc(buffer->begin, capacity);
+        buffer->end      = buffer->begin + length;
+        buffer->capacity = buffer->begin + capacity;
     }
 }
 
-void AppendToBuffer(Buffer *buffer, void const *data, size_t size)
+void append_buffer(buffer *buffer, void const *data, size_t size)
 {
-    GrowCapacity(buffer, buffer->End + size);
-    memcpy(buffer->End, data, size);
-    buffer->End += size;
+    GrowCapacity(buffer, buffer->end + size);
+    memcpy(buffer->end, data, size);
+    buffer->end += size;
 }
 
-void EraseBuffer(Buffer *buffer, size_t index, size_t size)
+void erase_buffer(buffer *buffer, size_t index, size_t size)
 {
-    uint8_t *first = buffer->Begin + index;
-    memcpy(first, first + size, BufferSize(buffer) - size);
-    buffer->End -= size;
+    uint8_t *first = buffer->begin + index;
+    memcpy(first, first + size, buffer_size(buffer) - size);
+    buffer->end -= size;
 }
 
-void ClearBuffer(Buffer *buffer)
+void clear_buffer(buffer *buffer)
 {
-    buffer->End = buffer->Begin;
+    buffer->end = buffer->begin;
 }
 
-size_t BufferSize(Buffer *buffer)
+size_t buffer_size(buffer *buffer)
 {
-    return buffer->End - buffer->Begin;
+    return buffer->end - buffer->begin;
 }
 
-void *BufferData(Buffer *buffer)
+void *buffer_data(buffer *buffer)
 {
-    return buffer->Begin;
+    return buffer->begin;
 }

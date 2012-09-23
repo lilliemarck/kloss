@@ -5,61 +5,61 @@
 #include <kloss/math.h>
 #include <stdlib.h>
 
-struct GroupInstance
+struct groupinstance
 {
-    Vec3 position_;
-    Group *group_;
+    vec3 position_;
+    group *group_;
 };
 
-GroupInstance *CreateGroupInstance(Group *group)
+groupinstance *create_groupinstance(group *group)
 {
-    GroupInstance *instance = calloc(1, sizeof(GroupInstance));
-    instance->group_ = RetainGroup(group);
+    groupinstance *instance = calloc(1, sizeof(groupinstance));
+    instance->group_ = retain_group(group);
     return instance;
 }
 
-void DestroyGroupInstance(GroupInstance *instance)
+void destroy_groupinstance(groupinstance *instance)
 {
     if (instance)
     {
-        ReleaseGroup(instance->group_);
+        release_group(instance->group_);
         free(instance);
     }
 }
 
-void DrawGroupInstance(GroupInstance const *instance)
+void draw_groupinstance(groupinstance const *instance)
 {
     glPushMatrix();
-    glTranslatef(instance->position_.X, instance->position_.Y, instance->position_.Z);
-    DrawGroup_(instance->group_);
+    glTranslatef(instance->position_.x, instance->position_.y, instance->position_.z);
+    draw_group_(instance->group_);
     glPopMatrix();
 }
 
-BoundingBox GroupInstanceBoundingBox(GroupInstance const *instance, Vec3 const *parentPos)
+boundingbox groupinstance_boundingbox(groupinstance const *instance, vec3 const *parentPos)
 {
-    Vec3 totalTranslation;
-    Vec3Add(&totalTranslation, parentPos, &instance->position_);
-    return GroupBoundingBox(instance->group_, &totalTranslation);
+    vec3 totalTranslation;
+    vec3_add(&totalTranslation, parentPos, &instance->position_);
+    return group_bounding_box(instance->group_, &totalTranslation);
 }
 
-static void TranslateBlockCallback(Block *block, void *data)
+static void translate_block_(block *block, void *data)
 {
-    TranslateBlock(block, data);
+    translate_block(block, data);
 }
 
-static void TranslateGroupInstanceCallback(GroupInstance *instance, void *data)
+static void translate_groupinstance_(groupinstance *instance, void *data)
 {
-    Vec3Add(&instance->position_, &instance->position_, data);
+    vec3_add(&instance->position_, &instance->position_, data);
 }
 
-void MoveGroupInstanceOrigin(GroupInstance *instance, Vec3 const *position)
+void move_groupinstance_origin(groupinstance *instance, vec3 const *position)
 {
-    Vec3 translation;
-    Vec3Subtract(&translation, &instance->position_, position);
+    vec3 translation;
+    vec3_subtract(&translation, &instance->position_, position);
 
-    ForEachBlockInGroup(instance->group_, TranslateBlockCallback, &translation);
-    ForEachGroupInstance(instance->group_, TranslateGroupInstanceCallback, &translation);
+    foreach_block(instance->group_, translate_block_, &translation);
+    foreach_groupinstance(instance->group_, translate_groupinstance_, &translation);
 
     instance->position_ = *position;
-    UpdateGroupVertexArray(instance->group_);
+    update_group_vertexarray(instance->group_);
 }

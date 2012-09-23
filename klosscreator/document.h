@@ -2,21 +2,21 @@
 
 #include <stdbool.h>
 
-struct BlockSelection;
-struct Group;
+struct blockselection;
+struct group;
 
-typedef struct Document Document;
+typedef struct document document;
 
-Document *CreateDocument(void);
-void DestroyDocument(Document *doc);
-void LockDocument(Document *doc);
-void UnlockDocument(Document *doc);
-bool IsDocumentLocked(Document *doc);
+document *create_document(void);
+void destroy_document(document *doc);
+void lock_document(document *doc);
+void unlock_document(document *doc);
+bool is_document_locked(document *doc);
 
-void CopySelectedBlocks(Document *doc);
-void PasteSelectedBlocks(Document *doc);
-void DeleteSelectedBlocks(Document *doc);
-void GroupSelectedBlocks(Document *doc);
+void copy_selected_blocks(document *doc);
+void paste_copied_blocks(document *doc);
+void delete_selected_blocks(document *doc);
+void group_selected_blocks(document *doc);
 
-struct Group *GetRootGroup(Document *doc);
-struct BlockSelection *GetBlockSelection(Document *doc);
+struct group *get_root_group(document *doc);
+struct blockselection *get_blockselection(document *doc);

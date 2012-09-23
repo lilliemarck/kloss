@@ -3,7 +3,7 @@
 #include <kloss/geometry.h>
 #include <math.h>
 
-static bool ConstrainToZAxis(Ray const *ray, Vec3 const *reference, Vec3 *out)
+static bool constrain_to_zaxis(ray const *ray, vec3 const *reference, vec3 *out)
 {
     /*
      * Find the z value of the intersection between the ray and a y-axis
@@ -15,16 +15,16 @@ static bool ConstrainToZAxis(Ray const *ray, Vec3 const *reference, Vec3 *out)
      * near clipping plane a small error is introduced when the camera turns
      * towards the sides.
      */
-    float denom = sqrt(Squaref(ray->Direction.X) + Squaref(ray->Direction.Y));
+    float denom = sqrt(squaref(ray->direction.x) + squaref(ray->direction.y));
 
     if (denom > 0.0f)
     {
-        float radius = Vec2Distance((Vec2 const*)&ray->Origin, (Vec2 const*)reference);
+        float radius = vec2_distance((vec2 const*)&ray->origin, (vec2 const*)reference);
         float u = radius / denom;
 
-        out->X = reference->X;
-        out->Y = reference->Y;
-        out->Z = ray->Origin.Z + u * ray->Direction.Z;
+        out->x = reference->x;
+        out->y = reference->y;
+        out->z = ray->origin.z + u * ray->direction.z;
 
         return true;
     }
@@ -32,18 +32,18 @@ static bool ConstrainToZAxis(Ray const *ray, Vec3 const *reference, Vec3 *out)
     return false;
 }
 
-bool ConstrainRay(ConstrainAlgorithm algorithm, struct Ray const *ray, struct Vec3 const *reference, struct Vec3 *out)
+bool constrain_ray(constraint constraint, struct ray const *ray, struct vec3 const *reference, struct vec3 *out)
 {
-    switch (algorithm)
+    switch (constraint)
     {
         case CONSTRAIN_TO_XY_PLANE:
         {
-            return RayIntersectXYPlane(out, ray, reference->Z);
+            return ray_intersect_xyplane(out, ray, reference->z);
         }
 
         case CONSTRAIN_TO_Z_AXIS:
         {
-            return ConstrainToZAxis(ray, reference, out);
+            return constrain_to_zaxis(ray, reference, out);
         }
     }
 

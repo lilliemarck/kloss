@@ -3,7 +3,7 @@
 #include <kloss/math.h>
 #include <stdint.h>
 
-struct Buffer;
+struct buffer;
 
 typedef struct color3ub color3ub;
 typedef struct vertex vertex;
@@ -16,11 +16,11 @@ struct color3ub
 struct vertex
 {
     color3ub color;
-    Vec3 position;
+    vec3 position;
 };
 
-void draw(struct Buffer *array);
-void draw_at(struct Buffer *array, Vec3 position);
+void draw(struct buffer *array);
+void draw_at(struct buffer *array, vec3 position);
 
-struct Buffer *create_grid(int size);
-struct Buffer *create_cursor(float size);
+struct buffer *create_grid(int size);
+struct buffer *create_cursor(float size);

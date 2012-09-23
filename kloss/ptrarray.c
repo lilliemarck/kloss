@@ -2,78 +2,78 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct PtrArray
+struct ptrarray
 {
-    void **Begin;
-    void **End;
-    void **Capacity;
+    void **begin;
+    void **end;
+    void **capacity;
 };
 
-PtrArray* CreatePtrArray(void)
+ptrarray* create_ptrarray(void)
 {
-    return calloc(1, sizeof(PtrArray));
+    return calloc(1, sizeof(ptrarray));
 }
 
-void DestroyPtrArray(PtrArray *array)
+void destroy_ptrarray(ptrarray *array)
 {
     if (array)
     {
-        free(array->Begin);
+        free(array->begin);
         free(array);
     }
 }
 
-void PushPtrArray(PtrArray *array, void *object)
+void push_ptrarray(ptrarray *array, void *object)
 {
-    if (array->End == array->Capacity)
+    if (array->end == array->capacity)
     {
-        size_t length   = array->End - array->Begin;
+        size_t length   = array->end - array->begin;
         size_t capacity = (length + 1) << 1;
-        array->Begin    = realloc(array->Begin, capacity * sizeof(void*));
-        array->End      = array->Begin + length;
-        array->Capacity = array->Begin + capacity;
+        array->begin    = realloc(array->begin, capacity * sizeof(void*));
+        array->end      = array->begin + length;
+        array->capacity = array->begin + capacity;
     }
 
-    *array->End++ = object;
+    *array->end++ = object;
 }
 
-void *PopPtrArray(PtrArray *array)
+void *pop_ptrarray(ptrarray *array)
 {
-    return *--array->End;
+    return *--array->end;
 }
 
-void *PtrArrayBack(PtrArray *array)
+void *ptrarray_back(ptrarray *array)
 {
-    return *(array->End - 1);
+    return *(array->end - 1);
 }
 
-void *GetPtrArray(PtrArray *array, size_t index)
+void *get_ptrarray(ptrarray *array, size_t index)
 {
-    return array->Begin[index];
+    return array->begin[index];
 }
 
-void PutPtrArray(PtrArray *array, size_t index, void *element)
+void put_ptrarray(ptrarray *array, size_t index, void *element)
 {
-    array->Begin[index] = element;
+    array->begin[index] = element;
 }
 
-void ErasePtrArray(PtrArray *array, size_t index)
+void erase_ptrarray(ptrarray *array, size_t index)
 {
-    memcpy(array->Begin + index,
-           array->Begin + index + 1,
-           sizeof(void*) * (--array->End - array->Begin - index));
+    memcpy(array->begin + index,
+           array->begin + index + 1,
+           sizeof(void*) * (--array->end - array->begin - index));
 }
 
-void RemovePtrArray(PtrArray *array, void const *element)
+void remove_ptrarray(ptrarray *array, void const *element)
 {
-    size_t count = PtrArrayCount(array);
+    size_t count = ptrarray_count(array);
     size_t i     = 0;
 
     while (i < count)
     {
-        if (array->Begin[i] == element)
+        if (array->begin[i] == element)
         {
-            ErasePtrArray(array, i);
+            erase_ptrarray(array, i);
             --count;
         }
         else
@@ -83,12 +83,12 @@ void RemovePtrArray(PtrArray *array, void const *element)
     }
 }
 
-void ClearPtrArray(PtrArray *array)
+void clear_ptrarray(ptrarray *array)
 {
-    array->End = array->Begin;
+    array->end = array->begin;
 }
 
-size_t PtrArrayCount(PtrArray const *array)
+size_t ptrarray_count(ptrarray const *array)
 {
-    return array->End - array->Begin;
+    return array->end - array->begin;
 }

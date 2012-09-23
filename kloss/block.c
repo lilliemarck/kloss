@@ -3,77 +3,77 @@
 #include <stdlib.h>
 #include <string.h>
 
-Vec3 CornerTop(Corner const *corner)
+vec3 cornertop(corner const *corner)
 {
-    return (Vec3){corner->X, corner->Y, corner->Top};
+    return (vec3){corner->x, corner->y, corner->top};
 }
 
-Vec3 CornerBottom(Corner const *corner)
+vec3 cornerbottom(corner const *corner)
 {
-    return (Vec3){corner->X, corner->Y, corner->Bottom};
+    return (vec3){corner->x, corner->y, corner->bottom};
 }
 
-void TranslateCorner(Corner *corner, Vec3 const *units)
+void translate_corner(corner *corner, vec3 const *units)
 {
-    corner->X      += units->X;
-    corner->Y      += units->Y;
-    corner->Top    += units->Z;
-    corner->Bottom += units->Z;
+    corner->x      += units->x;
+    corner->y      += units->y;
+    corner->top    += units->z;
+    corner->bottom += units->z;
 }
 
-Block *CreateBlock(void)
+block *create_block(void)
 {
-    return calloc(1, sizeof(Block));
+    return calloc(1, sizeof(block));
 }
 
-Block *CopyBlock(Block const *block)
+block *copy_block(block const *block)
 {
-    Block *copy = malloc(sizeof(Block));
-    memcpy(copy, block, sizeof(Block));
+    struct block *copy = malloc(sizeof(block));
+    memcpy(copy, block, sizeof(block));
     return copy;
 }
 
-void DestroyBlock(Block *block)
+void destroy_block(block *block)
 {
     free(block);
 }
 
-void TranslateBlock(Block *block, Vec3 const *units)
+void translate_block(block *block, vec3 const *units)
 {
-    TranslateCorner(&block->Corners[0], units);
-    TranslateCorner(&block->Corners[1], units);
-    TranslateCorner(&block->Corners[2], units);
-    TranslateCorner(&block->Corners[3], units);
+    translate_corner(&block->corners[0], units);
+    translate_corner(&block->corners[1], units);
+    translate_corner(&block->corners[2], units);
+    translate_corner(&block->corners[3], units);
 }
 
-void GetBlockTriangles(Block const *block, Buffer *buffer)
+void get_block_triangles(block const *block, buffer *buffer)
 {
-    Triangle triangles[12] =
+    triangle triangles[12] =
     {
         // front
-        {CornerTop(&block->Corners[0]), CornerBottom(&block->Corners[0]),    CornerTop(&block->Corners[1])},
-        {CornerTop(&block->Corners[1]), CornerBottom(&block->Corners[0]), CornerBottom(&block->Corners[1])},
+        {cornertop(&block->corners[0]), cornerbottom(&block->corners[0]),    cornertop(&block->corners[1])},
+        {cornertop(&block->corners[1]), cornerbottom(&block->corners[0]), cornerbottom(&block->corners[1])},
 
         // right
-        {CornerTop(&block->Corners[1]), CornerBottom(&block->Corners[1]),    CornerTop(&block->Corners[2])},
-        {CornerTop(&block->Corners[2]), CornerBottom(&block->Corners[1]), CornerBottom(&block->Corners[2])},
+        {cornertop(&block->corners[1]), cornerbottom(&block->corners[1]),    cornertop(&block->corners[2])},
+        {cornertop(&block->corners[2]), cornerbottom(&block->corners[1]), cornerbottom(&block->corners[2])},
 
         // back
-        {CornerTop(&block->Corners[2]), CornerBottom(&block->Corners[2]),    CornerTop(&block->Corners[3])},
-        {CornerTop(&block->Corners[3]), CornerBottom(&block->Corners[2]), CornerBottom(&block->Corners[3])},
+        {cornertop(&block->corners[2]), cornerbottom(&block->corners[2]),    cornertop(&block->corners[3])},
+        {cornertop(&block->corners[3]), cornerbottom(&block->corners[2]), cornerbottom(&block->corners[3])},
 
         // left
-        {CornerTop(&block->Corners[3]), CornerBottom(&block->Corners[3]),    CornerTop(&block->Corners[0])},
-        {CornerTop(&block->Corners[0]), CornerBottom(&block->Corners[3]), CornerBottom(&block->Corners[0])},
+        {cornertop(&block->corners[3]), cornerbottom(&block->corners[3]),    cornertop(&block->corners[0])},
+        {cornertop(&block->corners[0]), cornerbottom(&block->corners[3]), cornerbottom(&block->corners[0])},
 
         // CornerTop
-        {CornerTop(&block->Corners[3]), CornerTop(&block->Corners[0]), CornerTop(&block->Corners[2])},
-        {CornerTop(&block->Corners[2]), CornerTop(&block->Corners[0]), CornerTop(&block->Corners[1])},
+        {cornertop(&block->corners[3]), cornertop(&block->corners[0]), cornertop(&block->corners[2])},
+        {cornertop(&block->corners[2]), cornertop(&block->corners[0]), cornertop(&block->corners[1])},
 
         // bottom
-        {CornerBottom(&block->Corners[3]), CornerBottom(&block->Corners[2]), CornerBottom(&block->Corners[0])},
-        {CornerBottom(&block->Corners[0]), CornerBottom(&block->Corners[2]), CornerBottom(&block->Corners[1])}
+        {cornerbottom(&block->corners[3]), cornerbottom(&block->corners[2]), cornerbottom(&block->corners[0])},
+        {cornerbottom(&block->corners[0]), cornerbottom(&block->corners[2]), cornerbottom(&block->corners[1])}
     };
 
-    AppendToBuffer(buffer, &triangles, sizeof(triangles));
+    append_buffer(buffer, &triangles, sizeof(triangles));
 }

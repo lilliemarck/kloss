@@ -6,20 +6,20 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-struct GroupInstance;
+struct groupinstance;
 
-typedef struct Pick Pick;
-typedef struct Viewport Viewport;
-typedef struct Group Group;
+typedef struct pick pick;
+typedef struct viewport viewport;
+typedef struct group group;
 
-struct Pick
+struct pick
 {
-    Block *block;
-    Triangle triangle;
-    Vec3 intersection;
+    block *block;
+    triangle triangle;
+    vec3 intersection;
 };
 
-struct Viewport
+struct viewport
 {
     int x;
     int y;
@@ -27,18 +27,18 @@ struct Viewport
     int height;
 };
 
-Group *CreateGroup(void);
-Group *RetainGroup(Group *group);
-void ReleaseGroup(Group *group);
-void InsertBlocksInGroup(Group *group, Block **blocks, size_t count);
-void DeleteBlocksFromGroup(Group *group, Block **blocks, size_t count);
-void DetatchBlocksFromGroup(Group *group, Block **blocks, size_t count);
-void ForEachBlockInGroup(Group *group, void (function)(Block*,void*), void *data);
-void InsertGroupInstance(Group *group, struct GroupInstance *instance);
-void ForEachGroupInstance(Group *group, void (function)(struct GroupInstance*,void*), void *data);
-Pick PickGroupBlock(Group const *group, Ray const *ray);
-bool PickGroupVertex(Group const *group, Mat4 const *model, Mat4 const *projection, Viewport const *viewport, Vec2 const *mouse, CornerRef *ref);
-BoundingBox GroupBoundingBox(Group const *group, Vec3 const *translation);
-void UpdateGroupVertexArray(Group *group);
-void DrawGroup(Group const *group);
-void DrawGroup_(Group const *group);
+group *create_group(void);
+group *retain_group(group *group);
+void release_group(group *group);
+void insert_blocks(group *group, block **blocks, size_t count);
+void delete_blocks(group *group, block **blocks, size_t count);
+void detatch_blocks(group *group, block **blocks, size_t count);
+void foreach_block(group *group, void (function)(block*,void*), void *data);
+void insert_groupinstance(group *group, struct groupinstance *instance);
+void foreach_groupinstance(group *group, void (function)(struct groupinstance*,void*), void *data);
+pick pick_group_block(group const *group, ray const *ray);
+bool pick_group_vertex(group const *group, mat4 const *model, mat4 const *projection, viewport const *viewport, vec2 const *mouse, cornerref *ref);
+boundingbox group_bounding_box(group const *group, vec3 const *translation);
+void update_group_vertexarray(group *group);
+void draw_group(group const *group);
+void draw_group_(group const *group);

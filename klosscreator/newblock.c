@@ -11,7 +11,7 @@ typedef struct
 {
     mainwindow *window;
     bool        hascursor;
-    Vec3        cursor;
+    vec3        cursor;
 } newblock;
 
 static void *create(mainwindow *win)
@@ -31,19 +31,19 @@ static void mouse_pressed(void *data, ui_mouseevent const *event)
     {
         if (tool->hascursor)
         {
-            float x      = tool->cursor.X;
-            float y      = tool->cursor.Y;
+            float x      = tool->cursor.x;
+            float y      = tool->cursor.y;
             float top    = 1.0f;
             float bottom = 0.0f;
 
-            Block *block = CreateBlock();
-            block->Corners[0] = (Corner){x,        y,        top, bottom};
-            block->Corners[1] = (Corner){x + 1.0f, y,        top, bottom};
-            block->Corners[2] = (Corner){x + 1.0f, y + 1.0f, top, bottom};
-            block->Corners[3] = (Corner){x,        y + 1.0f, top, bottom};
+            block *block = create_block();
+            block->corners[0] = (corner){x,        y,        top, bottom};
+            block->corners[1] = (corner){x + 1.0f, y,        top, bottom};
+            block->corners[2] = (corner){x + 1.0f, y + 1.0f, top, bottom};
+            block->corners[3] = (corner){x,        y + 1.0f, top, bottom};
 
-            Document *doc = get_document(tool->window);
-            InsertBlocksInGroup(GetRootGroup(doc), &block, 1);
+            document *doc = get_document(tool->window);
+            insert_blocks(get_root_group(doc), &block, 1);
             ui_update_widget(get_glwidget(tool->window));
         }
     }
@@ -53,15 +53,15 @@ static void mouse_moved(void *data, ui_mouseevent const *event)
 {
     newblock *tool = data;
 
-    Ray ray = make_mouseray(tool->window, event->x, event->y);
-    Vec3 pos;
+    ray ray = make_mouseray(tool->window, event->x, event->y);
+    vec3 pos;
 
-    tool->hascursor = RayIntersectXYPlane(&pos, &ray, 0.0f);
+    tool->hascursor = ray_intersect_xyplane(&pos, &ray, 0.0f);
 
     if (tool->hascursor)
     {
-        tool->cursor.X = roundf(pos.X);
-        tool->cursor.Y = roundf(pos.Y);
+        tool->cursor.x = roundf(pos.x);
+        tool->cursor.y = roundf(pos.y);
         // Don't bother with setting z to 0 because z is 0 since calloc
     }
 

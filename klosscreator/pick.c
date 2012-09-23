@@ -1,37 +1,37 @@
 #include "pick.h"
 
-bool SinglePick(PickInterface *interface, void *data, void *pick)
+bool single_pick(pickprocs *interface, void *data, void *pick)
 {
     if (pick)
     {
-        if (!interface->IsSelected(data, pick))
+        if (!interface->is_selected(data, pick))
         {
-            interface->DeselectAll(data);
-            interface->Select(data, pick);
+            interface->deselect_all(data);
+            interface->select(data, pick);
         }
 
         return true;
     }
     else
     {
-        interface->DeselectAll(data);
+        interface->deselect_all(data);
     }
 
     return false;
 }
 
-bool MultiPick(PickInterface *interface, void *data, void *pick)
+bool multi_pick(pickprocs *interface, void *data, void *pick)
 {
     if (pick)
     {
-        if (!interface->IsSelected(data, pick))
+        if (!interface->is_selected(data, pick))
         {
-            interface->Select(data, pick);
+            interface->select(data, pick);
             return true;
         }
         else
         {
-            interface->Deselect(data, pick);
+            interface->deselect(data, pick);
         }
     }
 

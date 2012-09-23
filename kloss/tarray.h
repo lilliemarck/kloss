@@ -6,48 +6,48 @@
 #define DECLARE_TARRAY(T, name) \
 struct                          \
 {                               \
-    T *Begin;                   \
-    T *End;                     \
-    T *Capacity;                \
+    T *begin;                   \
+    T *end;                     \
+    T *capacity;                \
 } name
 
 #define INIT_TARRAY(array)   \
 {                            \
-    (array).Begin = NULL;    \
-    (array).End = NULL;      \
-    (array).Capacity = NULL; \
+    (array).begin = NULL;    \
+    (array).end = NULL;      \
+    (array).capacity = NULL; \
 }
 
 #define INIT_TARRAY_CAPACITY(array, capacity)                  \
 {                                                              \
-    (array).Begin = malloc(sizeof(*(array).Begin) * capacity); \
-    (array).End = (array).Begin;                               \
-    (array).Capacity = (array).Begin + capacity;               \
+    (array).begin = malloc(sizeof(*(array).begin) * capacity); \
+    (array).end = (array).begin;                               \
+    (array).capacity = (array).begin + capacity;               \
 }
 
 #define FREE_TARRAY(array) \
 {                          \
-    free((array).Begin);   \
+    free((array).begin);   \
 }
 
 #define PUSH_TARRAY(array, element)                                                \
 {                                                                                  \
-    if ((array).End == (array).Capacity)                                           \
+    if ((array).end == (array).capacity)                                           \
     {                                                                              \
-        size_t length = (array).End - (array).Begin;                               \
+        size_t length = (array).end - (array).begin;                               \
         size_t capacity = (length + 1) << 1;                                       \
-        (array).Begin = realloc((array).Begin, sizeof(*(array).Begin) * capacity); \
-        (array).End = (array).Begin + length;                                      \
-        (array).Capacity = (array).Begin + capacity;                               \
+        (array).begin = realloc((array).begin, sizeof(*(array).begin) * capacity); \
+        (array).end = (array).begin + length;                                      \
+        (array).capacity = (array).begin + capacity;                               \
     }                                                                              \
-    *(array).End++ = (element);                                                    \
+    *(array).end++ = (element);                                                    \
 }
 
 #define ERASE_TARRAY_INDEX(array, index)                                        \
 {                                                                               \
-    memcpy((array).Begin + (index),                                             \
-           (array).Begin + (index) + 1,                                         \
-           sizeof(*(array).Begin) * (--(array).End - (array).Begin - (index))); \
+    memcpy((array).begin + (index),                                             \
+           (array).begin + (index) + 1,                                         \
+           sizeof(*(array).begin) * (--(array).end - (array).begin - (index))); \
 }
 
 /**
@@ -57,9 +57,9 @@ struct                          \
 {                                                                  \
     memcpy(iterator,                                               \
            iterator + 1,                                           \
-           sizeof(*(array).Begin) * (--(array).End - (iterator))); \
+           sizeof(*(array).begin) * (--(array).end - (iterator))); \
 }
 
-#define CLEAR_TARRAY(array) { (array).End = (array).Begin; }
+#define CLEAR_TARRAY(array) { (array).end = (array).begin; }
 
-#define TARRAY_LENGTH(array) ((array).End - (array).Begin)
+#define TARRAY_LENGTH(array) ((array).end - (array).begin)

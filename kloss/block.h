@@ -3,30 +3,30 @@
 #include <kloss/geometry.h>
 #include <kloss/math.h>
 
-struct Buffer;
+struct buffer;
 
-typedef struct Block Block;
-typedef struct Corner Corner;
+typedef struct block block;
+typedef struct corner corner;
 
-struct Corner
+struct corner
 {
-    float X;
-    float Y;
-    float Top;
-    float Bottom;
+    float x;
+    float y;
+    float top;
+    float bottom;
 };
 
-struct Block
+struct block
 {
-    Corner Corners[4];
+    corner corners[4];
 };
 
-Vec3 CornerTop(Corner const *corner);
-Vec3 CornerBottom(Corner const *corner);
-void TranslateCorner(Corner *corner, Vec3 const *units);
+vec3 cornertop(corner const *corner);
+vec3 cornerbottom(corner const *corner);
+void translate_corner(corner *corner, vec3 const *units);
 
-Block *CreateBlock(void);
-Block *CopyBlock(Block const *block);
-void DestroyBlock(Block *block);
-void TranslateBlock(Block *block, Vec3 const *units);
-void GetBlockTriangles(Block const *block, struct Buffer *buffer);
+block *create_block(void);
+block *copy_block(block const *block);
+void destroy_block(block *block);
+void translate_block(block *block, vec3 const *units);
+void get_block_triangles(block const *block, struct buffer *buffer);

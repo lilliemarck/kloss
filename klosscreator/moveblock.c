@@ -13,9 +13,9 @@
 typedef struct
 {
     mainwindow *window;
-    Document   *document;
-    Vec3        reference;
-    Buffer     *dragbackup;
+    document   *document;
+    vec3        reference;
+    buffer     *dragbackup;
 } moveblock;
 
 static void *create(mainwindow *win)
@@ -32,9 +32,9 @@ static void destroy(void *data)
 {
     moveblock *tool = data;
 
-    UnlockDocument(tool->document);
-    DestroyBuffer(tool->dragbackup);
-    DeselectAllBlocks(GetBlockSelection(tool->document));
+    unlock_document(tool->document);
+    destroy_buffer(tool->dragbackup);
+    deselect_all_blocks(get_blockselection(tool->document));
 
     free(tool);
 }
@@ -45,29 +45,29 @@ static void mouse_pressed(void *data, ui_mouseevent const *event)
 
     if (event->button == UI_MOUSEBUTTON_LEFT)
     {
-        BlockSelection *selection = GetBlockSelection(tool->document);
-        Ray mouse = make_mouseray(tool->window, event->x, event->y);
-        Pick pick = PickGroupBlock(GetRootGroup(tool->document), &mouse);
+        blockselection *selection = get_blockselection(tool->document);
+        ray mouse = make_mouseray(tool->window, event->x, event->y);
+        pick pick = pick_group_block(get_root_group(tool->document), &mouse);
         bool did_select;
 
         if (event->modifiers & UI_MODIFIER_CTRL)
         {
-            did_select = MultiPickBlock(selection, pick.block);
+            did_select = multi_pick_block(selection, pick.block);
         }
         else
         {
-            did_select = SinglePickBlock(selection, pick.block);
+            did_select = single_pick_block(selection, pick.block);
         }
 
         if (did_select)
         {
             tool->reference = pick.intersection;
 
-            DestroyBuffer(tool->dragbackup);
-            tool->dragbackup = CreateBuffer();
-            BackupBlockSelection(selection, tool->dragbackup);
+            destroy_buffer(tool->dragbackup);
+            tool->dragbackup = create_buffer();
+            backup_blockselection(selection, tool->dragbackup);
 
-            LockDocument(tool->document);
+            lock_document(tool->document);
         }
 
         ui_update_widget(get_glwidget(tool->window));
@@ -80,8 +80,8 @@ static void mouse_released(void *data, ui_mouseevent const *event)
 
     if (event->button == UI_MOUSEBUTTON_LEFT)
     {
-        UnlockDocument(tool->document);
-        DestroyBuffer(tool->dragbackup);
+        unlock_document(tool->document);
+        destroy_buffer(tool->dragbackup);
         tool->dragbackup = NULL;
     }
 }
@@ -92,30 +92,30 @@ static void mouse_moved(void *data, ui_mouseevent const *event)
 
     if (tool->dragbackup)
     {
-        Ray ray = make_mouseray(tool->window, event->x, event->y);
-        Vec3 position;
+        ray ray = make_mouseray(tool->window, event->x, event->y);
+        vec3 position;
 
-        if (ConstrainRay(get_constrainalgorithm(tool->window), &ray, &tool->reference, &position))
+        if (constrain_ray(get_constrainalgorithm(tool->window), &ray, &tool->reference, &position))
         {
-            BlockSelection *selection = GetBlockSelection(tool->document);
-            RestoreBlockSelection(selection, tool->dragbackup);
+            blockselection *selection = get_blockselection(tool->document);
+            restore_blockselection(selection, tool->dragbackup);
 
-            Vec3 translation;
-            Vec3Subtract(&translation, &position, &tool->reference);
+            vec3 translation;
+            vec3_subtract(&translation, &position, &tool->reference);
 
-            translation.X = roundf(translation.X);
-            translation.Y = roundf(translation.Y);
-            translation.Z = roundf(translation.Z);
+            translation.x = roundf(translation.x);
+            translation.y = roundf(translation.y);
+            translation.z = roundf(translation.z);
 
-            Block** blocks = SelectedBlocks(selection);
-            size_t count = SelectedBlockCount(selection);
+            block** blocks = selected_blocks(selection);
+            size_t count = selected_block_count(selection);
 
             for (size_t i = 0; i < count; ++i)
             {
-                TranslateBlock(blocks[i], &translation);
+                translate_block(blocks[i], &translation);
             }
 
-            UpdateGroupVertexArray(GetRootGroup(tool->document));
+            update_group_vertexarray(get_root_group(tool->document));
         }
 
         ui_update_widget(get_glwidget(tool->window));
@@ -126,23 +126,23 @@ static void draw_gl(void *data)
 {
     moveblock *tool = data;
 
-    Buffer *vertices = get_cursorvertices(tool->window);
-    BlockSelection *selection = GetBlockSelection(tool->document);
-    Block **blocks = SelectedBlocks(selection);
-    size_t count = SelectedBlockCount(selection);
+    buffer *vertices = get_cursorvertices(tool->window);
+    blockselection *selection = get_blockselection(tool->document);
+    block **blocks = selected_blocks(selection);
+    size_t count = selected_block_count(selection);
 
     for (size_t i = 0; i < count; ++i)
     {
-        Block const *block = blocks[i];
+        block const *block = blocks[i];
 
-        draw_at(vertices, (Vec3){block->Corners[0].X, block->Corners[0].Y, block->Corners[0].Top});
-        draw_at(vertices, (Vec3){block->Corners[1].X, block->Corners[1].Y, block->Corners[1].Top});
-        draw_at(vertices, (Vec3){block->Corners[2].X, block->Corners[2].Y, block->Corners[2].Top});
-        draw_at(vertices, (Vec3){block->Corners[3].X, block->Corners[3].Y, block->Corners[3].Top});
-        draw_at(vertices, (Vec3){block->Corners[0].X, block->Corners[0].Y, block->Corners[0].Bottom});
-        draw_at(vertices, (Vec3){block->Corners[1].X, block->Corners[1].Y, block->Corners[1].Bottom});
-        draw_at(vertices, (Vec3){block->Corners[2].X, block->Corners[2].Y, block->Corners[2].Bottom});
-        draw_at(vertices, (Vec3){block->Corners[3].X, block->Corners[3].Y, block->Corners[3].Bottom});
+        draw_at(vertices, (vec3){block->corners[0].x, block->corners[0].y, block->corners[0].top});
+        draw_at(vertices, (vec3){block->corners[1].x, block->corners[1].y, block->corners[1].top});
+        draw_at(vertices, (vec3){block->corners[2].x, block->corners[2].y, block->corners[2].top});
+        draw_at(vertices, (vec3){block->corners[3].x, block->corners[3].y, block->corners[3].top});
+        draw_at(vertices, (vec3){block->corners[0].x, block->corners[0].y, block->corners[0].bottom});
+        draw_at(vertices, (vec3){block->corners[1].x, block->corners[1].y, block->corners[1].bottom});
+        draw_at(vertices, (vec3){block->corners[2].x, block->corners[2].y, block->corners[2].bottom});
+        draw_at(vertices, (vec3){block->corners[3].x, block->corners[3].y, block->corners[3].bottom});
     }
 }
 

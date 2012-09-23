@@ -6,71 +6,71 @@
 #include <assert.h>
 #include <stdlib.h>
 
-struct BlockSelection
+struct blockselection
 {
-    DECLARE_TARRAY(Block*, Blocks);
+    DECLARE_TARRAY(block*, blocks);
 };
 
-BlockSelection *CreateBlockSelection(void)
+blockselection *create_blockselection(void)
 {
-    return calloc(1, sizeof(BlockSelection));
+    return calloc(1, sizeof(blockselection));
 }
 
-void DestroyBlockSelection(BlockSelection *selection)
+void destroy_blockselection(blockselection *selection)
 {
     if (selection)
     {
-        FREE_TARRAY(selection->Blocks);
+        FREE_TARRAY(selection->blocks);
         free(selection);
     }
 }
 
-void SelectBlock(BlockSelection *selection, struct Block *block)
+void select_block(blockselection *selection, struct block *block)
 {
-    PUSH_TARRAY(selection->Blocks, block);
+    PUSH_TARRAY(selection->blocks, block);
 }
 
-void DeselectAllBlocks(BlockSelection *selection)
+void deselect_all_blocks(blockselection *selection)
 {
-    CLEAR_TARRAY(selection->Blocks);
+    CLEAR_TARRAY(selection->blocks);
 }
 
-size_t SelectedBlockCount(BlockSelection *selection)
+size_t selected_block_count(blockselection *selection)
 {
-    return TARRAY_LENGTH(selection->Blocks);
+    return TARRAY_LENGTH(selection->blocks);
 }
 
-Block **SelectedBlocks(BlockSelection *selection)
+block **selected_blocks(blockselection *selection)
 {
-    return selection->Blocks.Begin;
+    return selection->blocks.begin;
 }
 
-void BackupBlockSelection(BlockSelection *selection, Buffer *buffer)
+void backup_blockselection(blockselection *selection, buffer *buffer)
 {
-    for (Block **i = selection->Blocks.Begin; i != selection->Blocks.End; ++i)
+    for (block **i = selection->blocks.begin; i != selection->blocks.end; ++i)
     {
-        AppendToBuffer(buffer, *i, sizeof(Block));
+        append_buffer(buffer, *i, sizeof(block));
     }
 }
 
-void RestoreBlockSelection(BlockSelection *selection, Buffer *buffer)
+void restore_blockselection(blockselection *selection, buffer *buffer)
 {
-    assert(BufferSize(buffer) / sizeof(Block) == TARRAY_LENGTH(selection->Blocks));
+    assert(buffer_size(buffer) / sizeof(block) == TARRAY_LENGTH(selection->blocks));
 
-    Block *backup = BufferData(buffer);
-    size_t blockCount = TARRAY_LENGTH(selection->Blocks);
+    block *backup = buffer_data(buffer);
+    size_t blockcount = TARRAY_LENGTH(selection->blocks);
 
-    for (size_t i = 0; i < blockCount; ++i)
+    for (size_t i = 0; i < blockcount; ++i)
     {
-        *selection->Blocks.Begin[i] = backup[i];
+        *selection->blocks.begin[i] = backup[i];
     }
 }
 
-static bool IsSelected(void *data, void *element)
+static bool is_selected(void *data, void *element)
 {
-    BlockSelection *selection = data;
+    blockselection *selection = data;
 
-    for (Block **i = selection->Blocks.Begin; i != selection->Blocks.End; ++i)
+    for (block **i = selection->blocks.begin; i != selection->blocks.end; ++i)
     {
         if (*i == element)
         {
@@ -81,44 +81,44 @@ static bool IsSelected(void *data, void *element)
     return false;
 }
 
-static void Select(void *data, void *element)
+static void select(void *data, void *element)
 {
-    SelectBlock(data, element);
+    select_block(data, element);
 }
 
-static void Deselect(void *data, void *element)
+static void deselect(void *data, void *element)
 {
-    BlockSelection *selection = data;
+    blockselection *selection = data;
 
-    for (Block **i = selection->Blocks.Begin; i != selection->Blocks.End; ++i)
+    for (block **i = selection->blocks.begin; i != selection->blocks.end; ++i)
     {
         if (*i == element)
         {
-            ERASE_TARRAY_ITERATOR(selection->Blocks, i);
+            ERASE_TARRAY_ITERATOR(selection->blocks, i);
             return;
         }
     }
 }
 
-static void DeselectAll(void *data)
+static void deselect_all(void *data)
 {
-    DeselectAllBlocks(data);
+    deselect_all_blocks(data);
 }
 
-static PickInterface interface =
+static pickprocs interface =
 {
-    IsSelected,
-    Select,
-    Deselect,
-    DeselectAll
+    is_selected,
+    select,
+    deselect,
+    deselect_all
 };
 
-bool SinglePickBlock(BlockSelection *selection, Block *pick)
+bool single_pick_block(blockselection *selection, block *pick)
 {
-    return SinglePick(&interface, selection, pick);
+    return single_pick(&interface, selection, pick);
 }
 
-bool MultiPickBlock(BlockSelection *selection, Block *pick)
+bool multi_pick_block(blockselection *selection, block *pick)
 {
-    return MultiPick(&interface, selection, pick);
+    return multi_pick(&interface, selection, pick);
 }

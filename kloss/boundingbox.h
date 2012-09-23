@@ -2,14 +2,14 @@
 
 #include <kloss/math.h>
 
-typedef struct BoundingBox BoundingBox;
+typedef struct boundingbox boundingbox;
 
-struct BoundingBox
+struct boundingbox
 {
-    Vec3 Lower;
-    Vec3 Upper;
+    vec3 lower;
+    vec3 upper;
 };
 
-void InitBoundingBox(BoundingBox *bbox);
-void ExpandBoundingBox(BoundingBox *bbox, BoundingBox const *other);
-void TranslateBoundingBox(BoundingBox *bbox, Vec3 const *units);
+void init_boundingbox(boundingbox *bbox);
+void expand_boundingbox(boundingbox *bbox, boundingbox const *other);
+void translate_boundingbox(boundingbox *bbox, vec3 const *units);

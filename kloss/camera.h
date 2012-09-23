@@ -1,28 +1,28 @@
 #pragma once
 
-struct Mat4;
-struct Vec3;
-struct Ray;
+struct mat4;
+struct vec3;
+struct ray;
 
-typedef struct Camera Camera;
+typedef struct camera camera;
 
-Camera *CreateCamera(void);
-void DestroyCamera(Camera *camera);
-void GetCameraPosition(Camera const *camera, struct Vec3 *out);
-void SetCameraPosition(Camera *camera, struct Vec3 *out);
-float GetCameraYaw(Camera const *camera);
-void SetCameraYaw(Camera *camera, float radians);
-float GetCameraPitch(Camera const *camera);
-void SetCameraPitch(Camera *camera, float radians);
+camera *create_camera(void);
+void destroy_camera(camera *camera);
+void get_camera_position(camera const *camera, struct vec3 *out);
+void set_camera_position(camera *camera, struct vec3 *out);
+float get_camera_yaw(camera const *camera);
+void set_camera_yaw(camera *camera, float radians);
+float get_camera_pitch(camera const *camera);
+void set_camera_pitch(camera *camera, float radians);
 
-void MoveCameraForward(Camera *camera, float units);
-void MoveCameraSideways(Camera *camera, float units);
-void RotateCameraYaw(Camera *camera, float radians);
-void RotateCameraPitch(Camera *camera, float radians);
-void CameraLookDirection(Camera const *camera, struct Vec3 *out);
-void CameraRotationMatrix(Camera const *camera, struct Mat4 *out);
-void CameraWorldTransform(Camera const *camera, struct Mat4 *out);
+void move_camera_forward(camera *camera, float units);
+void move_camera_sideways(camera *camera, float units);
+void rotate_camera_yaw(camera *camera, float radians);
+void rotate_camera_pitch(camera *camera, float radians);
+void camera_lookdirection(camera const *camera, struct vec3 *out);
+void camera_rotationmatrix(camera const *camera, struct mat4 *out);
+void camera_worldtransform(camera const *camera, struct mat4 *out);
 /**
  * Create a ray from the camera's position and look direction.
  */
-void CameraRay(Camera const *camera, struct Ray *out);
+void camera_ray(camera const *camera, struct ray *out);
