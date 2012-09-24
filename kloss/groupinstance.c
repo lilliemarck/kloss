@@ -13,7 +13,7 @@ struct groupinstance
 
 groupinstance *create_groupinstance(group *group)
 {
-    groupinstance *instance = calloc(1, sizeof(groupinstance));
+    groupinstance *instance = calloc(1, sizeof(struct groupinstance));
     instance->group_ = retain_group(group);
     return instance;
 }

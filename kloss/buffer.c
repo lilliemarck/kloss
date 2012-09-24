@@ -13,7 +13,7 @@ struct buffer
 
 buffer *create_buffer(void)
 {
-    return calloc(1, sizeof(buffer));
+    return calloc(1, sizeof(struct buffer));
 }
 
 void destroy_buffer(buffer *buffer)

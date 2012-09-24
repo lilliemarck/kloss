@@ -14,7 +14,7 @@ struct camera
 
 camera *create_camera(void)
 {
-    return calloc(1, sizeof(camera));
+    return calloc(1, sizeof(struct camera));
 }
 
 void destroy_camera(camera *camera)

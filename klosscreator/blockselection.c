@@ -13,7 +13,7 @@ struct blockselection
 
 blockselection *create_blockselection(void)
 {
-    return calloc(1, sizeof(blockselection));
+    return calloc(1, sizeof(struct blockselection));
 }
 
 void destroy_blockselection(blockselection *selection)
@@ -49,13 +49,13 @@ void backup_blockselection(blockselection *selection, buffer *buffer)
 {
     for (block **i = selection->blocks.begin; i != selection->blocks.end; ++i)
     {
-        append_buffer(buffer, *i, sizeof(block));
+        append_buffer(buffer, *i, sizeof(struct block));
     }
 }
 
 void restore_blockselection(blockselection *selection, buffer *buffer)
 {
-    assert(buffer_size(buffer) / sizeof(block) == TARRAY_LENGTH(selection->blocks));
+    assert(buffer_size(buffer) / sizeof(struct block) == TARRAY_LENGTH(selection->blocks));
 
     block *backup = buffer_data(buffer);
     size_t blockcount = TARRAY_LENGTH(selection->blocks);

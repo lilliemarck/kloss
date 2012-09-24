@@ -14,7 +14,7 @@ struct cornerselection
 
 cornerselection *create_cornerselection(void)
 {
-    return calloc(1, sizeof(cornerselection));
+    return calloc(1, sizeof(struct cornerselection));
 }
 
 void destroy_cornerselection(cornerselection *selection)
@@ -40,13 +40,13 @@ void backup_cornerselection(cornerselection *selection, struct buffer *buffer)
 {
     for (cornerref *i = selection->cornerrefs.begin; i != selection->cornerrefs.end; ++i)
     {
-        append_buffer(buffer, i->corner, sizeof(corner));
+        append_buffer(buffer, i->corner, sizeof(struct corner));
     }
 }
 
 void restore_cornerselection(cornerselection *selection, struct buffer *buffer)
 {
-    assert(buffer_size(buffer) / sizeof(corner) == TARRAY_LENGTH(selection->cornerrefs));
+    assert(buffer_size(buffer) / sizeof(struct corner) == TARRAY_LENGTH(selection->cornerrefs));
 
     corner *backup = buffer_data(buffer);
     size_t cornercount = TARRAY_LENGTH(selection->cornerrefs);

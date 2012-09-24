@@ -5,13 +5,13 @@
 void draw(struct buffer *array)
 {
     vertex *data = buffer_data(array);
-    size_t count = buffer_size(array) / sizeof(vertex);
+    size_t count = buffer_size(array) / sizeof(struct vertex);
 
     glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
     glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_VERTEX_ARRAY);
-    glColorPointer(3, GL_UNSIGNED_BYTE, sizeof(vertex), &data->color);
-    glVertexPointer(3, GL_FLOAT, sizeof(vertex), &data->position);
+    glColorPointer(3, GL_UNSIGNED_BYTE, sizeof(struct vertex), &data->color);
+    glVertexPointer(3, GL_FLOAT, sizeof(struct vertex), &data->position);
     glDrawArrays(GL_LINES, 0, count);
     glPopClientAttrib();
 }

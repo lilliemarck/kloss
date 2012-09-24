@@ -25,7 +25,7 @@ struct group
 
 group *create_group(void)
 {
-    group *group = malloc(sizeof(group));
+    group *group = malloc(sizeof(struct group));
     group->blocks    = create_ptrarray();
     group->instances = create_ptrarray();
     group->vertices  = create_buffer();
@@ -66,7 +66,7 @@ void release_group(group *group)
 static void append_triangles(group *group, buffer *buffer)
 {
     triangle *triangles = buffer_data(buffer);
-    size_t count = buffer_size(buffer) / sizeof(triangle);
+    size_t count = buffer_size(buffer) / sizeof(struct triangle);
 
     for (size_t i = 0; i < count; ++i)
     {
@@ -163,7 +163,7 @@ pick pick_group_block(group const *group, ray const *ray)
         get_block_triangles(block, buffer);
 
         triangle *tris = buffer_data(buffer);
-        size_t tricount = buffer_size(buffer) / sizeof(triangle);
+        size_t tricount = buffer_size(buffer) / sizeof(struct triangle);
 
         for (size_t j = 0; j < tricount; ++j)
         {
@@ -378,10 +378,10 @@ void draw_group(group const *group)
 void draw_group_(group const *group)
 {
     vertex *vertices = buffer_data(group->vertices);
-    size_t vertexcount = buffer_size(group->vertices) / sizeof(vertex);
+    size_t vertexcount = buffer_size(group->vertices) / sizeof(struct vertex);
 
-    glNormalPointer(GL_FLOAT, sizeof(vertex), &vertices->normal);
-    glVertexPointer(3, GL_FLOAT, sizeof(vertex), &vertices->position);
+    glNormalPointer(GL_FLOAT, sizeof(struct vertex), &vertices->normal);
+    glVertexPointer(3, GL_FLOAT, sizeof(struct vertex), &vertices->position);
     glDrawArrays(GL_TRIANGLES, 0, vertexcount);
 
     size_t instancecount = ptrarray_count(group->instances);

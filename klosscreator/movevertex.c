@@ -12,7 +12,7 @@
 
 static float const snap_size = 1.0f / 8.0f;
 
-typedef struct
+typedef struct movevertex
 {
     mainwindow      *window;
     document        *document;
@@ -23,7 +23,7 @@ typedef struct
 
 static void *create(mainwindow *win)
 {
-    movevertex *tool = calloc(1, sizeof(movevertex));
+    movevertex *tool = calloc(1, sizeof(struct movevertex));
 
     tool->window     = win;
     tool->document   = get_document(win);

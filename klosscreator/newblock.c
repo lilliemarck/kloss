@@ -7,7 +7,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-typedef struct
+typedef struct newblock
 {
     mainwindow *window;
     bool        hascursor;
@@ -16,7 +16,7 @@ typedef struct
 
 static void *create(mainwindow *win)
 {
-    newblock *tool = calloc(1, sizeof(newblock));
+    newblock *tool = calloc(1, sizeof(struct newblock));
 
     tool->window = win;
 

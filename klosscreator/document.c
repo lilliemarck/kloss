@@ -16,7 +16,7 @@ struct document
 
 document *create_document(void)
 {
-    document *doc = malloc(sizeof(document));
+    document *doc = malloc(sizeof(struct document));
 
     doc->islocked = false;
     doc->group = create_group();
@@ -73,7 +73,7 @@ void paste_copied_blocks(document *doc)
     deselect_all_blocks(doc->blockselection);
 
     block* blocks = buffer_data(doc->copiedblocks);
-    size_t blockcount = buffer_size(doc->copiedblocks) / sizeof(block);
+    size_t blockcount = buffer_size(doc->copiedblocks) / sizeof(struct block);
 
     for (size_t i = 0; i < blockcount; ++i)
     {

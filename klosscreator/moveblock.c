@@ -10,7 +10,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-typedef struct
+typedef struct moveblock
 {
     mainwindow *window;
     document   *document;
@@ -20,7 +20,7 @@ typedef struct
 
 static void *create(mainwindow *win)
 {
-    moveblock *tool = calloc(1, sizeof(moveblock));
+    moveblock *tool = calloc(1, sizeof(struct moveblock));
 
     tool->window = win;
     tool->document = get_document(win);

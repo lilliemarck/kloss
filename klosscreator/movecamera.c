@@ -41,7 +41,7 @@ static void on_timer(void* data, ui_timer* timer)
 
 static void *create(mainwindow *win)
 {
-    movecamera *tool = calloc(1, sizeof(movecamera));
+    movecamera *tool = calloc(1, sizeof(struct movecamera));
 
     tool->window           = win;
     tool->backward_forward = create_keypair();

@@ -14,7 +14,7 @@ typedef struct rotatecamera
 
 static void *create(mainwindow *win)
 {
-    rotatecamera *tool = calloc(1, sizeof(rotatecamera));
+    rotatecamera *tool = calloc(1, sizeof(struct rotatecamera));
 
     tool->window = win;
 

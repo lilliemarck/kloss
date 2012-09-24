@@ -17,7 +17,7 @@ struct keypair
 
 keypair *create_keypair(void)
 {
-    return calloc(1, sizeof(keypair));
+    return calloc(1, sizeof(struct keypair));
 }
 
 void destroy_keypair(keypair *pair)

@@ -11,7 +11,7 @@ struct ptrarray
 
 ptrarray* create_ptrarray(void)
 {
-    return calloc(1, sizeof(ptrarray));
+    return calloc(1, sizeof(struct ptrarray));
 }
 
 void destroy_ptrarray(ptrarray *array)

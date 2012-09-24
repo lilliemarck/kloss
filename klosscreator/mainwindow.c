@@ -333,7 +333,7 @@ ui_mouseprocs mouseprocs =
 
 mainwindow *create_mainwindow(void)
 {
-    mainwindow *win = calloc(1, sizeof(mainwindow));
+    mainwindow *win = calloc(1, sizeof(struct mainwindow));
 
     win->document = create_document();
     win->window = ui_create_window();

@@ -23,13 +23,13 @@ void translate_corner(corner *corner, vec3 const *units)
 
 block *create_block(void)
 {
-    return calloc(1, sizeof(block));
+    return calloc(1, sizeof(struct block));
 }
 
 block *copy_block(block const *block)
 {
-    struct block *copy = malloc(sizeof(block));
-    memcpy(copy, block, sizeof(block));
+    struct block *copy = malloc(sizeof(struct block));
+    memcpy(copy, block, sizeof(struct block));
     return copy;
 }
 
