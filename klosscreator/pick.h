@@ -2,10 +2,6 @@
 
 #include <stdbool.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-
 typedef struct PickInterface PickInterface;
 
 struct PickInterface
@@ -18,7 +14,3 @@ struct PickInterface
 
 bool SinglePick(PickInterface *interface, void *data, void *pick);
 bool MultiPick(PickInterface *interface, void *data, void *pick);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus

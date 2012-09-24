@@ -2,10 +2,6 @@
 
 #include <stdbool.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-
 /**
  * Convert two mutually exclusive inputs to a single output value.
  */
@@ -29,7 +25,3 @@ float KeyPairSetSecond(KeyPair *pair, bool pressed);
  * key is selected or 0 if none of the keys are pressed.
  */
 float KeyPairValue(KeyPair const *pair);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus

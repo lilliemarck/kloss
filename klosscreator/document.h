@@ -5,10 +5,6 @@
 struct BlockSelection;
 struct Group;
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-
 typedef struct Document Document;
 
 Document *CreateDocument(void);
@@ -24,7 +20,3 @@ void GroupSelectedBlocks(Document *doc);
 
 struct Group *GetRootGroup(Document *doc);
 struct BlockSelection *GetBlockSelection(Document *doc);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus

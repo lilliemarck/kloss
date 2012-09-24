@@ -3,10 +3,6 @@
 #include <kloss/geometry.h>
 #include <kloss/math.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-
 struct Buffer;
 
 typedef struct Block Block;
@@ -34,7 +30,3 @@ Block *CopyBlock(Block const *block);
 void DestroyBlock(Block *block);
 void TranslateBlock(Block *block, Vec3 const *units);
 void GetBlockTriangles(Block const *block, struct Buffer *buffer);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus

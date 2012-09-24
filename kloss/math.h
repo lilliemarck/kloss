@@ -2,10 +2,6 @@
 
 #include <stdbool.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-
 #define M_TAU   6.2831853071795864
 #define M_TAU_2 3.1415926535897932
 #define M_TAU_4 1.5707963267948966
@@ -63,7 +59,3 @@ void Mat4RotationX(Mat4 *out, float rad);
 void Mat4RotationY(Mat4 *out, float rad);
 void Mat4RotationZ(Mat4 *out, float rad);
 void Mat4Transform(Mat4 *out, Mat4 const *mat, Mat4 const *x);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus

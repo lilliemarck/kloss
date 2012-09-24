@@ -192,7 +192,7 @@ struct ui_glwidget : public QGLWidget
         }
     }
 
-    ui_gl_procs const *procs;
+    ui_glprocs const *procs;
     void *data;
     ui_keyprocs const *keyprocs;
     void *keydata;
@@ -353,7 +353,7 @@ void ui_set_action_checkable(ui_action *action, bool checkable)
     action->qaction->setCheckable(checkable);
 }
 
-void ui_set_action_proc(ui_action *action, ui_actionproc proc, void* data)
+void ui_set_actionproc(ui_action *action, ui_actionproc proc, void* data)
 {
     action->proc = proc;
     action->data = data;
@@ -381,7 +381,7 @@ void ui_add_action_to_group(ui_actiongroup *group, ui_action *action)
     group->qactiongroup->addAction(action->qaction);
 }
 
-ui_glwidget *ui_create_glwidget(ui_gl_procs const* procs, void *data)
+ui_glwidget *ui_create_glwidget(ui_glprocs const* procs, void *data)
 {
     ui_glwidget *glw = new ui_glwidget;
     glw->setMouseTracking(true);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -63,7 +64,7 @@ typedef enum ui_key ui_key;
 typedef struct ui_app ui_app;
 typedef struct ui_action ui_action;
 typedef struct ui_actiongroup ui_actiongroup;
-typedef struct ui_glprocs ui_gl_procs;
+typedef struct ui_glprocs ui_glprocs;
 typedef struct ui_glwidget ui_glwidget;
 typedef struct ui_keyprocs ui_keyprocs;
 typedef struct ui_mouseevent ui_mouseevent;
@@ -130,13 +131,13 @@ ui_action *ui_create_action(ui_window *win);
 void ui_set_action_text(ui_action *action, char const *text);
 void ui_set_action_shortcut(ui_action *action, char const *shortcut);
 void ui_set_action_checkable(ui_action *action, bool checkable);
-void ui_set_action_proc(ui_action *action, ui_actionproc proc, void* data);
+void ui_set_actionproc(ui_action *action, ui_actionproc proc, void* data);
 void ui_trig_action(ui_action *action);
 
 ui_actiongroup *ui_create_actiongroup(ui_window *win);
 void ui_add_action_to_group(ui_actiongroup *group, ui_action *action);
 
-ui_glwidget *ui_create_glwidget(ui_gl_procs const* procs, void *data);
+ui_glwidget *ui_create_glwidget(ui_glprocs const* procs, void *data);
 void ui_focus_widget(ui_glwidget *glw);
 int ui_widget_width(ui_glwidget const *glw);
 int ui_widget_height(ui_glwidget const *glw);

@@ -9,7 +9,7 @@
 
 struct Document
 {
-    unsigned LockCount;
+    bool IsLocked;
     Group* Group;
     BlockSelection* BlockSelection;
     Buffer* CopiedBlocks;
@@ -19,7 +19,7 @@ Document *CreateDocument(void)
 {
     Document *doc = malloc(sizeof(Document));
 
-    doc->LockCount = 0;
+    doc->IsLocked = false;
     doc->Group = CreateGroup();
     doc->BlockSelection = CreateBlockSelection();
     doc->CopiedBlocks = CreateBuffer();
@@ -40,18 +40,17 @@ void DestroyDocument(Document *doc)
 
 void LockDocument(Document *doc)
 {
-    ++doc->LockCount;
+    doc->IsLocked = true;
 }
 
 void UnlockDocument(Document *doc)
 {
-    assert(IsDocumentLocked(doc));
-    --doc->LockCount;
+    doc->IsLocked = false;
 }
 
 bool IsDocumentLocked(Document *doc)
 {
-    return doc->LockCount;
+    return doc->IsLocked;
 }
 
 void CopySelectedBlocks(Document *doc)

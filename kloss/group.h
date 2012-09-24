@@ -6,10 +6,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-
 struct GroupInstance;
 
 typedef struct Pick Pick;
@@ -46,7 +42,3 @@ BoundingBox GroupBoundingBox(Group const *group, Vec3 const *translation);
 void UpdateGroupVertexArray(Group *group);
 void DrawGroup(Group const *group);
 void DrawGroup_(Group const *group);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus

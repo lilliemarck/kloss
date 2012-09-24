@@ -2,10 +2,6 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-
 struct Block;
 struct Corner;
 struct Vec3;
@@ -33,7 +29,3 @@ void TranslateCornerRef(CornerRef *ref, struct Vec3 const *units);
  * flag is set. Should not be used when both flags are set.
  */
 struct Vec3 CornerRefPosition(CornerRef const *ref);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus

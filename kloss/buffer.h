@@ -3,10 +3,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-
 typedef struct Buffer Buffer;
 
 Buffer *CreateBuffer(void);
@@ -16,7 +12,3 @@ void EraseBuffer(Buffer *buffer, size_t index, size_t size);
 void ClearBuffer(Buffer *buffer);
 size_t BufferSize(Buffer *buffer);
 void *BufferData(Buffer *buffer);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus

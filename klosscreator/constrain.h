@@ -2,10 +2,6 @@
 
 #include <stdbool.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-
 struct Ray;
 struct Vec3;
 
@@ -22,7 +18,3 @@ typedef enum ConstrainAlgorithm ConstrainAlgorithm;
  * around a reference point.
  */
 bool ConstrainRay(ConstrainAlgorithm algorithm, struct Ray const *ray, struct Vec3 const *reference, struct Vec3 *out);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus

@@ -3,10 +3,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-
 struct Block;
 struct Buffer;
 
@@ -24,7 +20,3 @@ void RestoreBlockSelection(BlockSelection *selection, struct Buffer *buffer);
 
 bool SinglePickBlock(BlockSelection *selection, struct Block *pick);
 bool MultiPickBlock(BlockSelection *selection, struct Block *pick);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus

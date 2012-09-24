@@ -5,16 +5,14 @@ add_executable(klosscreator
     constrain.c
     cornerselection.c
     document.c
-    document_lock.cpp
-    gl_widget.cpp
-    main.cpp
-    main_window.cpp
-    move_block_tool.cpp
-    move_camera_tool.cpp
-    move_vertex_tool.cpp
-    new_block_tool.cpp
+    main.c
+    mainwindow.c
+    moveblock.c
+    movecamera.c
+    movevertex.c
+    newblock.c
     pick.c
-    turn_camera_tool.cpp
-    vertex_array.cpp)
+    rotatecamera.c
+    vertexarray.c)
 
 target_link_libraries(klosscreator GL kloss ui ${OPENGL_glu_LIBRARY})

@@ -3,10 +3,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-
 struct Buffer;
 struct CornerRef;
 
@@ -22,7 +18,3 @@ void RestoreCornerSelection(CornerSelection *selection, struct Buffer *buffer);
 
 bool SinglePickCorner(CornerSelection *selection, struct CornerRef *pick);
 bool MultiPickCorner(CornerSelection *selection, struct CornerRef *pick);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus

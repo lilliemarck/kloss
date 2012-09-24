@@ -1,9 +1,5 @@
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-
 struct Mat4;
 struct Vec3;
 struct Ray;
@@ -30,7 +26,3 @@ void CameraWorldTransform(Camera const *camera, struct Mat4 *out);
  * Create a ray from the camera's position and look direction.
  */
 void CameraRay(Camera const *camera, struct Ray *out);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
