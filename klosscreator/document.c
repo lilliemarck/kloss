@@ -107,7 +107,7 @@ void group_selected_blocks(document *doc)
     block **blocks = selected_blocks(doc->blockselection);
     size_t blockcount = selected_block_count(doc->blockselection);
 
-    delete_blocks(doc->group, blocks, blockcount);
+    detatch_blocks(doc->group, blocks, blockcount);
     group *newgroup = create_group();
     insert_blocks(newgroup, blocks, blockcount);
     deselect_all_blocks(doc->blockselection);
