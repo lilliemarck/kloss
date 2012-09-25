@@ -38,7 +38,11 @@ void insert_groupinstance(group *group, struct groupinstance *instance);
 void foreach_groupinstance(group *group, void (function)(struct groupinstance*,void*), void *data);
 pick pick_group_block(group const *group, ray const *ray);
 bool pick_group_vertex(group const *group, mat4 const *model, mat4 const *projection, viewport const *viewport, vec2 const *mouse, cornerref *ref);
-boundingbox group_bounding_box(group const *group, vec3 const *translation);
 void update_group_vertexarray(group *group);
 void draw_group(group const *group);
-void draw_group_(group const *group);
+
+struct groupinstance *create_groupinstance(struct group *group);
+void destroy_groupinstance(struct groupinstance *instance);
+void draw_groupinstance(struct groupinstance const *instance);
+struct boundingbox groupinstance_boundingbox(struct groupinstance const *instance, struct vec3 const *parentpos);
+void move_groupinstance_origin(struct groupinstance *instance, struct vec3 const *position);

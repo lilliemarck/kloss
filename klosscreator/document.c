@@ -2,7 +2,6 @@
 #include <kloss/boundingbox.h>
 #include <kloss/buffer.h>
 #include <kloss/group.h>
-#include <kloss/groupinstance.h>
 #include <klosscreator/blockselection.h>
 #include <stdlib.h>
 
@@ -113,7 +112,7 @@ void group_selected_blocks(document *doc)
     deselect_all_blocks(doc->blockselection);
 
     vec3 zero = {0.0f, 0.0f, 0.0f};
-    groupinstance *instance = create_groupinstance(newgroup);
+    struct groupinstance *instance = create_groupinstance(newgroup);
     boundingbox bbox = groupinstance_boundingbox(instance, &zero);
     move_groupinstance_origin(instance, &bbox.lower);
 

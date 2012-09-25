@@ -7,7 +7,6 @@ add_library(kloss
     cornerref.c
     geometry.c
     group.c
-    groupinstance.c
     keypair.c
     ptrarray.c
     math.c)

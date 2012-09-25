@@ -1,7 +1,6 @@
 #include "group.h"
 #include <kloss/algorithm.h>
 #include <kloss/buffer.h>
-#include <kloss/groupinstance.h>
 #include <kloss/ptrarray.h>
 #include <GL/gl.h>
 #include <float.h>
@@ -21,6 +20,12 @@ struct group
     ptrarray *instances;
     buffer *vertices;
     size_t refcount;
+};
+
+struct groupinstance
+{
+    struct vec3 position;
+    struct group *group;
 };
 
 group *create_group(void)
@@ -132,12 +137,12 @@ void foreach_block(group *group, void (function)(block*,void*), void *data)
     }
 }
 
-void insert_groupinstance(group *group, groupinstance *instance)
+void insert_groupinstance(group *group, struct groupinstance *instance)
 {
     push_ptrarray(group->instances, instance);
 }
 
-void foreach_groupinstance(group *group, void (function)(groupinstance*,void*), void *data)
+void foreach_groupinstance(group *group, void (function)(struct groupinstance*,void*), void *data)
 {
     size_t instancecount = ptrarray_count(group->instances);
 
@@ -300,7 +305,7 @@ static void expand_bbox_with_corner(boundingbox *bbox, corner const *corner)
     bbox->upper.z = maxf(bbox->upper.z, corner->top);
 }
 
-boundingbox group_bounding_box(group const *group, vec3 const *translation)
+static boundingbox group_bounding_box(group const *group, vec3 const *translation)
 {
     boundingbox bbox;
     init_boundingbox(&bbox);
@@ -328,9 +333,9 @@ boundingbox group_bounding_box(group const *group, vec3 const *translation)
 
     for (size_t i = 0; i < count; ++i)
     {
-        groupinstance *instance = get_ptrarray(group->instances, i);
-        boundingbox childBBox = groupinstance_boundingbox(instance, &zero);
-        expand_boundingbox(&bbox, &childBBox);
+        struct groupinstance *instance = get_ptrarray(group->instances, i);
+        boundingbox childbbox = groupinstance_boundingbox(instance, &zero);
+        expand_boundingbox(&bbox, &childbbox);
     }
 
     return bbox;
@@ -351,6 +356,23 @@ void update_group_vertexarray(group *group)
     }
 
     destroy_buffer(buffer);
+}
+
+static void draw_group_(group const *group)
+{
+    vertex *vertices = buffer_data(group->vertices);
+    size_t vertexcount = buffer_size(group->vertices) / sizeof(struct vertex);
+
+    glNormalPointer(GL_FLOAT, sizeof(struct vertex), &vertices->normal);
+    glVertexPointer(3, GL_FLOAT, sizeof(struct vertex), &vertices->position);
+    glDrawArrays(GL_TRIANGLES, 0, vertexcount);
+
+    size_t instancecount = ptrarray_count(group->instances);
+
+    for (size_t i = 0; i < instancecount; ++i)
+    {
+        draw_groupinstance(get_ptrarray(group->instances, i));
+    }
 }
 
 void draw_group(group const *group)
@@ -375,19 +397,55 @@ void draw_group(group const *group)
     glPopAttrib();
 }
 
-void draw_group_(group const *group)
+struct groupinstance *create_groupinstance(group *group)
 {
-    vertex *vertices = buffer_data(group->vertices);
-    size_t vertexcount = buffer_size(group->vertices) / sizeof(struct vertex);
+    struct groupinstance *instance = calloc(1, sizeof(struct groupinstance));
+    instance->group = retain_group(group);
+    return instance;
+}
 
-    glNormalPointer(GL_FLOAT, sizeof(struct vertex), &vertices->normal);
-    glVertexPointer(3, GL_FLOAT, sizeof(struct vertex), &vertices->position);
-    glDrawArrays(GL_TRIANGLES, 0, vertexcount);
-
-    size_t instancecount = ptrarray_count(group->instances);
-
-    for (size_t i = 0; i < instancecount; ++i)
+void destroy_groupinstance(struct groupinstance *instance)
+{
+    if (instance)
     {
-        draw_groupinstance(get_ptrarray(group->instances, i));
+        release_group(instance->group);
+        free(instance);
     }
+}
+
+void draw_groupinstance(struct groupinstance const *instance)
+{
+    glPushMatrix();
+    glTranslatef(instance->position.x, instance->position.y, instance->position.z);
+    draw_group_(instance->group);
+    glPopMatrix();
+}
+
+boundingbox groupinstance_boundingbox(struct groupinstance const *instance, vec3 const *parentPos)
+{
+    vec3 totalTranslation;
+    vec3_add(&totalTranslation, parentPos, &instance->position);
+    return group_bounding_box(instance->group, &totalTranslation);
+}
+
+static void translate_block_(block *block, void *data)
+{
+    translate_block(block, data);
+}
+
+static void translate_groupinstance_(struct groupinstance *instance, void *data)
+{
+    vec3_add(&instance->position, &instance->position, data);
+}
+
+void move_groupinstance_origin(struct groupinstance *instance, vec3 const *position)
+{
+    vec3 translation;
+    vec3_subtract(&translation, &instance->position, position);
+
+    foreach_block(instance->group, translate_block_, &translation);
+    foreach_groupinstance(instance->group, translate_groupinstance_, &translation);
+
+    instance->position = *position;
+    update_group_vertexarray(instance->group);
 }
