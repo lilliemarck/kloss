@@ -47,7 +47,7 @@ static void mouse_pressed(void *data, ui_mouseevent const *event)
     {
         blockselection *selection = get_blockselection(tool->document);
         ray mouse = make_mouseray(tool->window, event->x, event->y);
-        pick pick = pick_group_block(get_root_group(tool->document), &mouse);
+        pick pick = pick_block(get_root_group(tool->document), &mouse);
         bool did_select;
 
         if (event->modifiers & UI_MODIFIER_CTRL)

@@ -14,66 +14,76 @@ struct vertex
     vec3 position;
 };
 
-struct group
+struct groupdata
 {
     ptrarray *blocks;
-    ptrarray *instances;
+    ptrarray *groups;
     buffer *vertices;
     size_t refcount;
 };
 
-struct groupinstance
+struct group
 {
     struct vec3 position;
-    struct group *group;
+    struct groupdata *data;
 };
 
-group *create_group(void)
+static struct groupdata *create_groupdata(void)
 {
-    group *group = malloc(sizeof(struct group));
-    group->blocks    = create_ptrarray();
-    group->instances = create_ptrarray();
-    group->vertices  = create_buffer();
-    group->refcount  = 1;
-    return group;
+    struct groupdata *groupdata = malloc(sizeof(struct groupdata));
+    groupdata->blocks   = create_ptrarray();
+    groupdata->groups   = create_ptrarray();
+    groupdata->vertices = create_buffer();
+    groupdata->refcount = 1;
+    return groupdata;
 }
 
-group *retain_group(group *group)
+static void release_groupdata(struct groupdata *groupdata)
 {
-    ++group->refcount;
-    return group;
-}
-
-void release_group(group *group)
-{
-    if (group && --group->refcount == 0)
+    if (groupdata && --groupdata->refcount == 0)
     {
-        size_t count = ptrarray_count(group->blocks);
-        for (size_t i = 0; i < count; ++i)
+        size_t blockcount = ptrarray_count(groupdata->blocks);
+        for (size_t i = 0; i < blockcount; ++i)
         {
-            destroy_block(get_ptrarray(group->blocks, i));
+            destroy_block(get_ptrarray(groupdata->blocks, i));
         }
 
-        count = ptrarray_count(group->instances);
-        for (size_t i = 0; i < count; ++i)
+        size_t groupcount = ptrarray_count(groupdata->groups);
+        for (size_t i = 0; i < groupcount; ++i)
         {
-            destroy_groupinstance(get_ptrarray(group->instances, i));
+            destroy_group(get_ptrarray(groupdata->groups, i));
         }
 
-        destroy_ptrarray(group->blocks);
-        destroy_ptrarray(group->instances);
-        destroy_buffer(group->vertices);
+        destroy_ptrarray(groupdata->blocks);
+        destroy_ptrarray(groupdata->groups);
+        destroy_buffer(groupdata->vertices);
 
+        free(groupdata);
+    }
+}
+
+struct group *create_group(void)
+{
+    struct group *group = calloc(1, sizeof(struct group));
+    group->data = create_groupdata();
+    return group;
+}
+
+void destroy_group(struct group *group)
+{
+    if (group)
+    {
+        release_groupdata(group->data);
         free(group);
     }
 }
 
-static void append_triangles(group *group, buffer *buffer)
+static void append_triangles(struct groupdata *groupdata, buffer *buffer)
 {
     triangle *triangles = buffer_data(buffer);
-    size_t count = buffer_size(buffer) / sizeof(struct triangle);
+    size_t trianglecount = buffer_size(buffer) / sizeof(struct triangle);
 
-    for (size_t i = 0; i < count; ++i)
+    for (size_t i = 0; i < trianglecount; ++i)
     {
         vec3 normal;
 
@@ -87,27 +97,27 @@ static void append_triangles(group *group, buffer *buffer)
             {normal, triangles[i].c}
         };
 
-        append_buffer(group->vertices, vertices, sizeof(vertices));
+        append_buffer(groupdata->vertices, vertices, sizeof(vertices));
     }
 }
 
-void insert_blocks(group *group, block **blocks, size_t count)
+void insert_blocks(struct group *group, block **blocks, size_t count)
 {
     buffer *buffer = create_buffer();
 
     for (size_t i = 0; i < count; ++i)
     {
         block *block = blocks[i];
-        push_ptrarray(group->blocks, block);
+        push_ptrarray(group->data->blocks, block);
         get_block_triangles(block, buffer);
-        append_triangles(group, buffer);
+        append_triangles(group->data, buffer);
         clear_buffer(buffer);
     }
 
     destroy_buffer(buffer);
 }
 
-void delete_blocks(group *group, block **blocks, size_t count)
+void delete_blocks(struct group *group, block **blocks, size_t count)
 {
     detatch_blocks(group, blocks, count);
 
@@ -117,53 +127,55 @@ void delete_blocks(group *group, block **blocks, size_t count)
     }
 }
 
-void detatch_blocks(group *group, block **blocks, size_t count)
+void detatch_blocks(struct group *group, block **blocks, size_t count)
 {
     for (size_t i = 0; i < count; ++i)
     {
-        remove_ptrarray(group->blocks, blocks[i]);
+        remove_ptrarray(group->data->blocks, blocks[i]);
     }
 
     update_group_vertexarray(group);
 }
 
-void foreach_block(group *group, void (function)(block*,void*), void *data)
+static void foreach_block(struct groupdata *groupdata, void (function)(block*,void*), void *userdata)
 {
-    size_t groupcount = ptrarray_count(group->blocks);
+    size_t groupcount = ptrarray_count(groupdata->blocks);
 
     for (size_t i = 0; i < groupcount; ++i)
     {
-        function(get_ptrarray(group->blocks, i), data);
+        function(get_ptrarray(groupdata->blocks, i), userdata);
     }
 }
 
-void insert_groupinstance(group *group, struct groupinstance *instance)
+void insert_group(struct group *group, struct group *child)
 {
-    push_ptrarray(group->instances, instance);
+    push_ptrarray(group->data->groups, child);
 }
 
-void foreach_groupinstance(group *group, void (function)(struct groupinstance*,void*), void *data)
+static void foreach_group(struct groupdata *groupdata, void (function)(struct group*,void*), void *userdata)
 {
-    size_t instancecount = ptrarray_count(group->instances);
+    size_t groupcount = ptrarray_count(groupdata->groups);
 
-    for (size_t i = 0; i < instancecount; ++i)
+    for (size_t i = 0; i < groupcount; ++i)
     {
-        function(get_ptrarray(group->instances, i), data);
+        function(get_ptrarray(groupdata->groups, i), userdata);
     }
 }
 
-pick pick_group_block(group const *group, ray const *ray)
+pick pick_block(struct group const *group, ray const *ray)
 {
+    struct groupdata *groupdata = group->data;
+
     float nearest = FLT_MAX;
     block *nearestblock = NULL;
     triangle nearesttriangle;
 
     buffer *buffer = create_buffer();
-    size_t blockcount = ptrarray_count(group->blocks);
+    size_t blockcount = ptrarray_count(groupdata->blocks);
 
     for (size_t i = 0; i < blockcount; ++i)
     {
-        block *block = get_ptrarray(group->blocks, i);
+        block *block = get_ptrarray(groupdata->blocks, i);
 
         get_block_triangles(block, buffer);
 
@@ -257,9 +269,11 @@ void check_vertex(struct vertexpickdata *data, vec3 position, cornerref const *r
     }
 }
 
-bool pick_group_vertex(group const *group, mat4 const *model, mat4 const *projection, viewport const *viewport, vec2 const *mouse, cornerref *ref)
+bool pick_vertex(struct group *group, mat4 const *model, mat4 const *projection, viewport const *viewport, vec2 const *mouse, cornerref *ref)
 {
-    struct vertexpickdata data =
+    struct groupdata *groupdata = group->data;
+
+    struct vertexpickdata pickdata =
     {
         model,
         projection,
@@ -268,25 +282,25 @@ bool pick_group_vertex(group const *group, mat4 const *model, mat4 const *projec
         FLT_MAX
     };
 
-    size_t blockcount = ptrarray_count(group->blocks);
+    size_t blockcount = ptrarray_count(groupdata->blocks);
 
     for (size_t i = 0; i < blockcount; ++i)
     {
-        block *block = get_ptrarray(group->blocks, i);
+        block *block = get_ptrarray(groupdata->blocks, i);
         cornerref cornerrefs[4];
         make_cornerrefs(cornerrefs, block);
 
         for (size_t i = 0; i < 4; ++i)
         {
             cornerref *cornerRef = cornerrefs + i;
-            check_vertex(&data, cornertop   (cornerRef->corner), cornerRef, CORNERREF_TOP);
-            check_vertex(&data, cornerbottom(cornerRef->corner), cornerRef, CORNERREF_BOTTOM);
+            check_vertex(&pickdata, cornertop   (cornerRef->corner), cornerRef, CORNERREF_TOP);
+            check_vertex(&pickdata, cornerbottom(cornerRef->corner), cornerRef, CORNERREF_BOTTOM);
         }
     }
 
-    if (data.distance != FLT_MAX)
+    if (pickdata.distance != FLT_MAX)
     {
-        *ref = data.cornerref;
+        *ref = pickdata.cornerref;
         return true;
     }
     else
@@ -305,77 +319,48 @@ static void expand_bbox_with_corner(boundingbox *bbox, corner const *corner)
     bbox->upper.z = maxf(bbox->upper.z, corner->top);
 }
 
-static boundingbox group_bounding_box(group const *group, vec3 const *translation)
+void update_group_vertexarray(struct group *group)
 {
-    boundingbox bbox;
-    init_boundingbox(&bbox);
+    struct groupdata *groupdata = group->data;
 
-    size_t count = ptrarray_count(group->blocks);
-
-    if (count > 0)
-    {
-        for (size_t i = 0; i < count; ++i)
-        {
-            block const *block = get_ptrarray(group->blocks, i);
-
-            expand_bbox_with_corner(&bbox, block->corners + 0);
-            expand_bbox_with_corner(&bbox, block->corners + 1);
-            expand_bbox_with_corner(&bbox, block->corners + 2);
-            expand_bbox_with_corner(&bbox, block->corners + 3);
-        }
-
-        // Don't translate if there are no blocks
-        translate_boundingbox(&bbox, translation);
-    }
-
-    count = ptrarray_count(group->instances);
-    vec3 const zero = {0.0f, 0.0f, 0.0f};
-
-    for (size_t i = 0; i < count; ++i)
-    {
-        struct groupinstance *instance = get_ptrarray(group->instances, i);
-        boundingbox childbbox = groupinstance_boundingbox(instance, &zero);
-        expand_boundingbox(&bbox, &childbbox);
-    }
-
-    return bbox;
-}
-
-void update_group_vertexarray(group *group)
-{
-    clear_buffer(group->vertices);
+    clear_buffer(groupdata->vertices);
     buffer *buffer = create_buffer();
-    size_t blockcount = ptrarray_count(group->blocks);
+    size_t blockcount = ptrarray_count(groupdata->blocks);
 
     for (size_t i = 0; i < blockcount; ++i)
     {
-        block *block = get_ptrarray(group->blocks, i);
+        block *block = get_ptrarray(groupdata->blocks, i);
         get_block_triangles(block, buffer);
-        append_triangles(group, buffer);
+        append_triangles(groupdata, buffer);
         clear_buffer(buffer);
     }
 
     destroy_buffer(buffer);
 }
 
-static void draw_group_(group const *group)
+static void draw_group_(struct group const *group)
 {
-    vertex *vertices = buffer_data(group->vertices);
-    size_t vertexcount = buffer_size(group->vertices) / sizeof(struct vertex);
+    struct groupdata *groupdata = group->data;
 
+    vertex *vertices = buffer_data(groupdata->vertices);
+    size_t vertexcount = buffer_size(groupdata->vertices) / sizeof(struct vertex);
+
+    glPushMatrix();
+    glTranslatef(group->position.x, group->position.y, group->position.z);
     glNormalPointer(GL_FLOAT, sizeof(struct vertex), &vertices->normal);
     glVertexPointer(3, GL_FLOAT, sizeof(struct vertex), &vertices->position);
     glDrawArrays(GL_TRIANGLES, 0, vertexcount);
+    glPopMatrix();
 
-    size_t instancecount = ptrarray_count(group->instances);
+    size_t groupcount = ptrarray_count(groupdata->groups);
 
-    for (size_t i = 0; i < instancecount; ++i)
+    for (size_t i = 0; i < groupcount; ++i)
     {
-        draw_groupinstance(get_ptrarray(group->instances, i));
+        draw_group_(get_ptrarray(groupdata->groups, i));
     }
 }
 
-void draw_group(group const *group)
+void draw_group(struct group const *group)
 {
     glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING_BIT);
 
@@ -397,35 +382,41 @@ void draw_group(group const *group)
     glPopAttrib();
 }
 
-struct groupinstance *create_groupinstance(group *group)
+struct boundingbox group_boundingbox(struct group const *group)
 {
-    struct groupinstance *instance = calloc(1, sizeof(struct groupinstance));
-    instance->group = retain_group(group);
-    return instance;
-}
+    struct groupdata *groupdata = group->data;
 
-void destroy_groupinstance(struct groupinstance *instance)
-{
-    if (instance)
+    boundingbox bbox;
+    init_boundingbox(&bbox);
+
+    size_t blockcount = ptrarray_count(groupdata->blocks);
+
+    if (blockcount > 0)
     {
-        release_group(instance->group);
-        free(instance);
+        for (size_t i = 0; i < blockcount; ++i)
+        {
+            block const *block = get_ptrarray(groupdata->blocks, i);
+
+            expand_bbox_with_corner(&bbox, block->corners + 0);
+            expand_bbox_with_corner(&bbox, block->corners + 1);
+            expand_bbox_with_corner(&bbox, block->corners + 2);
+            expand_bbox_with_corner(&bbox, block->corners + 3);
+        }
+
+        // Don't translate if there are no blocks
+        translate_boundingbox(&bbox, &group->position);
     }
-}
 
-void draw_groupinstance(struct groupinstance const *instance)
-{
-    glPushMatrix();
-    glTranslatef(instance->position.x, instance->position.y, instance->position.z);
-    draw_group_(instance->group);
-    glPopMatrix();
-}
+    blockcount = ptrarray_count(groupdata->groups);
 
-boundingbox groupinstance_boundingbox(struct groupinstance const *instance, vec3 const *parentPos)
-{
-    vec3 totalTranslation;
-    vec3_add(&totalTranslation, parentPos, &instance->position);
-    return group_bounding_box(instance->group, &totalTranslation);
+    for (size_t i = 0; i < blockcount; ++i)
+    {
+        struct group *group = get_ptrarray(groupdata->groups, i);
+        boundingbox childbbox = group_boundingbox(group);
+        expand_boundingbox(&bbox, &childbbox);
+    }
+
+    return bbox;
 }
 
 static void translate_block_(block *block, void *data)
@@ -433,19 +424,19 @@ static void translate_block_(block *block, void *data)
     translate_block(block, data);
 }
 
-static void translate_groupinstance_(struct groupinstance *instance, void *data)
+static void translate_group_(struct group *group, void *data)
 {
-    vec3_add(&instance->position, &instance->position, data);
+    vec3_add(&group->position, &group->position, data);
 }
 
-void move_groupinstance_origin(struct groupinstance *instance, vec3 const *position)
+void move_group_origin(struct group *group, vec3 const *position)
 {
     vec3 translation;
-    vec3_subtract(&translation, &instance->position, position);
+    vec3_subtract(&translation, &group->position, position);
 
-    foreach_block(instance->group, translate_block_, &translation);
-    foreach_groupinstance(instance->group, translate_groupinstance_, &translation);
+    foreach_block(group->data, translate_block_, &translation);
+    foreach_group(group->data, translate_group_, &translation);
 
-    instance->position = *position;
-    update_group_vertexarray(instance->group);
+    group->position = *position;
+    update_group_vertexarray(group);
 }

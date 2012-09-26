@@ -8,7 +8,7 @@
 struct document
 {
     bool islocked;
-    group* group;
+    struct group* group;
     blockselection *blockselection;
     buffer *copiedblocks;
 };
@@ -31,7 +31,7 @@ void destroy_document(document *doc)
     {
         destroy_buffer(doc->copiedblocks);
         destroy_blockselection(doc->blockselection);
-        release_group(doc->group);
+        destroy_group(doc->group);
         free(doc);
     }
 }
@@ -107,20 +107,18 @@ void group_selected_blocks(document *doc)
     size_t blockcount = selected_block_count(doc->blockselection);
 
     detatch_blocks(doc->group, blocks, blockcount);
-    group *newgroup = create_group();
+
+    struct group *newgroup = create_group();
     insert_blocks(newgroup, blocks, blockcount);
     deselect_all_blocks(doc->blockselection);
 
-    vec3 zero = {0.0f, 0.0f, 0.0f};
-    struct groupinstance *instance = create_groupinstance(newgroup);
-    boundingbox bbox = groupinstance_boundingbox(instance, &zero);
-    move_groupinstance_origin(instance, &bbox.lower);
+    boundingbox bbox = group_boundingbox(newgroup);
+    move_group_origin(newgroup, &bbox.lower);
 
-    insert_groupinstance(doc->group, instance);
-    release_group(newgroup);
+    insert_group(doc->group, newgroup);
 }
 
-group *get_root_group(document *doc)
+struct group *get_root_group(document *doc)
 {
     return doc->group;
 }

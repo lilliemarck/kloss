@@ -6,11 +6,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-struct groupinstance;
+struct group;
 
 typedef struct pick pick;
 typedef struct viewport viewport;
-typedef struct group group;
 
 struct pick
 {
@@ -27,22 +26,15 @@ struct viewport
     int height;
 };
 
-group *create_group(void);
-group *retain_group(group *group);
-void release_group(group *group);
-void insert_blocks(group *group, block **blocks, size_t count);
-void delete_blocks(group *group, block **blocks, size_t count);
-void detatch_blocks(group *group, block **blocks, size_t count);
-void foreach_block(group *group, void (function)(block*,void*), void *data);
-void insert_groupinstance(group *group, struct groupinstance *instance);
-void foreach_groupinstance(group *group, void (function)(struct groupinstance*,void*), void *data);
-pick pick_group_block(group const *group, ray const *ray);
-bool pick_group_vertex(group const *group, mat4 const *model, mat4 const *projection, viewport const *viewport, vec2 const *mouse, cornerref *ref);
-void update_group_vertexarray(group *group);
-void draw_group(group const *group);
-
-struct groupinstance *create_groupinstance(struct group *group);
-void destroy_groupinstance(struct groupinstance *instance);
-void draw_groupinstance(struct groupinstance const *instance);
-struct boundingbox groupinstance_boundingbox(struct groupinstance const *instance, struct vec3 const *parentpos);
-void move_groupinstance_origin(struct groupinstance *instance, struct vec3 const *position);
+struct group *create_group(void);
+void destroy_group(struct group *group);
+void insert_blocks(struct group *group, block **blocks, size_t count);
+void delete_blocks(struct group *group, block **blocks, size_t count);
+void detatch_blocks(struct group *group, block **blocks, size_t count);
+void insert_group(struct group *group, struct group *child);
+pick pick_block(struct group const *group, ray const *ray);
+bool pick_vertex(struct group *group, mat4 const *model, mat4 const *projection, viewport const *viewport, vec2 const *mouse, cornerref *ref);
+void update_group_vertexarray(struct group *group);
+void draw_group(struct group const *group);
+struct boundingbox group_boundingbox(struct group const *instance);
+void move_group_origin(struct group *instance, struct vec3 const *position);

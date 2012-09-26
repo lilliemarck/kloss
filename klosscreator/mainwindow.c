@@ -445,20 +445,20 @@ constraint get_constrainalgorithm(mainwindow const *win)
     return win->constraint;
 }
 
-bool pick_vertex(mainwindow const *win, float mousex, float mousey, struct cornerref *cornerref)
+bool window_pick_vertex(mainwindow const *win, float mousex, float mousey, struct cornerref *cornerref)
 {
-    group*   group      = get_root_group(win->document);
-    mat4     model      = modelviewmatrix(win);
-    mat4     projection = projectionmatrix(win);
-    viewport viewport   = {0, 0, ui_widget_width(win->glwidget), ui_widget_height(win->glwidget)};
-    vec2     mouse      = {mousex, mousey};
+    struct group *group      = get_root_group(win->document);
+    mat4          model      = modelviewmatrix(win);
+    mat4          projection = projectionmatrix(win);
+    viewport      viewport   = {0, 0, ui_widget_width(win->glwidget), ui_widget_height(win->glwidget)};
+    vec2          mouse      = {mousex, mousey};
 
-    if (pick_group_vertex(group, &model, &projection, &viewport, &mouse, cornerref))
+    if (pick_vertex(group, &model, &projection, &viewport, &mouse, cornerref))
     {
         vec3 camerapos; get_camera_position(win->camera, &camerapos);
         vec3 vertexpos = cornerref_position(cornerref);
         ray cameraray; ray_from_point_to_point(&cameraray, &camerapos, &vertexpos);
-        pick pick = pick_group_block(group, &cameraray);
+        pick pick = pick_block(group, &cameraray);
 
         if (pick.block)
         {

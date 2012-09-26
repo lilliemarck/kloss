@@ -51,7 +51,7 @@ static void mouse_pressed(void *data, ui_mouseevent const *event)
     if (event->button == UI_MOUSEBUTTON_LEFT)
     {
         cornerref pick;
-        bool did_pick = pick_vertex(tool->window, event->x, event->y, &pick);
+        bool did_pick = window_pick_vertex(tool->window, event->x, event->y, &pick);
         bool did_select;
 
         if (event->modifiers & UI_MODIFIER_CTRL)
