@@ -162,20 +162,29 @@ static void foreach_group(struct groupdata *groupdata, void (function)(struct gr
     }
 }
 
-pick pick_block(struct group const *group, ray const *ray)
+struct nearest
+{
+    float distance;
+    struct group *group;
+    struct block *block;
+    struct triangle triangle;
+};
+
+static void find_nearest_block(struct group *group, struct ray const *ray, struct nearest *nearest)
 {
     struct groupdata *groupdata = group->data;
 
-    float nearest = FLT_MAX;
-    block *nearestblock = NULL;
-    triangle nearesttriangle;
+    struct ray groupspaceray;
+    vec3_subtract(&groupspaceray.origin, &ray->origin, &group->position);
+    groupspaceray.direction = ray->direction;
 
     buffer *buffer = create_buffer();
-    size_t blockcount = ptrarray_count(groupdata->blocks);
+    ptrarray *blocks = groupdata->blocks;
+    size_t blockcount = ptrarray_count(blocks);
 
     for (size_t i = 0; i < blockcount; ++i)
     {
-        block *block = get_ptrarray(groupdata->blocks, i);
+        block *block = get_ptrarray(blocks, i);
 
         get_block_triangles(block, buffer);
 
@@ -185,7 +194,7 @@ pick pick_block(struct group const *group, ray const *ray)
         for (size_t j = 0; j < tricount; ++j)
         {
             float temp;
-            if (ray_intersect_triangle(&temp, ray, &tris[j]))
+            if (ray_intersect_triangle(&temp, &groupspaceray, &tris[j]))
             {
                 /*
                  * Use <= for distance comparsion here so that when there are
@@ -193,11 +202,12 @@ pick pick_block(struct group const *group, ray const *ray)
                  * be selected. It is useful after pasting that the new blocks
                  * can be dragged to a new location.
                  */
-                if (temp <= nearest)
+                if (temp <= nearest->distance)
                 {
-                    nearest = temp;
-                    nearestblock = block;
-                    nearesttriangle = tris[j];
+                    nearest->distance = temp;
+                    nearest->group    = group;
+                    nearest->block    = block;
+                    nearest->triangle = tris[j];
                 }
             }
         }
@@ -207,9 +217,25 @@ pick pick_block(struct group const *group, ray const *ray)
 
     destroy_buffer(buffer);
 
+    struct ptrarray *groups = groupdata->groups;
+    size_t groupcount = ptrarray_count(groups);
+
+    for (size_t i = 0; i < groupcount; ++i)
+    {
+        struct group *childgroup = get_ptrarray(groups, i);
+        find_nearest_block(childgroup, ray, nearest);
+    }
+}
+
+pick pick_block(struct group *group, ray const *ray)
+{
+    struct nearest nearest = {FLT_MAX};
+
+    find_nearest_block(group, ray, &nearest);
+
     vec3 intersection;
-    vec3_add_scaled(&intersection, &ray->origin, &ray->direction, nearest);
-    return (pick){nearestblock, nearesttriangle, intersection};
+    vec3_add_scaled(&intersection, &ray->origin, &ray->direction, nearest.distance);
+    return (pick){nearest.group, nearest.block, nearest.triangle, intersection};
 }
 
 static bool project(vec3 *out, vec3 const *in, mat4 const *model, mat4 const *projection, viewport const *viewport)
