@@ -1,6 +1,8 @@
 #include "blockselection.h"
+#include <kloss/algorithm.h>
 #include <kloss/block.h>
 #include <kloss/buffer.h>
+#include <kloss/group.h>
 #include <kloss/tarray.h>
 #include <klosscreator/pick.h>
 #include <assert.h>
@@ -8,31 +10,90 @@
 
 struct blockselection
 {
-    DECLARE_TARRAY(block*, blocks);
+    struct group *rootgroup;
+    DECLARE_TARRAY(struct block*, blocks);
+    DECLARE_TARRAY(struct group*, groups);
 };
 
-blockselection *create_blockselection(void)
+blockselection *create_blockselection(struct group *rootgroup)
 {
-    return calloc(1, sizeof(struct blockselection));
+    struct blockselection *selection = calloc(1, sizeof(struct blockselection));
+    selection->rootgroup = rootgroup;
+    return selection;
 }
 
 void destroy_blockselection(blockselection *selection)
 {
     if (selection)
     {
+        FREE_TARRAY(selection->groups);
         FREE_TARRAY(selection->blocks);
         free(selection);
     }
 }
 
-void select_block(blockselection *selection, struct block *block)
+/**
+ * Returns true if the block is selected directly or indirectly through a child
+ * group.
+ */
+static bool is_block_selected(struct blockselection *selection, struct group *group, struct block *block)
 {
-    PUSH_TARRAY(selection->blocks, block);
+    if (find_ptr(selection->blocks.begin, selection->blocks.end, block))
+    {
+        return true;
+    }
+
+    struct group *child = get_child_by_descendant(selection->rootgroup, group);
+    return find_ptr(selection->groups.begin, selection->groups.end, child);
+}
+
+void select_block(struct blockselection *selection, struct group *group, struct block *block)
+{
+    if (is_block_selected(selection, group, block))
+    {
+        return;
+    }
+
+    if (group == selection->rootgroup)
+    {
+        PUSH_TARRAY(selection->blocks, block);
+    }
+
+    struct group *child = get_child_by_descendant(selection->rootgroup, group);
+
+    if (child)
+    {
+        PUSH_TARRAY(selection->groups, child);
+    }
+}
+
+void deselect_block(blockselection *selection, struct group *group, struct block *block)
+{
+    for (struct block **i = selection->blocks.begin; i != selection->blocks.end; ++i)
+    {
+        if (*i == block)
+        {
+            ERASE_TARRAY_ITERATOR(selection->blocks, i);
+            return;
+        }
+    }
+
+    struct group *child = get_child_by_descendant(selection->rootgroup, group);
+
+    for (struct group **i = selection->groups.begin; i != selection->groups.end; ++i)
+    {
+        if (*i == child)
+        {
+            ERASE_TARRAY_ITERATOR(selection->groups, i);
+            return;
+        }
+    }
 }
 
 void deselect_all_blocks(blockselection *selection)
 {
     CLEAR_TARRAY(selection->blocks);
+    CLEAR_TARRAY(selection->groups);
 }
 
 size_t selected_block_count(blockselection *selection)
@@ -68,36 +129,23 @@ void restore_blockselection(blockselection *selection, buffer *buffer)
 
 static bool is_selected(void *data, void *element)
 {
-    blockselection *selection = data;
+    struct pick *pick = element;
 
-    for (block **i = selection->blocks.begin; i != selection->blocks.end; ++i)
-    {
-        if (*i == element)
-        {
-            return true;
-        }
-    }
-
-    return false;
+    return is_block_selected(data, pick->group, pick->block);
 }
 
 static void select(void *data, void *element)
 {
-    select_block(data, element);
+    struct pick *pick = element;
+
+    select_block(data, pick->group, pick->block);
 }
 
 static void deselect(void *data, void *element)
 {
-    blockselection *selection = data;
+    struct pick *pick = element;
 
-    for (block **i = selection->blocks.begin; i != selection->blocks.end; ++i)
-    {
-        if (*i == element)
-        {
-            ERASE_TARRAY_ITERATOR(selection->blocks, i);
-            return;
-        }
-    }
+    deselect_block(data, pick->group, pick->block);
 }
 
 static void deselect_all(void *data)
@@ -113,12 +161,12 @@ static pickprocs interface =
     deselect_all
 };
 
-bool single_pick_block(blockselection *selection, block *pick)
+bool single_pick_block(blockselection *selection, struct pick *pick)
 {
     return single_pick(&interface, selection, pick);
 }
 
-bool multi_pick_block(blockselection *selection, block *pick)
+bool multi_pick_block(blockselection *selection, struct pick *pick)
 {
     return multi_pick(&interface, selection, pick);
 }

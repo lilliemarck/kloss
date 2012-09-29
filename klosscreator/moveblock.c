@@ -52,11 +52,11 @@ static void mouse_pressed(void *data, ui_mouseevent const *event)
 
         if (event->modifiers & UI_MODIFIER_CTRL)
         {
-            did_select = multi_pick_block(selection, pick.block);
+            did_select = multi_pick_block(selection, pick.block ? &pick : NULL);
         }
         else
         {
-            did_select = single_pick_block(selection, pick.block);
+            did_select = single_pick_block(selection, pick.block ? &pick : NULL);
         }
 
         if (did_select)

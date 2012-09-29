@@ -27,7 +27,7 @@ struct viewport
     int height;
 };
 
-struct group *create_group(void);
+struct group *create_group(struct group *parent);
 void destroy_group(struct group *group);
 void insert_blocks(struct group *group, block **blocks, size_t count);
 void delete_blocks(struct group *group, block **blocks, size_t count);
@@ -39,3 +39,10 @@ void update_group_vertexarray(struct group *group);
 void draw_group(struct group const *group);
 struct boundingbox group_boundingbox(struct group const *instance);
 void move_group_origin(struct group *instance, struct vec3 const *position);
+
+/**
+ * Returns a pointer to the child group that contains the descendant or that
+ * is the descendant itself. Returns NULL if descendant is not a descendant of
+ * group.
+ */
+struct group *get_child_by_descendant(struct group const *group, struct group *descendant);

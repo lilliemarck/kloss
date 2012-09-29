@@ -1,5 +1,6 @@
 #include "algorithm.h"
 #include <math.h>
+#include <stddef.h>
 
 float clampf(float x, float min, float max)
 {
@@ -29,4 +30,17 @@ float roundtofractf(float x, float increment)
 float squaref(float x)
 {
     return x * x;
+}
+
+void *find_ptr(void *begin, void *end, void *element)
+{
+    for (void **i = begin; i != end; ++i)
+    {
+        if (*i == element)
+        {
+            return i;
+        }
+    }
+
+    return NULL;
 }

@@ -24,6 +24,7 @@ struct groupdata
 
 struct group
 {
+    struct group *parent;
     struct vec3 position;
     struct groupdata *data;
 };
@@ -62,9 +63,10 @@ static void release_groupdata(struct groupdata *groupdata)
     }
 }
 
-struct group *create_group(void)
+struct group *create_group(struct group *parent)
 {
     struct group *group = calloc(1, sizeof(struct group));
+    group->parent = parent;
     group->data = create_groupdata();
     return group;
 }
@@ -465,4 +467,20 @@ void move_group_origin(struct group *group, vec3 const *position)
 
     group->position = *position;
     update_group_vertexarray(group);
+}
+
+struct group *get_child_by_descendant(struct group const *group, struct group *descendant)
+{
+    do
+    {
+        if (descendant->parent == group)
+        {
+            return descendant;
+        }
+
+        descendant = descendant->parent;
+    }
+    while (descendant);
+
+    return NULL;
 }
