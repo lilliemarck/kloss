@@ -9,6 +9,7 @@ struct buffer;
 struct group;
 
 typedef struct blockselection blockselection;
+typedef void (*foreachblockproc)(struct blockref *ref, void *data);
 
 /**
  * Create a block selection with the given group as the root group.
@@ -29,6 +30,7 @@ void deselect_block(blockselection *selection, struct blockref ref);
 void deselect_all_blocks(blockselection *selection);
 size_t selected_block_count(blockselection *selection);
 struct block **selected_blocks(blockselection *selection);
+void foreach_selected_block(struct blockselection *selection, foreachblockproc proc, void *data);
 
 void backup_blockselection(blockselection *selection, struct buffer *buffer);
 void restore_blockselection(blockselection *selection, struct buffer *buffer);

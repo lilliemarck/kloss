@@ -80,6 +80,11 @@ void destroy_group(struct group *group)
     }
 }
 
+vec3 get_group_position(struct group const *group)
+{
+    return group->position;
+}
+
 static void append_triangles(struct groupdata *groupdata, buffer *buffer)
 {
     triangle *triangles = buffer_data(buffer);
@@ -467,6 +472,29 @@ void move_group_origin(struct group *group, vec3 const *position)
 
     group->position = *position;
     update_group_vertexarray(group);
+}
+
+void foreach_block_in_hiearchy(struct group *group, void (*proc)(struct blockref*, void*), void *data)
+{
+    struct groupdata *groupdata  = group->data;
+    struct ptrarray  *blocks     = groupdata->blocks;
+    size_t            blockcount = ptrarray_count(blocks);
+    struct blockref   ref        = {NULL, group};
+
+    for (size_t i = 0; i < blockcount; ++i)
+    {
+        ref.block = get_ptrarray(blocks, i);
+        proc(&ref, data);
+    }
+
+    struct ptrarray *groups = groupdata->groups;
+    size_t groupcount = ptrarray_count(groups);
+
+    for (size_t i = 0; i < groupcount; ++i)
+    {
+        struct group *child = get_ptrarray(groups, i);
+        foreach_block_in_hiearchy(child, proc, data);
+    }
 }
 
 struct group *get_child_by_descendant(struct group const *group, struct group *descendant)

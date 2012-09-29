@@ -1,4 +1,5 @@
 #include "tool.h"
+#include <GL/gl.h>
 #include <kloss/block.h>
 #include <kloss/buffer.h>
 #include <kloss/group.h>
@@ -123,28 +124,34 @@ static void mouse_moved(void *data, ui_mouseevent const *event)
     }
 }
 
+static void draw_block(struct blockref *ref, void *vertices)
+{
+    vec3 pos = get_group_position(ref->group);
+    struct block *block = ref->block;
+
+    glPushMatrix();
+    glTranslatef(pos.x, pos.y, pos.z);
+
+    draw_at(vertices, (vec3){block->corners[0].x, block->corners[0].y, block->corners[0].top});
+    draw_at(vertices, (vec3){block->corners[1].x, block->corners[1].y, block->corners[1].top});
+    draw_at(vertices, (vec3){block->corners[2].x, block->corners[2].y, block->corners[2].top});
+    draw_at(vertices, (vec3){block->corners[3].x, block->corners[3].y, block->corners[3].top});
+    draw_at(vertices, (vec3){block->corners[0].x, block->corners[0].y, block->corners[0].bottom});
+    draw_at(vertices, (vec3){block->corners[1].x, block->corners[1].y, block->corners[1].bottom});
+    draw_at(vertices, (vec3){block->corners[2].x, block->corners[2].y, block->corners[2].bottom});
+    draw_at(vertices, (vec3){block->corners[3].x, block->corners[3].y, block->corners[3].bottom});
+
+    glPopMatrix();
+}
+
 static void draw_gl(void *data)
 {
     moveblock *tool = data;
 
     buffer *vertices = get_cursorvertices(tool->window);
     blockselection *selection = get_blockselection(tool->document);
-    block **blocks = selected_blocks(selection);
-    size_t count = selected_block_count(selection);
 
-    for (size_t i = 0; i < count; ++i)
-    {
-        block const *block = blocks[i];
-
-        draw_at(vertices, (vec3){block->corners[0].x, block->corners[0].y, block->corners[0].top});
-        draw_at(vertices, (vec3){block->corners[1].x, block->corners[1].y, block->corners[1].top});
-        draw_at(vertices, (vec3){block->corners[2].x, block->corners[2].y, block->corners[2].top});
-        draw_at(vertices, (vec3){block->corners[3].x, block->corners[3].y, block->corners[3].top});
-        draw_at(vertices, (vec3){block->corners[0].x, block->corners[0].y, block->corners[0].bottom});
-        draw_at(vertices, (vec3){block->corners[1].x, block->corners[1].y, block->corners[1].bottom});
-        draw_at(vertices, (vec3){block->corners[2].x, block->corners[2].y, block->corners[2].bottom});
-        draw_at(vertices, (vec3){block->corners[3].x, block->corners[3].y, block->corners[3].bottom});
-    }
+    foreach_selected_block(selection, draw_block, vertices);
 }
 
 toolprocs moveblock_toolprocs =
