@@ -1,7 +1,10 @@
 #pragma once
 
+#include <stddef.h>
+
 float clampf(float x, float min, float max);
 float maxf(float x, float y);
+float maxz(size_t x, size_t y);
 float minf(float x, float y);
 int mini(int x, int y);
 float roundtofractf(float x, float increment);

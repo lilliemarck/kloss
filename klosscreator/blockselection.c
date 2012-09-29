@@ -90,6 +90,17 @@ void deselect_block(blockselection *selection, struct blockref ref)
     }
 }
 
+void ungroup_selection(struct blockselection *selection)
+{
+    for (struct group **i = selection->groups.begin; i != selection->groups.end; ++i)
+    {
+        struct group *group = *i;
+        merge_group_into_parent(group);
+    }
+
+    CLEAR_TARRAY(selection->groups);
+}
+
 void deselect_all_blocks(blockselection *selection)
 {
     CLEAR_TARRAY(selection->blocks);

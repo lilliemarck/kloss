@@ -82,6 +82,9 @@ static void group_action(void* data)
 
 static void ungroup(void* data)
 {
+    mainwindow* self = data;
+    ungroup_selected_blocks(self->document);
+    ui_update_widget(self->glwidget);
 }
 
 static void free_tool(mainwindow *win)

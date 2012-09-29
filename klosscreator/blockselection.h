@@ -32,6 +32,11 @@ size_t selected_block_count(blockselection *selection);
 struct block **selected_blocks(blockselection *selection);
 void foreach_selected_block(struct blockselection *selection, foreachblockproc proc, void *data);
 
+/**
+ * Merges selected child groups into the root group.
+ */
+void ungroup_selection(struct blockselection *selection);
+
 void backup_blockselection(blockselection *selection, struct buffer *buffer);
 void restore_blockselection(blockselection *selection, struct buffer *buffer);
 

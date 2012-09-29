@@ -12,6 +12,11 @@ float maxf(float x, float y)
     return x < y ? y : x;
 }
 
+float maxz(size_t x, size_t y)
+{
+    return x < y ? y : x;
+}
+
 float minf(float x, float y)
 {
     return x < y ? x : y;

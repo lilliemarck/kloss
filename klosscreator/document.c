@@ -119,6 +119,16 @@ void group_selected_blocks(document *doc)
     insert_group(doc->group, newgroup);
 }
 
+void ungroup_selected_blocks(document *doc)
+{
+    if (is_document_locked(doc))
+    {
+        return;
+    }
+
+    ungroup_selection(doc->blockselection);
+}
+
 struct group *get_root_group(document *doc)
 {
     return doc->group;

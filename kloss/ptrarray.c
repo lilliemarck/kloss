@@ -1,4 +1,5 @@
 #include "ptrarray.h"
+#include <kloss/algorithm.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -81,6 +82,29 @@ void remove_ptrarray(ptrarray *array, void const *element)
             ++i;
         }
     }
+}
+
+static void grow_capacity(ptrarray *array, void **end)
+{
+    if (end > array->capacity)
+    {
+        size_t length   = array->end - array->begin;
+        size_t capacity = array->capacity - array->begin;
+
+        capacity = maxz(capacity << 1, end - array->begin);
+
+        array->begin    = realloc(array->begin, capacity * sizeof(void*));
+        array->end      = array->begin + length;
+        array->capacity = array->begin + capacity;
+    }
+}
+
+void append_ptrarray(ptrarray *array, ptrarray const *from)
+{
+    size_t count = ptrarray_count(from);
+    grow_capacity(array, array->end + count);
+    memcpy(array->end, from->begin, count * sizeof(void*));
+    array->end += count;
 }
 
 void clear_ptrarray(ptrarray *array)

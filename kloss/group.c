@@ -154,6 +154,24 @@ static void foreach_block(struct groupdata *groupdata, void (function)(block*,vo
     }
 }
 
+void merge_group_into_parent(struct group *group)
+{
+    struct groupdata *groupdata  = group->data;
+    struct group     *parent     = group->parent;
+    struct groupdata *parentdata = parent->data;
+
+    move_group_origin(group, &parent->position);
+
+    append_ptrarray (parentdata->blocks, groupdata->blocks);
+    clear_ptrarray  (groupdata->blocks);
+    remove_ptrarray (parentdata->groups, group);
+    append_ptrarray (parentdata->groups, groupdata->groups);
+    clear_ptrarray  (groupdata->groups);
+
+    destroy_group(group);
+    update_group_vertexarray(parent);
+}
+
 void insert_group(struct group *group, struct group *child)
 {
     push_ptrarray(group->data->groups, child);

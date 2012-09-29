@@ -52,6 +52,11 @@ void move_group_origin(struct group *instance, struct vec3 const *position);
 void foreach_block_in_hiearchy(struct group *group, void (*proc)(struct blockref*, void*), void *data);
 
 /**
+ * Merges this group into the parent group and destroy this group.
+ */
+void merge_group_into_parent(struct group *group);
+
+/**
  * Returns a pointer to the child group that contains the descendant or that
  * is the descendant itself. Returns NULL if descendant is not a descendant of
  * group.

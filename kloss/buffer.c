@@ -1,4 +1,5 @@
 #include "buffer.h"
+#include <kloss/algorithm.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,19 +26,14 @@ void destroy_buffer(buffer *buffer)
     }
 }
 
-static size_t Max(size_t x, size_t y)
-{
-    return x < y ? y : x;
-}
-
-static void GrowCapacity(buffer *buffer, uint8_t *end)
+static void grow_capacity(buffer *buffer, uint8_t *end)
 {
     if (end > buffer->capacity)
     {
         size_t length   = buffer->end - buffer->begin;
         size_t capacity = buffer->capacity - buffer->begin;
 
-        capacity = Max(capacity << 1, end - buffer->begin);
+        capacity = maxz(capacity << 1, end - buffer->begin);
 
         buffer->begin    = realloc(buffer->begin, capacity);
         buffer->end      = buffer->begin + length;
@@ -47,7 +43,7 @@ static void GrowCapacity(buffer *buffer, uint8_t *end)
 
 void append_buffer(buffer *buffer, void const *data, size_t size)
 {
-    GrowCapacity(buffer, buffer->end + size);
+    grow_capacity(buffer, buffer->end + size);
     memcpy(buffer->end, data, size);
     buffer->end += size;
 }
