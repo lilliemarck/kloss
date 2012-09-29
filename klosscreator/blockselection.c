@@ -36,30 +36,30 @@ void destroy_blockselection(blockselection *selection)
  * Returns true if the block is selected directly or indirectly through a child
  * group.
  */
-static bool is_block_selected(struct blockselection *selection, struct group *group, struct block *block)
+static bool is_block_selected(struct blockselection *selection, struct blockref ref)
 {
-    if (find_ptr(selection->blocks.begin, selection->blocks.end, block))
+    if (find_ptr(selection->blocks.begin, selection->blocks.end, ref.block))
     {
         return true;
     }
 
-    struct group *child = get_child_by_descendant(selection->rootgroup, group);
+    struct group *child = get_child_by_descendant(selection->rootgroup, ref.group);
     return find_ptr(selection->groups.begin, selection->groups.end, child);
 }
 
-void select_block(struct blockselection *selection, struct group *group, struct block *block)
+void select_block(struct blockselection *selection, struct blockref ref)
 {
-    if (is_block_selected(selection, group, block))
+    if (is_block_selected(selection, ref))
     {
         return;
     }
 
-    if (group == selection->rootgroup)
+    if (ref.group == selection->rootgroup)
     {
-        PUSH_TARRAY(selection->blocks, block);
+        PUSH_TARRAY(selection->blocks, ref.block);
     }
 
-    struct group *child = get_child_by_descendant(selection->rootgroup, group);
+    struct group *child = get_child_by_descendant(selection->rootgroup, ref.group);
 
     if (child)
     {
@@ -67,18 +67,18 @@ void select_block(struct blockselection *selection, struct group *group, struct 
     }
 }
 
-void deselect_block(blockselection *selection, struct group *group, struct block *block)
+void deselect_block(blockselection *selection, struct blockref ref)
 {
     for (struct block **i = selection->blocks.begin; i != selection->blocks.end; ++i)
     {
-        if (*i == block)
+        if (*i == ref.block)
         {
             ERASE_TARRAY_ITERATOR(selection->blocks, i);
             return;
         }
     }
 
-    struct group *child = get_child_by_descendant(selection->rootgroup, group);
+    struct group *child = get_child_by_descendant(selection->rootgroup, ref.group);
 
     for (struct group **i = selection->groups.begin; i != selection->groups.end; ++i)
     {
@@ -129,23 +129,23 @@ void restore_blockselection(blockselection *selection, buffer *buffer)
 
 static bool is_selected(void *data, void *element)
 {
-    struct pick *pick = element;
+    struct blockref *ref = element;
 
-    return is_block_selected(data, pick->group, pick->block);
+    return is_block_selected(data, *ref);
 }
 
 static void select(void *data, void *element)
 {
-    struct pick *pick = element;
+    struct blockref *ref = element;
 
-    select_block(data, pick->group, pick->block);
+    select_block(data, *ref);
 }
 
 static void deselect(void *data, void *element)
 {
-    struct pick *pick = element;
+    struct blockref *ref = element;
 
-    deselect_block(data, pick->group, pick->block);
+    deselect_block(data, *ref);
 }
 
 static void deselect_all(void *data)
@@ -161,12 +161,12 @@ static pickprocs interface =
     deselect_all
 };
 
-bool single_pick_block(blockselection *selection, struct pick *pick)
+bool single_pick_block(blockselection *selection, struct blockref *ref)
 {
-    return single_pick(&interface, selection, pick);
+    return single_pick(&interface, selection, ref);
 }
 
-bool multi_pick_block(blockselection *selection, struct pick *pick)
+bool multi_pick_block(blockselection *selection, struct blockref *ref)
 {
-    return multi_pick(&interface, selection, pick);
+    return multi_pick(&interface, selection, ref);
 }

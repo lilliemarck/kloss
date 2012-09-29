@@ -4,9 +4,9 @@
 #include <stddef.h>
 
 struct block;
+struct blockref;
 struct buffer;
 struct group;
-struct pick;
 
 typedef struct blockselection blockselection;
 
@@ -20,12 +20,12 @@ void destroy_blockselection(blockselection *selection);
  * Selects the block or the group that the block is part of. The selection is
  * left unchanged if the block is part of of an ancestor or unrelated group.
  */
-void select_block(blockselection *selection, struct group *group, struct block *block);
+void select_block(blockselection *selection, struct blockref ref);
 
 /**
  * Deselects the block or the group that the block is part of.
  */
-void deselect_block(blockselection *selection, struct group *group, struct block *block);
+void deselect_block(blockselection *selection, struct blockref ref);
 void deselect_all_blocks(blockselection *selection);
 size_t selected_block_count(blockselection *selection);
 struct block **selected_blocks(blockselection *selection);
@@ -33,5 +33,5 @@ struct block **selected_blocks(blockselection *selection);
 void backup_blockselection(blockselection *selection, struct buffer *buffer);
 void restore_blockselection(blockselection *selection, struct buffer *buffer);
 
-bool single_pick_block(blockselection *selection, struct pick *pick);
-bool multi_pick_block(blockselection *selection, struct pick *pick);
+bool single_pick_block(blockselection *selection, struct blockref *ref);
+bool multi_pick_block(blockselection *selection, struct blockref *ref);

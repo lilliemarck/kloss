@@ -460,7 +460,7 @@ bool window_pick_vertex(mainwindow const *win, float mousex, float mousey, struc
         ray cameraray; ray_from_point_to_point(&cameraray, &camerapos, &vertexpos);
         pick pick = pick_block(group, &cameraray);
 
-        if (pick.block)
+        if (pick.blockref.block)
         {
             if (vec3_equals(&pick.triangle.a, &vertexpos) ||
                 vec3_equals(&pick.triangle.b, &vertexpos) ||

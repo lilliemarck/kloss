@@ -76,9 +76,10 @@ void paste_copied_blocks(document *doc)
 
     for (size_t i = 0; i < blockcount; ++i)
     {
-        block *newblock = copy_block(blocks + i);
-        insert_blocks(doc->group, &newblock, 1);
-        select_block(doc->blockselection, doc->group, newblock);
+        struct blockref ref = {copy_block(blocks + i), doc->group};
+
+        insert_blocks(ref.group, &ref.block, 1);
+        select_block(doc->blockselection, ref);
     }
 }
 

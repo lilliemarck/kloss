@@ -11,10 +11,19 @@ struct group;
 typedef struct pick pick;
 typedef struct viewport viewport;
 
+/**
+ * Reference to a block and the group that the block is part of.
+ * This is needed because blocks doesn't have a pointer their group.
+ */
+struct blockref
+{
+    struct block *block;
+    struct group *group;
+};
+
 struct pick
 {
-    struct group *group;
-    struct block *block;
+    struct blockref blockref;
     struct triangle triangle;
     struct vec3 intersection;
 };

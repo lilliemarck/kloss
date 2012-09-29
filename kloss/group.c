@@ -237,7 +237,7 @@ pick pick_block(struct group *group, ray const *ray)
 
     vec3 intersection;
     vec3_add_scaled(&intersection, &ray->origin, &ray->direction, nearest.distance);
-    return (pick){nearest.group, nearest.block, nearest.triangle, intersection};
+    return (pick){{nearest.block, nearest.group}, nearest.triangle, intersection};
 }
 
 static bool project(vec3 *out, vec3 const *in, mat4 const *model, mat4 const *projection, viewport const *viewport)
