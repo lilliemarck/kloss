@@ -65,6 +65,11 @@ size_t buffer_size(buffer *buffer)
     return buffer->end - buffer->begin;
 }
 
+size_t buffer_count(buffer *buffer, size_t elementsize)
+{
+    return buffer_size(buffer) / elementsize;
+}
+
 void *buffer_data(buffer *buffer)
 {
     return buffer->begin;

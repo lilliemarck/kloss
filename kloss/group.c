@@ -88,7 +88,7 @@ vec3 get_group_position(struct group const *group)
 static void append_triangles(struct groupdata *groupdata, buffer *buffer)
 {
     triangle *triangles = buffer_data(buffer);
-    size_t trianglecount = buffer_size(buffer) / sizeof(struct triangle);
+    size_t trianglecount = buffer_count(buffer, sizeof(struct triangle));
 
     for (size_t i = 0; i < trianglecount; ++i)
     {
@@ -214,7 +214,7 @@ static void find_nearest_block(struct group *group, struct ray const *ray, struc
         get_block_triangles(block, buffer);
 
         triangle *tris = buffer_data(buffer);
-        size_t tricount = buffer_size(buffer) / sizeof(struct triangle);
+        size_t tricount = buffer_count(buffer, sizeof(struct triangle));
 
         for (size_t j = 0; j < tricount; ++j)
         {
@@ -394,7 +394,7 @@ static void draw_group_(struct group const *group)
     struct groupdata *groupdata = group->data;
 
     vertex *vertices = buffer_data(groupdata->vertices);
-    size_t vertexcount = buffer_size(groupdata->vertices) / sizeof(struct vertex);
+    size_t vertexcount = buffer_count(groupdata->vertices, sizeof(struct vertex));
 
     glPushMatrix();
     glTranslatef(group->position.x, group->position.y, group->position.z);

@@ -46,7 +46,7 @@ void backup_cornerselection(cornerselection *selection, struct buffer *buffer)
 
 void restore_cornerselection(cornerselection *selection, struct buffer *buffer)
 {
-    assert(buffer_size(buffer) / sizeof(struct corner) == TARRAY_LENGTH(selection->cornerrefs));
+    assert(buffer_count(buffer, sizeof(struct corner)) == TARRAY_LENGTH(selection->cornerrefs));
 
     corner *backup = buffer_data(buffer);
     size_t cornercount = TARRAY_LENGTH(selection->cornerrefs);

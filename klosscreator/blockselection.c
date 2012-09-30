@@ -143,7 +143,7 @@ void backup_blockselection(blockselection *selection, buffer *buffer)
 
 void restore_blockselection(blockselection *selection, buffer *buffer)
 {
-    assert(buffer_size(buffer) / sizeof(struct block) == TARRAY_LENGTH(selection->blocks));
+    assert(buffer_count(buffer, sizeof(struct block)) == TARRAY_LENGTH(selection->blocks));
 
     block *backup = buffer_data(buffer);
     size_t blockcount = TARRAY_LENGTH(selection->blocks);

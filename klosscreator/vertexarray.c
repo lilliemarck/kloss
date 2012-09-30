@@ -5,7 +5,7 @@
 void draw(struct buffer *array)
 {
     vertex *data = buffer_data(array);
-    size_t count = buffer_size(array) / sizeof(struct vertex);
+    size_t count = buffer_count(array, sizeof(struct vertex));
 
     glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
     glEnableClientState(GL_COLOR_ARRAY);
