@@ -24,17 +24,24 @@ void destroy_ptrarray(ptrarray *array)
     }
 }
 
-void push_ptrarray(ptrarray *array, void *object)
+static void grow_capacity(ptrarray *array, void **end)
 {
-    if (array->end == array->capacity)
+    if (end > array->capacity)
     {
         size_t length   = array->end - array->begin;
-        size_t capacity = (length + 1) << 1;
+        size_t capacity = array->capacity - array->begin;
+
+        capacity = maxz(capacity << 1, end - array->begin);
+
         array->begin    = realloc(array->begin, capacity * sizeof(void*));
         array->end      = array->begin + length;
         array->capacity = array->begin + capacity;
     }
+}
 
+void push_ptrarray(ptrarray *array, void *object)
+{
+    grow_capacity(array, array->end + 1);
     *array->end++ = object;
 }
 
@@ -81,21 +88,6 @@ void remove_ptrarray(ptrarray *array, void const *element)
         {
             ++i;
         }
-    }
-}
-
-static void grow_capacity(ptrarray *array, void **end)
-{
-    if (end > array->capacity)
-    {
-        size_t length   = array->end - array->begin;
-        size_t capacity = array->capacity - array->begin;
-
-        capacity = maxz(capacity << 1, end - array->begin);
-
-        array->begin    = realloc(array->begin, capacity * sizeof(void*));
-        array->end      = array->begin + length;
-        array->capacity = array->begin + capacity;
     }
 }
 
