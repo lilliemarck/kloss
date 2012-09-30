@@ -37,6 +37,7 @@ struct viewport
 };
 
 struct group *create_group(void);
+struct group *copy_group(struct group *group);
 void destroy_group(struct group *group);
 struct group *parent_group(struct group *group);
 vec3 get_group_position(struct group const *group);

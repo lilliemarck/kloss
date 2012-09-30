@@ -13,7 +13,7 @@ struct vec3;
 struct blockcopy
 {
     DECLARE_TARRAY(struct block, blocks);
-    DECLARE_TARRAY(struct vec3, grouppositions);
+    DECLARE_TARRAY(struct group*, groups);
 };
 
 typedef struct blockselection blockselection;

@@ -39,6 +39,12 @@ static struct groupdata *create_groupdata(void)
     return groupdata;
 }
 
+static struct groupdata *retain_groupdata(struct groupdata *groupdata)
+{
+    ++groupdata->refcount;
+    return groupdata;
+}
+
 static void release_groupdata(struct groupdata *groupdata)
 {
     if (groupdata && --groupdata->refcount == 0)
@@ -68,6 +74,16 @@ struct group *create_group(void)
     struct group *group = calloc(1, sizeof(struct group));
     group->data = create_groupdata();
     return group;
+}
+
+struct group *copy_group(struct group *group)
+{
+    struct group *copy = calloc(1, sizeof(struct group));
+
+    copy->position = group->position;
+    copy->data     = retain_groupdata(group->data);
+
+    return copy;
 }
 
 void destroy_group(struct group *group)

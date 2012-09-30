@@ -164,7 +164,7 @@ struct blockcopy* create_blockcopy(blockselection* selection)
 
     for (struct group **group = selection->groups.begin; group != selection->groups.end; ++group)
     {
-        PUSH_TARRAY(copy->grouppositions, get_group_position(*group));
+        PUSH_TARRAY(copy->groups, copy_group(*group));
     }
 
     return copy;
@@ -174,8 +174,13 @@ void destroy_blockcopy(struct blockcopy *copy)
 {
     if (copy)
     {
+        for (struct group **group = copy->groups.begin; group != copy->groups.end; ++group)
+        {
+            destroy_group(*group);
+        }
+
         FREE_TARRAY(copy->blocks);
-        FREE_TARRAY(copy->grouppositions);
+        FREE_TARRAY(copy->groups);
         free(copy);
     }
 }
@@ -196,7 +201,8 @@ void restore_blockcopy(blockselection *selection, struct blockcopy const *copy)
 
     for (size_t i = 0; i < groupcount; ++i)
     {
-        set_group_position(selection->groups.begin[i], copy->grouppositions.begin[i]);
+        vec3 pos = get_group_position(copy->groups.begin[i]);
+        set_group_position(selection->groups.begin[i], pos);
     }
 }
 
