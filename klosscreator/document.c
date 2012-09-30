@@ -18,7 +18,7 @@ document *create_document(void)
     document *doc = malloc(sizeof(struct document));
 
     doc->islocked = false;
-    doc->group = create_group(NULL);
+    doc->group = create_group();
     doc->blockselection = create_blockselection(doc->group);
     doc->copiedblocks = create_buffer();
 
@@ -109,7 +109,7 @@ void group_selected_blocks(document *doc)
 
     detatch_blocks(doc->group, blocks, blockcount);
 
-    struct group *newgroup = create_group(doc->group);
+    struct group *newgroup = create_group();
     insert_blocks(newgroup, blocks, blockcount);
     deselect_all_blocks(doc->blockselection);
 

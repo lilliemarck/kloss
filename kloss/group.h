@@ -36,9 +36,11 @@ struct viewport
     int height;
 };
 
-struct group *create_group(struct group *parent);
+struct group *create_group(void);
 void destroy_group(struct group *group);
+struct group *parent_group(struct group *group);
 vec3 get_group_position(struct group const *group);
+size_t child_group_count(struct group const *group);
 void insert_blocks(struct group *group, block **blocks, size_t count);
 void delete_blocks(struct group *group, block **blocks, size_t count);
 void detatch_blocks(struct group *group, block **blocks, size_t count);

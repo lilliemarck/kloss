@@ -63,10 +63,9 @@ static void release_groupdata(struct groupdata *groupdata)
     }
 }
 
-struct group *create_group(struct group *parent)
+struct group *create_group(void)
 {
     struct group *group = calloc(1, sizeof(struct group));
-    group->parent = parent;
     group->data = create_groupdata();
     return group;
 }
@@ -75,14 +74,31 @@ void destroy_group(struct group *group)
 {
     if (group)
     {
+        struct group *parent = group->parent;
+
+        if (parent)
+        {
+            remove_ptrarray(parent->data->groups, group);
+        }
+
         release_groupdata(group->data);
         free(group);
     }
 }
 
+struct group *parent_group(struct group *group)
+{
+    return group->parent;
+}
+
 vec3 get_group_position(struct group const *group)
 {
     return group->position;
+}
+
+size_t child_group_count(struct group const *group)
+{
+    return ptrarray_count(group->data->groups);
 }
 
 static void append_triangles(struct groupdata *groupdata, buffer *buffer)
@@ -175,6 +191,7 @@ void merge_group_into_parent(struct group *group)
 void insert_group(struct group *group, struct group *child)
 {
     push_ptrarray(group->data->groups, child);
+    child->parent = group;
 }
 
 static void foreach_group(struct groupdata *groupdata, void (function)(struct group*,void*), void *userdata)
