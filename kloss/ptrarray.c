@@ -67,9 +67,8 @@ void put_ptrarray(ptrarray *array, size_t index, void *element)
 
 void erase_ptrarray(ptrarray *array, size_t index)
 {
-    memcpy(array->begin + index,
-           array->begin + index + 1,
-           sizeof(void*) * (--array->end - array->begin - index));
+    void **dst = array->begin + index;
+    memmove(dst, dst + 1, (--array->end - dst) * sizeof(void*));
 }
 
 void remove_ptrarray(ptrarray *array, void const *element)

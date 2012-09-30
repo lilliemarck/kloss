@@ -43,21 +43,19 @@ struct                          \
     *(array).end++ = (element);                                                    \
 }
 
-#define ERASE_TARRAY_INDEX(array, index)                                        \
-{                                                                               \
-    memcpy((array).begin + (index),                                             \
-           (array).begin + (index) + 1,                                         \
-           sizeof(*(array).begin) * (--(array).end - (array).begin - (index))); \
+#define ERASE_TARRAY_INDEX(array, index)                   \
+{                                                          \
+    ERASE_TARRAY_ITERATOR(array, (array).begin + (index)); \
 }
 
 /**
  * Erases an element given a pointer of the correct type to that element.
  */
-#define ERASE_TARRAY_ITERATOR(array, iterator)                     \
-{                                                                  \
-    memcpy(iterator,                                               \
-           iterator + 1,                                           \
-           sizeof(*(array).begin) * (--(array).end - (iterator))); \
+#define ERASE_TARRAY_ITERATOR(array, iterator)                      \
+{                                                                   \
+    memmove(iterator,                                               \
+            iterator + 1,                                           \
+            (--(array).end - (iterator)) * sizeof(*(array).begin)); \
 }
 
 #define CLEAR_TARRAY(array) { (array).end = (array).begin; }

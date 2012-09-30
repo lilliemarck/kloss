@@ -48,10 +48,11 @@ void append_buffer(buffer *buffer, void const *data, size_t size)
     buffer->end += size;
 }
 
-void erase_buffer(buffer *buffer, size_t index, size_t size)
+void erase_buffer(buffer *buffer, size_t offset, size_t size)
 {
-    uint8_t *first = buffer->begin + index;
-    memcpy(first, first + size, buffer_size(buffer) - size);
+    uint8_t *dst = buffer->begin + offset;
+    uint8_t *src = dst + size;
+    memmove(dst, src, buffer->end - src);
     buffer->end -= size;
 }
 
