@@ -14,9 +14,9 @@
 typedef struct moveblock
 {
     mainwindow *window;
-    document   *document;
-    vec3        reference;
-    buffer     *dragbackup;
+    document *document;
+    vec3 reference;
+    struct blockcopy *dragbackup;
 } moveblock;
 
 static void *create(mainwindow *win)
@@ -34,7 +34,7 @@ static void destroy(void *data)
     moveblock *tool = data;
 
     unlock_document(tool->document);
-    destroy_buffer(tool->dragbackup);
+    destroy_blockcopy(tool->dragbackup);
     deselect_all_blocks(get_blockselection(tool->document));
 
     free(tool);
@@ -63,12 +63,9 @@ static void mouse_pressed(void *data, ui_mouseevent const *event)
 
         if (did_select)
         {
+            destroy_blockcopy(tool->dragbackup);
             tool->reference = pick.intersection;
-
-            destroy_buffer(tool->dragbackup);
-            tool->dragbackup = create_buffer();
-            backup_blockselection(selection, tool->dragbackup);
-
+            tool->dragbackup = create_blockcopy(selection);
             lock_document(tool->document);
         }
 
@@ -83,7 +80,7 @@ static void mouse_released(void *data, ui_mouseevent const *event)
     if (event->button == UI_MOUSEBUTTON_LEFT)
     {
         unlock_document(tool->document);
-        destroy_buffer(tool->dragbackup);
+        destroy_blockcopy(tool->dragbackup);
         tool->dragbackup = NULL;
     }
 }
@@ -100,7 +97,7 @@ static void mouse_moved(void *data, ui_mouseevent const *event)
         if (constrain_ray(get_constrainalgorithm(tool->window), &ray, &tool->reference, &position))
         {
             blockselection *selection = get_blockselection(tool->document);
-            restore_blockselection(selection, tool->dragbackup);
+            restore_blockcopy(selection, tool->dragbackup);
 
             vec3 translation;
             vec3_subtract(&translation, &position, &tool->reference);

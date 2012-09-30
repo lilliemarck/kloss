@@ -1,6 +1,5 @@
 #include "document.h"
 #include <kloss/boundingbox.h>
-#include <kloss/buffer.h>
 #include <kloss/group.h>
 #include <klosscreator/blockselection.h>
 #include <stdlib.h>
@@ -10,17 +9,15 @@ struct document
     bool islocked;
     struct group* group;
     blockselection *blockselection;
-    buffer *copiedblocks;
+    struct blockcopy *copiedblocks;
 };
 
 document *create_document(void)
 {
-    document *doc = malloc(sizeof(struct document));
+    document *doc = calloc(1, sizeof(struct document));
 
-    doc->islocked = false;
     doc->group = create_group();
     doc->blockselection = create_blockselection(doc->group);
-    doc->copiedblocks = create_buffer();
 
     return doc;
 }
@@ -29,7 +26,7 @@ void destroy_document(document *doc)
 {
     if (doc)
     {
-        destroy_buffer(doc->copiedblocks);
+        destroy_blockcopy(doc->copiedblocks);
         destroy_blockselection(doc->blockselection);
         destroy_group(doc->group);
         free(doc);
@@ -58,25 +55,24 @@ void copy_selected_blocks(document *doc)
         return;
     }
 
-    clear_buffer(doc->copiedblocks);
-    backup_blockselection(doc->blockselection, doc->copiedblocks);
+    destroy_blockcopy(doc->copiedblocks);
+    doc->copiedblocks = create_blockcopy(doc->blockselection);
 }
 
 void paste_copied_blocks(document *doc)
 {
-    if (is_document_locked(doc) || buffer_size(doc->copiedblocks) == 0)
+    if (is_document_locked(doc) || !doc->copiedblocks)
     {
         return;
     }
 
     deselect_all_blocks(doc->blockselection);
 
-    block* blocks = buffer_data(doc->copiedblocks);
-    size_t blockcount = buffer_count(doc->copiedblocks, sizeof(struct block));
+    struct blockcopy *copy = doc->copiedblocks;
 
-    for (size_t i = 0; i < blockcount; ++i)
+    for (struct block *block = copy->blocks.begin; block != copy->blocks.end; ++block)
     {
-        struct blockref ref = {copy_block(blocks + i), doc->group};
+        struct blockref ref = {copy_block(block), doc->group};
 
         insert_blocks(ref.group, &ref.block, 1);
         select_block(doc->blockselection, ref);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <kloss/tarray.h>
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -7,6 +8,11 @@ struct block;
 struct blockref;
 struct buffer;
 struct group;
+
+struct blockcopy
+{
+    DECLARE_TARRAY(struct block, blocks);
+};
 
 typedef struct blockselection blockselection;
 typedef void (*foreachblockproc)(struct blockref *ref, void *data);
@@ -37,8 +43,13 @@ void foreach_selected_block(struct blockselection *selection, foreachblockproc p
  */
 void ungroup_selection(struct blockselection *selection);
 
-void backup_blockselection(blockselection *selection, struct buffer *buffer);
-void restore_blockselection(blockselection *selection, struct buffer *buffer);
+struct blockcopy *create_blockcopy(blockselection *selection);
+void destroy_blockcopy(struct blockcopy *copy);
+/**
+ * Restores an earlier copy made from this block selection. The number of
+ * blocks and groups in the copy must match what is in the selection.
+ */
+void restore_blockcopy(blockselection *selection, struct blockcopy const *copy);
 
 bool single_pick_block(blockselection *selection, struct blockref *ref);
 bool multi_pick_block(blockselection *selection, struct blockref *ref);

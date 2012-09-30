@@ -3,7 +3,6 @@
 #include <kloss/block.h>
 #include <kloss/buffer.h>
 #include <kloss/group.h>
-#include <kloss/tarray.h>
 #include <klosscreator/pick.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -133,24 +132,36 @@ void foreach_selected_block(struct blockselection *selection, foreachblockproc p
     }
 }
 
-void backup_blockselection(blockselection *selection, buffer *buffer)
+struct blockcopy* create_blockcopy(blockselection* selection)
 {
+    struct blockcopy *copy = calloc(1, sizeof(struct blockcopy));
+
     for (block **i = selection->blocks.begin; i != selection->blocks.end; ++i)
     {
-        append_buffer(buffer, *i, sizeof(struct block));
+        PUSH_TARRAY(copy->blocks, **i);
+    }
+
+    return copy;
+}
+
+void destroy_blockcopy(struct blockcopy *copy)
+{
+    if (copy)
+    {
+        FREE_TARRAY(copy->blocks);
+        free(copy);
     }
 }
 
-void restore_blockselection(blockselection *selection, buffer *buffer)
+void restore_blockcopy(blockselection *selection, struct blockcopy const *copy)
 {
-    assert(buffer_count(buffer, sizeof(struct block)) == TARRAY_LENGTH(selection->blocks));
+    assert(TARRAY_LENGTH(copy->blocks) == TARRAY_LENGTH(selection->blocks));
 
-    block *backup = buffer_data(buffer);
     size_t blockcount = TARRAY_LENGTH(selection->blocks);
 
     for (size_t i = 0; i < blockcount; ++i)
     {
-        *selection->blocks.begin[i] = backup[i];
+        *selection->blocks.begin[i] = copy->blocks.begin[i];
     }
 }
 
