@@ -207,14 +207,21 @@ void merge_group_into_parent(struct group *group)
     struct group     *parent     = group->parent;
     struct groupdata *parentdata = parent->data;
 
-    vec3 zero = {0.0f, 0.0f, 0.0f};
-    move_group_origin(group, &zero);
+    for (size_t i = 0; i < ptrarray_count(groupdata->blocks); ++i)
+    {
+        struct block *copy = copy_block(get_ptrarray(groupdata->blocks, i));
+        translate_block(copy, &group->position);
+        push_ptrarray(parentdata->blocks, copy);
+    }
 
-    append_ptrarray (parentdata->blocks, groupdata->blocks);
-    clear_ptrarray  (groupdata->blocks);
-    remove_ptrarray (parentdata->groups, group);
-    append_ptrarray (parentdata->groups, groupdata->groups);
-    clear_ptrarray  (groupdata->groups);
+    remove_ptrarray(parentdata->groups, group);
+
+    for (size_t i = 0; i < ptrarray_count(groupdata->groups); ++i)
+    {
+        struct group *copy = copy_group(get_ptrarray(groupdata->groups, i));
+        vec3_add(&copy->position, &copy->position, &group->position);
+        push_ptrarray(parentdata->groups, copy);
+    }
 
     destroy_group(group);
     update_group_vertexarray(parent);

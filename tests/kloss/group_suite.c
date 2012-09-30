@@ -60,8 +60,8 @@ START_TEST(merge_group_with_blocks)
     struct block **blocks = get_blocks(group);
 
     fail_unless(block_count(group) == 1, NULL);
-    fail_unless(block->corners[0].x      == blocks[0]->corners[0].x, NULL);
-    fail_unless(block->corners[0].bottom == blocks[0]->corners[0].bottom, NULL);
+    fail_unless(10.0f == blocks[0]->corners[0].x,      NULL);
+    fail_unless(20.0f == blocks[0]->corners[3].bottom, NULL);
 }
 END_TEST
 
