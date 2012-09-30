@@ -96,6 +96,11 @@ vec3 get_group_position(struct group const *group)
     return group->position;
 }
 
+void set_group_position(struct group *group, vec3 pos)
+{
+    group->position = pos;
+}
+
 size_t child_group_count(struct group const *group)
 {
     return ptrarray_count(group->data->groups);
@@ -160,6 +165,16 @@ void detatch_blocks(struct group *group, block **blocks, size_t count)
     update_group_vertexarray(group);
 }
 
+block **get_blocks(struct group *group)
+{
+    return ptrarray_data(group->data->blocks);
+}
+
+size_t block_count(struct group const *group)
+{
+    return ptrarray_count(group->data->blocks);
+}
+
 static void foreach_block(struct groupdata *groupdata, void (function)(block*,void*), void *userdata)
 {
     size_t groupcount = ptrarray_count(groupdata->blocks);
@@ -176,7 +191,8 @@ void merge_group_into_parent(struct group *group)
     struct group     *parent     = group->parent;
     struct groupdata *parentdata = parent->data;
 
-    move_group_origin(group, &parent->position);
+    vec3 zero = {0.0f, 0.0f, 0.0f};
+    move_group_origin(group, &zero);
 
     append_ptrarray (parentdata->blocks, groupdata->blocks);
     clear_ptrarray  (groupdata->blocks);

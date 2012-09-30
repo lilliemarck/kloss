@@ -17,3 +17,4 @@ void remove_ptrarray(ptrarray *array, void const *element);
 void append_ptrarray(ptrarray *array, ptrarray const *from);
 void clear_ptrarray(ptrarray *array);
 size_t ptrarray_count(const ptrarray *array);
+void *ptrarray_data(ptrarray *array);

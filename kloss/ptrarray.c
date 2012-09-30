@@ -108,3 +108,8 @@ size_t ptrarray_count(ptrarray const *array)
 {
     return array->end - array->begin;
 }
+
+void *ptrarray_data(ptrarray *array)
+{
+    return array->begin;
+}
