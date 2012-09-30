@@ -106,15 +106,7 @@ static void mouse_moved(void *data, ui_mouseevent const *event)
             translation.y = roundf(translation.y);
             translation.z = roundf(translation.z);
 
-            block** blocks = selected_blocks(selection);
-            size_t count = selected_block_count(selection);
-
-            for (size_t i = 0; i < count; ++i)
-            {
-                translate_block(blocks[i], &translation);
-            }
-
-            update_group_vertexarray(get_root_group(tool->document));
+            translate_blockselection(selection, translation);
         }
 
         ui_update_widget(get_glwidget(tool->window));

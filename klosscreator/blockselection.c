@@ -100,6 +100,27 @@ void ungroup_selection(struct blockselection *selection)
     CLEAR_TARRAY(selection->groups);
 }
 
+void translate_blockselection(struct blockselection *selection, vec3 translation)
+{
+    for (struct block **block  = selection->blocks.begin;
+                        block != selection->blocks.end;
+                      ++block)
+    {
+        translate_block(*block, &translation);
+    }
+
+    for (struct group **group  = selection->groups.begin;
+                        group != selection->groups.end;
+                      ++group)
+    {
+        vec3 grouppos = get_group_position(*group);
+        vec3_add(&grouppos, &grouppos, &translation);
+        set_group_position(*group, grouppos);
+    }
+
+    update_group_vertexarray(selection->rootgroup);
+}
+
 void deselect_all_blocks(blockselection *selection)
 {
     CLEAR_TARRAY(selection->blocks);
@@ -141,6 +162,11 @@ struct blockcopy* create_blockcopy(blockselection* selection)
         PUSH_TARRAY(copy->blocks, **i);
     }
 
+    for (struct group **group = selection->groups.begin; group != selection->groups.end; ++group)
+    {
+        PUSH_TARRAY(copy->grouppositions, get_group_position(*group));
+    }
+
     return copy;
 }
 
@@ -149,6 +175,7 @@ void destroy_blockcopy(struct blockcopy *copy)
     if (copy)
     {
         FREE_TARRAY(copy->blocks);
+        FREE_TARRAY(copy->grouppositions);
         free(copy);
     }
 }
@@ -156,12 +183,20 @@ void destroy_blockcopy(struct blockcopy *copy)
 void restore_blockcopy(blockselection *selection, struct blockcopy const *copy)
 {
     assert(TARRAY_LENGTH(copy->blocks) == TARRAY_LENGTH(selection->blocks));
+    assert(TARRAY_LENGTH(copy->groups) == TARRAY_LENGTH(selection->groups));
 
     size_t blockcount = TARRAY_LENGTH(selection->blocks);
 
     for (size_t i = 0; i < blockcount; ++i)
     {
         *selection->blocks.begin[i] = copy->blocks.begin[i];
+    }
+
+    size_t groupcount = TARRAY_LENGTH(selection->groups);
+
+    for (size_t i = 0; i < groupcount; ++i)
+    {
+        set_group_position(selection->groups.begin[i], copy->grouppositions.begin[i]);
     }
 }
 

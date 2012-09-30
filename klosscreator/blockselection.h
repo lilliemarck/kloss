@@ -8,10 +8,12 @@ struct block;
 struct blockref;
 struct buffer;
 struct group;
+struct vec3;
 
 struct blockcopy
 {
     DECLARE_TARRAY(struct block, blocks);
+    DECLARE_TARRAY(struct vec3, grouppositions);
 };
 
 typedef struct blockselection blockselection;
@@ -42,6 +44,7 @@ void foreach_selected_block(struct blockselection *selection, foreachblockproc p
  * Merges selected child groups into the root group.
  */
 void ungroup_selection(struct blockselection *selection);
+void translate_blockselection(struct blockselection *selection, struct vec3 translation);
 
 struct blockcopy *create_blockcopy(blockselection *selection);
 void destroy_blockcopy(struct blockcopy *copy);
