@@ -45,6 +45,7 @@ void foreach_selected_block(struct blockselection *selection, foreachblockproc p
  */
 void ungroup_selection(struct blockselection *selection);
 void translate_blockselection(struct blockselection *selection, struct vec3 translation);
+void paste_blockcopy(struct blockselection *selection, struct blockcopy *copy);
 
 struct blockcopy *create_blockcopy(blockselection *selection);
 void destroy_blockcopy(struct blockcopy *copy);

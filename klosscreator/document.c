@@ -50,7 +50,7 @@ bool is_document_locked(document *doc)
 
 void copy_selected_blocks(document *doc)
 {
-    if (is_document_locked(doc) || selected_block_count(doc->blockselection) == 0)
+    if (is_document_locked(doc))
     {
         return;
     }
@@ -66,17 +66,7 @@ void paste_copied_blocks(document *doc)
         return;
     }
 
-    deselect_all_blocks(doc->blockselection);
-
-    struct blockcopy *copy = doc->copiedblocks;
-
-    for (struct block *block = copy->blocks.begin; block != copy->blocks.end; ++block)
-    {
-        struct blockref ref = {copy_block(block), doc->group};
-
-        insert_blocks(ref.group, &ref.block, 1);
-        select_block(doc->blockselection, ref);
-    }
+    paste_blockcopy(doc->blockselection, doc->copiedblocks);
 }
 
 void delete_selected_blocks(document *doc)

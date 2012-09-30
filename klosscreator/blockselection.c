@@ -121,6 +121,25 @@ void translate_blockselection(struct blockselection *selection, vec3 translation
     update_group_vertexarray(selection->rootgroup);
 }
 
+void paste_blockcopy(struct blockselection *selection, struct blockcopy *copy)
+{
+    deselect_all_blocks(selection);
+
+    for (struct block *block = copy->blocks.begin; block != copy->blocks.end; ++block)
+    {
+        struct block *copiedblock = copy_block(block);
+        insert_blocks(selection->rootgroup, &copiedblock, 1);
+        PUSH_TARRAY(selection->blocks, copiedblock);
+    }
+
+    for (struct group **group = copy->groups.begin; group != copy->groups.end; ++group)
+    {
+        struct group *copiedgroup = copy_group(*group);
+        insert_group(selection->rootgroup, copiedgroup);
+        PUSH_TARRAY(selection->groups, copiedgroup);
+    }
+}
+
 void deselect_all_blocks(blockselection *selection)
 {
     CLEAR_TARRAY(selection->blocks);
