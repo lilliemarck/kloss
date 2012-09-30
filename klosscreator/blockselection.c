@@ -140,6 +140,21 @@ void paste_blockcopy(struct blockselection *selection, struct blockcopy *copy)
     }
 }
 
+void delete_blockselection(struct blockselection *selection)
+{
+    block **blocks = selected_blocks(selection);
+    size_t blockcount = selected_block_count(selection);
+
+    delete_blocks(selection->rootgroup, blocks, blockcount);
+
+    for (struct group **group = selection->groups.begin; group != selection->groups.end; ++group)
+    {
+        destroy_group(*group);
+    }
+
+    deselect_all_blocks(selection);
+}
+
 void deselect_all_blocks(blockselection *selection)
 {
     CLEAR_TARRAY(selection->blocks);

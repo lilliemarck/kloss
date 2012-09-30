@@ -71,16 +71,12 @@ void paste_copied_blocks(document *doc)
 
 void delete_selected_blocks(document *doc)
 {
-    if (is_document_locked(doc) || selected_block_count(doc->blockselection) == 0)
+    if (is_document_locked(doc))
     {
         return;
     }
 
-    block **blocks = selected_blocks(doc->blockselection);
-    size_t blockcount = selected_block_count(doc->blockselection);
-
-    delete_blocks(doc->group, blocks, blockcount);
-    deselect_all_blocks(doc->blockselection);
+    delete_blockselection(doc->blockselection);
 }
 
 void group_selected_blocks(document *doc)
