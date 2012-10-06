@@ -90,13 +90,7 @@ void destroy_group(struct group *group)
 {
     if (group)
     {
-        struct group *parent = group->parent;
-
-        if (parent)
-        {
-            remove_ptrarray(parent->data->groups, group);
-        }
-
+        detatch_group(group);
         release_groupdata(group->data);
         free(group);
     }
@@ -220,7 +214,7 @@ void merge_group_into_parent(struct group *group)
     {
         struct group *copy = copy_group(get_ptrarray(groupdata->groups, i));
         vec3_add(&copy->position, &copy->position, &group->position);
-        push_ptrarray(parentdata->groups, copy);
+        insert_group(parent, copy);
     }
 
     destroy_group(group);
@@ -231,6 +225,17 @@ void insert_group(struct group *group, struct group *child)
 {
     push_ptrarray(group->data->groups, child);
     child->parent = group;
+}
+
+void detatch_group(struct group *group)
+{
+    struct group *parent = group->parent;
+
+    if (parent)
+    {
+        remove_ptrarray(parent->data->groups, group);
+        group->parent = NULL;
+    }
 }
 
 static void foreach_group(struct groupdata *groupdata, void (function)(struct group*,void*), void *userdata)
@@ -447,7 +452,6 @@ static void draw_group_(struct group const *group)
     glNormalPointer(GL_FLOAT, sizeof(struct vertex), &vertices->normal);
     glVertexPointer(3, GL_FLOAT, sizeof(struct vertex), &vertices->position);
     glDrawArrays(GL_TRIANGLES, 0, vertexcount);
-    glPopMatrix();
 
     size_t groupcount = ptrarray_count(groupdata->groups);
 
@@ -455,6 +459,8 @@ static void draw_group_(struct group const *group)
     {
         draw_group_(get_ptrarray(groupdata->groups, i));
     }
+
+    glPopMatrix();
 }
 
 void draw_group(struct group const *group)

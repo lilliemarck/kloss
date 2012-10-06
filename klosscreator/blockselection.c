@@ -89,6 +89,32 @@ void deselect_block(blockselection *selection, struct blockref ref)
     }
 }
 
+void group_selection(struct blockselection *selection)
+{
+    if (TARRAY_LENGTH(selection->blocks) == 0 &&
+        TARRAY_LENGTH(selection->groups) == 0)
+    {
+        return;
+    }
+
+    struct group *newgroup = create_group();
+
+    block **blocks = selected_blocks(selection);
+    size_t blockcount = selected_block_count(selection);
+
+    detatch_blocks(selection->rootgroup, blocks, blockcount);
+    insert_blocks(newgroup, blocks, blockcount);
+
+    for (struct group **group = selection->groups.begin; group != selection->groups.end; ++group)
+    {
+        detatch_group(*group);
+        insert_group(newgroup, *group);
+    }
+
+    deselect_all_blocks(selection);
+    insert_group(selection->rootgroup, newgroup);
+}
+
 void ungroup_selection(struct blockselection *selection)
 {
     for (struct group **i = selection->groups.begin; i != selection->groups.end; ++i)

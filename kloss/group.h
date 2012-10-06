@@ -49,6 +49,7 @@ void detatch_blocks(struct group *group, block **blocks, size_t count);
 block **get_blocks(struct group *group);
 size_t block_count(struct group const *group);
 void insert_group(struct group *group, struct group *child);
+void detatch_group(struct group *group);
 pick pick_block(struct group *group, ray const *ray);
 bool pick_vertex(struct group *group, mat4 const *model, mat4 const *projection, viewport const *viewport, vec2 const *mouse, cornerref *ref);
 void update_group_vertexarray(struct group *group);

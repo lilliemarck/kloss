@@ -81,21 +81,12 @@ void delete_selected_blocks(document *doc)
 
 void group_selected_blocks(document *doc)
 {
-    if (is_document_locked(doc) || selected_block_count(doc->blockselection) == 0)
+    if (is_document_locked(doc))
     {
         return;
     }
 
-    block **blocks = selected_blocks(doc->blockselection);
-    size_t blockcount = selected_block_count(doc->blockselection);
-
-    detatch_blocks(doc->group, blocks, blockcount);
-
-    struct group *newgroup = create_group();
-    insert_blocks(newgroup, blocks, blockcount);
-    deselect_all_blocks(doc->blockselection);
-
-    insert_group(doc->group, newgroup);
+    group_selection(doc->blockselection);
 }
 
 void ungroup_selected_blocks(document *doc)
