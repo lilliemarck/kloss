@@ -95,9 +95,6 @@ void group_selected_blocks(document *doc)
     insert_blocks(newgroup, blocks, blockcount);
     deselect_all_blocks(doc->blockselection);
 
-    boundingbox bbox = group_boundingbox(newgroup);
-    move_group_origin(newgroup, &bbox.lower);
-
     insert_group(doc->group, newgroup);
 }
 

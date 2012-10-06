@@ -416,16 +416,6 @@ bool pick_vertex(struct group *group, mat4 const *model, mat4 const *projection,
     }
 }
 
-static void expand_bbox_with_corner(boundingbox *bbox, corner const *corner)
-{
-    bbox->lower.x = minf(bbox->lower.x, corner->x);
-    bbox->upper.x = maxf(bbox->upper.x, corner->x);
-    bbox->lower.y = minf(bbox->lower.y, corner->y);
-    bbox->upper.y = maxf(bbox->upper.y, corner->y);
-    bbox->lower.z = minf(bbox->lower.z, corner->bottom);
-    bbox->upper.z = maxf(bbox->upper.z, corner->top);
-}
-
 void update_group_vertexarray(struct group *group)
 {
     struct groupdata *groupdata = group->data;
@@ -487,43 +477,6 @@ void draw_group(struct group const *group)
 
     glPopClientAttrib();
     glPopAttrib();
-}
-
-struct boundingbox group_boundingbox(struct group const *group)
-{
-    struct groupdata *groupdata = group->data;
-
-    boundingbox bbox;
-    init_boundingbox(&bbox);
-
-    size_t blockcount = ptrarray_count(groupdata->blocks);
-
-    if (blockcount > 0)
-    {
-        for (size_t i = 0; i < blockcount; ++i)
-        {
-            block const *block = get_ptrarray(groupdata->blocks, i);
-
-            expand_bbox_with_corner(&bbox, block->corners + 0);
-            expand_bbox_with_corner(&bbox, block->corners + 1);
-            expand_bbox_with_corner(&bbox, block->corners + 2);
-            expand_bbox_with_corner(&bbox, block->corners + 3);
-        }
-
-        // Don't translate if there are no blocks
-        translate_boundingbox(&bbox, &group->position);
-    }
-
-    blockcount = ptrarray_count(groupdata->groups);
-
-    for (size_t i = 0; i < blockcount; ++i)
-    {
-        struct group *group = get_ptrarray(groupdata->groups, i);
-        boundingbox childbbox = group_boundingbox(group);
-        expand_boundingbox(&bbox, &childbbox);
-    }
-
-    return bbox;
 }
 
 static void translate_block_(block *block, void *data)

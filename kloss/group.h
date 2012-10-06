@@ -53,7 +53,6 @@ pick pick_block(struct group *group, ray const *ray);
 bool pick_vertex(struct group *group, mat4 const *model, mat4 const *projection, viewport const *viewport, vec2 const *mouse, cornerref *ref);
 void update_group_vertexarray(struct group *group);
 void draw_group(struct group const *group);
-struct boundingbox group_boundingbox(struct group const *instance);
 void move_group_origin(struct group *instance, struct vec3 const *position);
 void foreach_block_in_hiearchy(struct group *group, void (*proc)(struct blockref*, void*), void *data);
 
