@@ -111,6 +111,20 @@ void set_group_position(struct group *group, vec3 pos)
     group->position = pos;
 }
 
+vec3 get_group_world_position(struct group const *group)
+{
+    if (group->parent)
+    {
+        vec3 pos = get_group_world_position(group->parent);
+        vec3_add(&pos, &pos, &group->position);
+        return pos;
+    }
+    else
+    {
+        return group->position;
+    }
+}
+
 size_t child_group_count(struct group const *group)
 {
     return ptrarray_count(group->data->groups);

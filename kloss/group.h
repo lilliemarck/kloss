@@ -42,6 +42,7 @@ void destroy_group(struct group *group);
 struct group *parent_group(struct group *group);
 vec3 get_group_position(struct group const *group);
 void set_group_position(struct group *group, vec3 pos);
+vec3 get_group_world_position(struct group const *group);
 size_t child_group_count(struct group const *group);
 void insert_blocks(struct group *group, block **blocks, size_t count);
 void delete_blocks(struct group *group, block **blocks, size_t count);

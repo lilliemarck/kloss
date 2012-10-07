@@ -115,7 +115,7 @@ static void mouse_moved(void *data, ui_mouseevent const *event)
 
 static void draw_block(struct blockref *ref, void *vertices)
 {
-    vec3 pos = get_group_position(ref->group);
+    vec3 pos = get_group_world_position(ref->group);
     struct block *block = ref->block;
 
     glPushMatrix();
