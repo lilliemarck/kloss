@@ -21,25 +21,13 @@ START_TEST(add_child_group)
     insert_group(group, child);
 
     fail_unless(child_group_count(group) == 1, NULL);
-    fail_unless(parent_group(child) == group);
-}
-END_TEST
-
-START_TEST(destroy_child_group)
-{
-    struct group *child = create_group();
-    insert_group(group, child);
-    destroy_group(child);
-
-    fail_unless(child_group_count(group) == 0, NULL);
 }
 END_TEST
 
 START_TEST(merge_empty_group)
 {
     struct group *child = create_group();
-    insert_group(group, child);
-    merge_group_into_parent(child);
+    merge_group(group, child);
 
     fail_unless(child_group_count(group) == 0, NULL);
 }
@@ -54,8 +42,7 @@ START_TEST(merge_group_with_blocks)
     block->corners[3].bottom = 20;
 
     insert_blocks(child, &block, 1);
-    insert_group(group, child);
-    merge_group_into_parent(child);
+    merge_group(group, child);
 
     struct block **blocks = get_blocks(group);
 
@@ -71,9 +58,8 @@ START_TEST(merge_translated_group)
     struct block *block = create_block();
 
     insert_blocks(child, &block, 1);
-    insert_group(group, child);
     set_group_position(child, (vec3){1.0f, 2.0f, 3.0f});
-    merge_group_into_parent(child);
+    merge_group(group, child);
 
     struct block **blocks = get_blocks(group);
 
@@ -96,8 +82,7 @@ START_TEST(merge_group_to_translated_parent)
     struct block *block = create_block();
 
     insert_blocks(child, &block, 1);
-    insert_group(group, child);
-    merge_group_into_parent(child);
+    merge_group(group, child);
 
     struct block **blocks = get_blocks(group);
 
@@ -116,7 +101,6 @@ Suite *group_suite(void)
     tc = tcase_create("Nesting");
     tcase_add_checked_fixture(tc, setup, teardown);
     tcase_add_test(tc, add_child_group);
-    tcase_add_test(tc, destroy_child_group);
     suite_add_tcase(s, tc);
 
     tc = tcase_create("Merging");

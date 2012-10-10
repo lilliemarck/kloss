@@ -113,13 +113,12 @@ static void mouse_moved(void *data, ui_mouseevent const *event)
     }
 }
 
-static void draw_block(struct blockref *ref, void *vertices)
+static void draw_block(struct blockref *ref, struct vec3 const *pos, void *vertices)
 {
-    vec3 pos = get_group_world_position(ref->group);
     struct block *block = ref->block;
 
     glPushMatrix();
-    glTranslatef(pos.x, pos.y, pos.z);
+    glTranslatef(pos->x, pos->y, pos->z);
 
     draw_at(vertices, (vec3){block->corners[0].x, block->corners[0].y, block->corners[0].top});
     draw_at(vertices, (vec3){block->corners[1].x, block->corners[1].y, block->corners[1].top});

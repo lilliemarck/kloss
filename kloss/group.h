@@ -39,10 +39,8 @@ struct viewport
 struct group *create_group(void);
 struct group *copy_group(struct group *group);
 void destroy_group(struct group *group);
-struct group *parent_group(struct group *group);
 vec3 get_group_position(struct group const *group);
 void set_group_position(struct group *group, vec3 pos);
-vec3 get_group_world_position(struct group const *group);
 size_t child_group_count(struct group const *group);
 void insert_blocks(struct group *group, block **blocks, size_t count);
 void delete_blocks(struct group *group, block **blocks, size_t count);
@@ -50,18 +48,22 @@ void detatch_blocks(struct group *group, block **blocks, size_t count);
 block **get_blocks(struct group *group);
 size_t block_count(struct group const *group);
 void insert_group(struct group *group, struct group *child);
-void detatch_group(struct group *group);
+void erase_group(struct group *group, struct group *child);
 pick pick_block(struct group *group, ray const *ray);
 bool pick_vertex(struct group *group, mat4 const *model, mat4 const *projection, viewport const *viewport, vec2 const *mouse, cornerref *ref);
 void update_group_vertexarray(struct group *group);
 void draw_group(struct group const *group);
 void move_group_origin(struct group *instance, struct vec3 const *position);
-void foreach_block_in_hiearchy(struct group *group, void (*proc)(struct blockref*, void*), void *data);
+void foreach_block_in_hiearchy(
+    struct group *group,
+    struct vec3 const *parentpos,
+    void (*proc)(struct blockref*, struct vec3 const *pos, void*),
+    void *data);
 
 /**
- * Merges this group into the parent group and destroy this group.
+ * Merges a group into another and destroys the original group.
  */
-void merge_group_into_parent(struct group *group);
+void merge_group(struct group *group, struct group *child);
 
 /**
  * Returns a pointer to the child group that contains the descendant or that

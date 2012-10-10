@@ -107,7 +107,7 @@ void group_selection(struct blockselection *selection)
 
     for (struct group **group = selection->groups.begin; group != selection->groups.end; ++group)
     {
-        detatch_group(*group);
+        erase_group(selection->rootgroup, *group);
         insert_group(newgroup, *group);
     }
 
@@ -120,7 +120,8 @@ void ungroup_selection(struct blockselection *selection)
     for (struct group **i = selection->groups.begin; i != selection->groups.end; ++i)
     {
         struct group *group = *i;
-        merge_group_into_parent(group);
+        erase_group(selection->rootgroup, group);
+        merge_group(selection->rootgroup, group);
     }
 
     CLEAR_TARRAY(selection->groups);
@@ -199,17 +200,20 @@ block **selected_blocks(blockselection *selection)
 
 void foreach_selected_block(struct blockselection *selection, foreachblockproc proc, void *data)
 {
+    vec3 rootpos = get_group_position(selection->rootgroup);
     struct blockref ref = {NULL, selection->rootgroup};
 
     for (struct block **i = selection->blocks.begin; i != selection->blocks.end; ++i)
     {
         ref.block = *i;
-        proc(&ref , data);
+        proc(&ref, &rootpos, data);
     }
 
     for (struct group **i = selection->groups.begin; i != selection->groups.end; ++i)
     {
-        foreach_block_in_hiearchy(*i, proc, data);
+        vec3 pos = get_group_position(*i);
+        vec3_add(&pos, &pos, &rootpos);
+        foreach_block_in_hiearchy(*i, &rootpos, proc, data);
     }
 }
 

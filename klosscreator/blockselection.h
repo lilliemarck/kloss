@@ -17,7 +17,7 @@ struct blockcopy
 };
 
 typedef struct blockselection blockselection;
-typedef void (*foreachblockproc)(struct blockref *ref, void *data);
+typedef void (*foreachblockproc)(struct blockref *ref, struct vec3 const *pos, void *data);
 
 /**
  * Create a block selection with the given group as the root group.

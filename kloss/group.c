@@ -24,7 +24,6 @@ struct groupdata
 
 struct group
 {
-    struct group *parent;
     struct vec3 position;
     struct groupdata *data;
 };
@@ -90,15 +89,9 @@ void destroy_group(struct group *group)
 {
     if (group)
     {
-        detatch_group(group);
         release_groupdata(group->data);
         free(group);
     }
-}
-
-struct group *parent_group(struct group *group)
-{
-    return group->parent;
 }
 
 vec3 get_group_position(struct group const *group)
@@ -109,20 +102,6 @@ vec3 get_group_position(struct group const *group)
 void set_group_position(struct group *group, vec3 pos)
 {
     group->position = pos;
-}
-
-vec3 get_group_world_position(struct group const *group)
-{
-    if (group->parent)
-    {
-        vec3 pos = get_group_world_position(group->parent);
-        vec3_add(&pos, &pos, &group->position);
-        return pos;
-    }
-    else
-    {
-        return group->position;
-    }
 }
 
 size_t child_group_count(struct group const *group)
@@ -209,47 +188,37 @@ static void foreach_block(struct groupdata *groupdata, void (function)(block*,vo
     }
 }
 
-void merge_group_into_parent(struct group *group)
+void merge_group(struct group *group, struct group *child)
 {
-    struct groupdata *groupdata  = group->data;
-    struct group     *parent     = group->parent;
-    struct groupdata *parentdata = parent->data;
+    struct groupdata *groupdata = group->data;
+    struct groupdata *childdata = child->data;
 
-    for (size_t i = 0; i < ptrarray_count(groupdata->blocks); ++i)
+    for (size_t i = 0; i < ptrarray_count(childdata->blocks); ++i)
     {
-        struct block *copy = copy_block(get_ptrarray(groupdata->blocks, i));
-        translate_block(copy, &group->position);
-        push_ptrarray(parentdata->blocks, copy);
+        struct block *copy = copy_block(get_ptrarray(childdata->blocks, i));
+        translate_block(copy, &child->position);
+        push_ptrarray(groupdata->blocks, copy);
     }
 
-    remove_ptrarray(parentdata->groups, group);
-
-    for (size_t i = 0; i < ptrarray_count(groupdata->groups); ++i)
+    for (size_t i = 0; i < ptrarray_count(childdata->groups); ++i)
     {
-        struct group *copy = copy_group(get_ptrarray(groupdata->groups, i));
-        vec3_add(&copy->position, &copy->position, &group->position);
-        insert_group(parent, copy);
+        struct group *copy = copy_group(get_ptrarray(childdata->groups, i));
+        vec3_add(&copy->position, &copy->position, &child->position);
+        insert_group(group, copy);
     }
 
-    destroy_group(group);
-    update_group_vertexarray(parent);
+    destroy_group(child);
+    update_group_vertexarray(group);
 }
 
 void insert_group(struct group *group, struct group *child)
 {
     push_ptrarray(group->data->groups, child);
-    child->parent = group;
 }
 
-void detatch_group(struct group *group)
+void erase_group(struct group *group, struct group *child)
 {
-    struct group *parent = group->parent;
-
-    if (parent)
-    {
-        remove_ptrarray(parent->data->groups, group);
-        group->parent = NULL;
-    }
+    remove_ptrarray(group->data->groups, child);
 }
 
 static void foreach_group(struct groupdata *groupdata, void (function)(struct group*,void*), void *userdata)
@@ -521,8 +490,15 @@ void move_group_origin(struct group *group, vec3 const *position)
     update_group_vertexarray(group);
 }
 
-void foreach_block_in_hiearchy(struct group *group, void (*proc)(struct blockref*, void*), void *data)
+void foreach_block_in_hiearchy(
+    struct group *group,
+    struct vec3 const *parentpos,
+    void (*proc)(struct blockref*, struct vec3 const *pos, void*),
+    void *data)
 {
+    vec3 pos;
+    vec3_add(&pos, parentpos, &group->position);
+
     struct groupdata *groupdata  = group->data;
     struct ptrarray  *blocks     = groupdata->blocks;
     size_t            blockcount = ptrarray_count(blocks);
@@ -531,7 +507,7 @@ void foreach_block_in_hiearchy(struct group *group, void (*proc)(struct blockref
     for (size_t i = 0; i < blockcount; ++i)
     {
         ref.block = get_ptrarray(blocks, i);
-        proc(&ref, data);
+        proc(&ref, &pos, data);
     }
 
     struct ptrarray *groups = groupdata->groups;
@@ -540,22 +516,30 @@ void foreach_block_in_hiearchy(struct group *group, void (*proc)(struct blockref
     for (size_t i = 0; i < groupcount; ++i)
     {
         struct group *child = get_ptrarray(groups, i);
-        foreach_block_in_hiearchy(child, proc, data);
+        foreach_block_in_hiearchy(child, &pos, proc, data);
     }
 }
 
 struct group *get_child_by_descendant(struct group const *group, struct group *descendant)
 {
-    do
+    struct groupdata *groupdata = group->data;
+    struct ptrarray *groups = groupdata->groups;
+    size_t groupcount = ptrarray_count(groups);
+
+    for (size_t i = 0; i < groupcount; ++i)
     {
-        if (descendant->parent == group)
+        struct group *child = get_ptrarray(groups, i);
+
+        if (child == descendant)
         {
-            return descendant;
+            return child;
         }
 
-        descendant = descendant->parent;
+        if (get_child_by_descendant(child, descendant))
+        {
+            return child;
+        }
     }
-    while (descendant);
 
     return NULL;
 }
