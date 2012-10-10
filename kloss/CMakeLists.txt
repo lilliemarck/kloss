@@ -1,12 +1,9 @@
 add_library(kloss
-    algorithm.c
-    block.c
-    buffer.c
-    boundingbox.c
-    camera.c
-    cornerref.c
-    geometry.c
-    group.c
-    keypair.c
-    ptrarray.c
-    math.c)
+    algorithm.cpp
+    block.cpp
+    camera.cpp
+    corner_ref.cpp
+    geometry.cpp
+    group.cpp
+    key_pair.cpp
+    math.cpp)

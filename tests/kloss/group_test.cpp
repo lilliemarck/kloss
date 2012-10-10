@@ -1,87 +1,66 @@
 #include <gtest/gtest.h>
+#include <kloss/group.hpp>
+#include <kloss/memory.hpp>
 #include <memory>
-
-extern "C" {
-#include <kloss/group.h>
-#include <kloss/ptrarray.h>
-} // extern "C"
 
 class group_test : public testing::Test
 {
 public:
-    group_test() : group_(create_group())
+    group_test() : group_(make_unique<group>())
     {
-        std::cout << "construct\n";
     }
 
-    ~group_test()
-    {
-        std::cout << "destructr\n";
-        destroy_group(group_);
-    }
-
-    void SetUp() override
-    {
-        std::cout << "setup\n";
-    }
-
-    void TearDown() override
-    {
-        std::cout << "teardown\n";
-    }
-
-    group* group_;
+    group_ptr group_;
 };
 
 TEST_F(group_test, add_child_group)
 {
-    struct group *child = create_group();
-    insert_group(group_, child);
+    group_->insert(std::make_shared<group>());
 
-    EXPECT_EQ(1u, child_group_count(group_));
+    EXPECT_EQ(1u, group_->group_count());
 }
 
 TEST_F(group_test, merge_empty_group)
 {
-    struct group *child = create_group();
-    merge_group(group_, child);
+    group_ptr child = std::make_shared<group>();
+    group_->merge(child);
 
-    EXPECT_EQ(0u, child_group_count(group_));
+    EXPECT_EQ(0u, group_->group_count());
 }
 
 TEST_F(group_test, merge_group_with_blocks)
 {
-    struct group *child = create_group();
-    struct block *block = create_block();
+    group_ptr child = std::make_shared<group>();
+    block_ptr block = std::make_shared<struct block>();
 
     block->corners[0].x = 10;
     block->corners[3].bottom = 20;
 
-    insert_blocks(child, &block, 1);
-    merge_group(group_, child);
+    child->insert(&block, 1);
+    group_->merge(child);
 
-    struct block **blocks = get_blocks(group_);
+    block_ptr first_block = *group_->begin_blocks();
 
-    EXPECT_EQ(1u, block_count(group_));
-    EXPECT_EQ(10.0f, blocks[0]->corners[0].x);
-    EXPECT_EQ(20.0f, blocks[0]->corners[3].bottom);
+    EXPECT_EQ(1u, group_->block_count());
+    EXPECT_EQ(10.0f, first_block->corners[0].x);
+    EXPECT_EQ(20.0f, first_block->corners[3].bottom);
 }
 
 TEST_F(group_test, merge_translated_group)
 {
-    struct group *child = create_group();
-    struct block *block = create_block();
+    group_ptr child = std::make_shared<group>();
+    block_ptr block = std::make_shared<struct block>();
 
-    insert_blocks(child, &block, 1);
-    set_group_position(child, {1.0f, 2.0f, 3.0f});
-    merge_group(group_, child);
+    child->insert(&block, 1);
+    child->set_position({1.0f, 2.0f, 3.0f});
+    group_->merge(child);
 
-    struct block **blocks = get_blocks(group_);
+    block_ptr first_block = *group_->begin_blocks();
 
-    EXPECT_EQ(1.0f, blocks[0]->corners[0].x);
-    EXPECT_EQ(2.0f, blocks[0]->corners[0].y);
-    EXPECT_EQ(3.0f, blocks[0]->corners[0].top);
-    EXPECT_EQ(3.0f, blocks[0]->corners[0].bottom);
+    EXPECT_EQ(1.0f, first_block->corners[0].x);
+    EXPECT_EQ(2.0f, first_block->corners[0].y);
+    EXPECT_EQ(3.0f, first_block->corners[0].top);
+    EXPECT_EQ(3.0f, first_block->corners[0].bottom);
 }
 
 /*
@@ -90,18 +69,18 @@ TEST_F(group_test, merge_translated_group)
  */
 TEST_F(group_test, merge_group_to_translated_parent)
 {
-    set_group_position(group_, {1.0f, 2.0f, 3.0f});
+    group_->set_position({1.0f, 2.0f, 3.0f});
 
-    struct group *child = create_group();
-    struct block *block = create_block();
+    group_ptr child = std::make_shared<group>();
+    block_ptr block = std::make_shared<struct block>();
 
-    insert_blocks(child, &block, 1);
-    merge_group(group_, child);
+    child->insert(&block, 1);
+    group_->merge(child);
 
-    struct block **blocks = get_blocks(group_);
+    block_ptr first_block = *group_->begin_blocks();
 
-    EXPECT_EQ(0.0f, blocks[0]->corners[0].x);
-    EXPECT_EQ(0.0f, blocks[0]->corners[0].y);
-    EXPECT_EQ(0.0f, blocks[0]->corners[0].top);
-    EXPECT_EQ(0.0f, blocks[0]->corners[0].bottom);
+    EXPECT_EQ(0.0f, first_block->corners[0].x);
+    EXPECT_EQ(0.0f, first_block->corners[0].y);
+    EXPECT_EQ(0.0f, first_block->corners[0].top);
+    EXPECT_EQ(0.0f, first_block->corners[0].bottom);
 }
