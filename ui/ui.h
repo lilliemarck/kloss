@@ -61,7 +61,6 @@ enum ui_key
 
 typedef enum ui_mousebuttons ui_mousebuttons;
 typedef enum ui_key ui_key;
-typedef struct ui_app ui_app;
 typedef struct ui_action ui_action;
 typedef struct ui_actiongroup ui_actiongroup;
 typedef struct ui_glprocs ui_glprocs;
@@ -103,10 +102,6 @@ struct ui_mouseprocs
     void (*released)(void *data, ui_mouseevent const *event);
     void (*moved)(void *data, ui_mouseevent const *event);
 };
-
-ui_app *ui_create_app(int *argc, char **argv);
-void ui_destroy_app(ui_app *app);
-void ui_run_app(ui_app *app);
 
 ui_window *ui_create_window(void);
 void ui_destroy_window(ui_window *win);

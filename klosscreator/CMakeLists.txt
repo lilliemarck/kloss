@@ -1,4 +1,10 @@
 find_package(OpenGL)
+find_package(Qt4 REQUIRED QtCore QtGui)
+
+include(${QT_USE_FILE})
+add_definitions(${QT_DEFINITIONS})
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${QT_INCLUDE_DIR}")
 
 add_library(klosscreator
     block_selection.cpp

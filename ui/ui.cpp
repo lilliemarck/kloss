@@ -13,13 +13,6 @@
 
 extern "C" {
 
-struct ui_app
-{
-    ui_app(int &argc, char **argv) : qapp(argc, argv) {}
-
-    QApplication qapp;
-};
-
 struct ui_menu
 {
     ui_window *parent;
@@ -203,21 +196,6 @@ struct ui_glwidget : public QGLWidget
 static void add_child(ui_window *win, void *data, void (*release)(void*))
 {
     win->children.push_back({data, release});
-}
-
-ui_app *ui_create_app(int *argc, char **argv)
-{
-    return new ui_app(*argc, argv);
-}
-
-void ui_destroy_app(ui_app *app)
-{
-    delete app;
-}
-
-void ui_run_app(ui_app *app)
-{
-    app->qapp.exec();
 }
 
 ui_window *ui_create_window(void)

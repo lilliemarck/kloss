@@ -8,5 +8,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${QT_INCLUDE_DIR}")
 
 qt4_wrap_cpp(ui_MOC_SOURCES ui_qt.h)
 
-add_library(ui ui.cpp ${ui_MOC_SOURCES})
+add_library(ui application.cpp ui.cpp ${ui_MOC_SOURCES})
 target_link_libraries(ui ${QT_LIBRARIES})
